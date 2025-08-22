@@ -4,6 +4,13 @@ import express, { Application } from "express";
 import * as path from "path";
 import sequelize from "../database/connection";
 import "../models";
+import { iniciarCronJobs } from "../services/cronJobs";
+
+// Importar rutas (cuando las tengas creadas)
+import RUsuario from "../routes/usuario";
+import RAuth from "../routes/auth";
+
+/* 
 
 // Importar rutas (cuando las tengas creadas)
 /* import RUsuario from "../routes/usuario";
@@ -15,6 +22,7 @@ import RInventario from "../routes/inventario";
 import RCompra from "../routes/compra"; */
 
 dotenv.config();
+iniciarCronJobs();
 
 class Server {
   private app: Application;
@@ -22,7 +30,8 @@ class Server {
 
   constructor() {
     this.app = express();
-    this.port = process.env.PORT || "3010"; 
+
+    this.port = process.env.PORT || "3010";
     this.middlewares();
     this.router();
     this.DBconnect();
@@ -36,6 +45,8 @@ class Server {
   }
 
   router() {
+    this.app.use("/usuarios", RUsuario);
+    this.app.use("/auth", RAuth);
     /*     this.app.use("/usuarios", RUsuario);
     this.app.use("/tanques", RTanque);
     this.app.use("/ciclos", RCiclo);
@@ -50,6 +61,7 @@ class Server {
       "/uploads",
       express.static(path.join(__dirname, "../../uploads"))
     );
+    this.app.use("/assets", express.static(path.join(__dirname, "../../src/assets")));
     this.app.use(express.json());
     this.app.use(
       cors({
@@ -63,6 +75,10 @@ class Server {
   async DBconnect() {
     try {
       await sequelize.authenticate();
+
+      await sequelize.sync({ force: true });
+ 
+
       await sequelize.sync({ alter: true });
 
       console.log(
