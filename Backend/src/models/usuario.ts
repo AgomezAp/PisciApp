@@ -1,3 +1,4 @@
+
 import { DataTypes, Model, Optional } from "sequelize";
 import sequelize from "../database/connection";
 
@@ -66,16 +67,40 @@ export class Usuario
 }
 
 // Inicialización con Sequelize
+import { DataTypes, Model } from "sequelize";
+import sequelize from "../database/connection";
+
+export class Usuario extends Model {
+  public id!: number;
+  public nombre!: string;
+  public correo!: string;
+  public contraseña!: string | null;
+  public google_id!: string | null;
+  public foto_perfil!: string | null;
+  public periodo_gracia!: boolean;
+  public periodo_prueba!: boolean;
+  public fecha_cobro!: Date | null;
+  public telefono!: string;
+  public rol!: "Admin" | "Cliente" | "Trabajador";
+}
+
 Usuario.init(
   {
     id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
     nombre: { type: DataTypes.STRING, allowNull: false },
     correo: { type: DataTypes.STRING, allowNull: false, unique: true },
+
     contraseña: { type: DataTypes.STRING, allowNull: true }, // null si es login Google
     google_id: { type: DataTypes.STRING, allowNull: true },
     foto_perfil: { type: DataTypes.STRING, allowNull: true },
     periodo_gracia: { type: DataTypes.BOOLEAN, defaultValue: false },
     periodo_gracia_expira: { type: DataTypes.DATE, allowNull: true },
+
+    contraseña: { type: DataTypes.STRING, allowNull: true },
+    google_id: { type: DataTypes.STRING, allowNull: true },
+    foto_perfil: { type: DataTypes.STRING, allowNull: true },
+    periodo_gracia: { type: DataTypes.BOOLEAN, defaultValue: false },
+
     periodo_prueba: { type: DataTypes.BOOLEAN, defaultValue: false },
     fecha_cobro: { type: DataTypes.DATE, allowNull: true },
     telefono: { type: DataTypes.STRING, allowNull: true },
@@ -84,6 +109,7 @@ Usuario.init(
       allowNull: false,
       defaultValue: "Cliente",
     },
+
     is_verified: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
@@ -92,10 +118,16 @@ Usuario.init(
     verification_code: { type: DataTypes.STRING, allowNull: true },
     verification_expires_at: { type: DataTypes.DATE, allowNull: true },
     twofa_secret: { type: DataTypes.STRING, allowNull: true },
+=======
+
   },
   {
     sequelize,
     tableName: "usuarios",
+
     timestamps: true, // ahora true para manejar createdAt y updatedAt
+
+    timestamps: false,
+
   }
 );

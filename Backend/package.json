@@ -35,6 +35,14 @@
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
+    "jsonwebtoken": "^9.0.2",
+    "mysql2": "^3.14.3",
+    "passport": "^0.7.0",
+    "passport-google-oauth20": "^2.0.0",
+    "pg": "^8.16.3",
+    "sequelize": "^6.37.7"
+  },
+  "devDependencies": {
     "@types/cookie-parser": "^1.4.9",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",

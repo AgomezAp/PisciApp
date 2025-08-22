@@ -11,6 +11,9 @@ import RUsuario from "../routes/usuario";
 import RAuth from "../routes/auth";
 
 /* 
+
+// Importar rutas (cuando las tengas creadas)
+/* import RUsuario from "../routes/usuario";
 import RTanque from "../routes/tanque";
 import RCiclo from "../routes/ciclo";
 import RTarea from "../routes/tarea";
@@ -72,8 +75,12 @@ class Server {
   async DBconnect() {
     try {
       await sequelize.authenticate();
+
       await sequelize.sync({ force: true });
  
+
+      await sequelize.sync({ alter: true });
+
       console.log(
         "✅ Conexión establecida y tablas sincronizadas correctamente"
       );
