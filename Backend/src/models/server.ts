@@ -11,12 +11,12 @@ import RUsuario from "../routes/usuario";
 import RAuth from "../routes/auth";
 import cookieParser from "cookie-parser";
 import rateLimit from "express-rate-limit";
+import RInventario from "../routes/inventario";
 /* 
 import RTanque from "../routes/tanque";
 import RCiclo from "../routes/ciclo";
 import RTarea from "../routes/tarea";
 import RProducto from "../routes/producto";
-import RInventario from "../routes/inventario";
 import RCompra from "../routes/compra"; */
 
 dotenv.config();
@@ -33,7 +33,7 @@ class Server {
       // 👇 Cambiá tudominio.com por el dominio real de tu frontend Angular
       res.setHeader(
         "Content-Security-Policy",
-        "default-src 'self' http://localhost:4200 https://tudominio.com"// CAMBIAR ESTO POR LA URL DE PRODUCCIÓN 
+        "default-src 'self' http://localhost:4200 https://tudominio.com" // CAMBIAR ESTO POR LA URL DE PRODUCCIÓN
       );
       next();
     });
@@ -59,6 +59,7 @@ class Server {
 
     this.app.use("/usuarios", RUsuario);
     this.app.use("/auth", RAuth);
+    this.app.use("/inventario", RInventario);
     /*     this.app.use("/usuarios", RUsuario);
     this.app.use("/tanques", RTanque);
     this.app.use("/ciclos", RCiclo);

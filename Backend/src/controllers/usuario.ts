@@ -18,30 +18,9 @@ import { Sesion } from "../models/session";
 import { randomBytes } from "crypto";
 import { addDays } from "date-fns";
 import argon2 from "argon2";
+import { generateTokens } from "../utils/token";
 
-async function generateTokens(usuario: Usuario) {
-  // Access Token
-  const accessToken = jwt.sign(
-    { id: usuario.id, correo: usuario.correo, rol: usuario.rol },
-    process.env.JWT_SECRET || "secret",
-    { expiresIn: "15m" }
-  );
 
-  // Refresh Token random seguro
-  const refreshTokenPlain = randomBytes(64).toString("hex");
-  const refreshTokenHash = await argon2.hash(refreshTokenPlain);
-
-  const expiresAt = addDays(new Date(), 7); // 7 días
-
-  await Sesion.create({
-    user_id: usuario.id,
-    refresh_token_hash: refreshTokenHash,
-    is_revoked: false,
-    expires_at: expiresAt,
-  } as any);
-
-  return { accessToken, refreshToken: refreshTokenPlain };
-}
 export const registrarUsuario = async (req: Request, res: Response) => {
   try {
     const { nombre, correo, contraseña } = req.body;
