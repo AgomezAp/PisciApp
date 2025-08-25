@@ -5,6 +5,7 @@ import {
   loginConGoogle,
   loginHandler,
   refreshTokenHandler,
+  logoutHandler,
 } from "../controllers/usuario";
 
 const router = Router();
@@ -21,4 +22,5 @@ router.post("/google", loginConGoogle);
 // Refresh Tokens
 router.post("/refresh", refreshTokenHandler);
 
+router.post("/logout", logoutHandler);
 export default router;  

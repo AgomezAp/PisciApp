@@ -241,53 +241,110 @@ export const loginHandler = async (req: Request, res: Response) => {
   });
 };
 export const refreshTokenHandler = async (req: Request, res: Response) => {
+  // 1. Log de entrada
+  console.log("📩 Se llamó a /auth/refresh");
+
+  // 2. Ver qué refresh token llega (de cookie o body)
   const refreshToken = req.cookies.refresh_token || req.body.refreshToken;
+  console.log(
+    "🔑 Refresh token recibido:",
+    refreshToken ? refreshToken.substring(0, 20) + "..." : "NULO"
+  );
 
   if (!refreshToken) {
+    console.warn("⚠️ No se envió refresh token");
     return res.status(400).json({ error: "Refresh token requerido" });
   }
 
-  // Buscar en DB
+  // 3. Log: buscar en DB
   const sesiones = await Sesion.findAll({ where: { is_revoked: false } });
-
+  console.log(`🔎 Se encontraron ${sesiones.length} sesiones activas en DB`);
+  console.log(
+    "📋 Sesiones activas en bruto:",
+    JSON.stringify(sesiones, null, 2)
+  );
+  console.log("📋 Sesiones con toJSON():", sesiones.map(s => s.toJSON()));
   let stored: Sesion | null = null;
   for (const sesion of sesiones) {
-    const match = await argon2.verify(sesion.refresh_token_hash, refreshToken);
-    if (match) {
-      stored = sesion;
-      break;
+    console.log("➡️ Sesión encontrada en DB:", {
+      id: sesion.id,
+      user_id: sesion.user_id,
+      hash_preview: sesion.refresh_token_hash?.substring(0, 25) + "...",
+      expires_at: sesion.expires_at,
+      is_revoked: sesion.is_revoked,
+    });
+
+    if (!sesion.refresh_token_hash) {
+      console.warn(`⚠️ Sesión ${sesion.id} con hash vacío, se descarta`);
+      continue;
+    }
+
+    try {
+      const match = await argon2.verify(
+        sesion.refresh_token_hash,
+        refreshToken
+      );
+      console.log(`🧩 Comparando refreshToken vs hash -> match=${match}`);
+      if (match) {
+        stored = sesion;
+        break;
+      }
+    } catch (err) {
+      console.error(
+        `❌ Error verificando hash con argon2 en sesión id=${sesion.id}`,
+        err
+      );
     }
   }
 
   if (!stored) {
+    console.warn(
+      "🚫 No se encontró sesión que coincida con el refresh token recibido"
+    );
     return res.status(403).json({ error: "Refresh token inválido" });
   }
 
+  console.log(
+    `✅ Match encontrado en sesión id=${stored.id}, user_id=${stored.user_id}`
+  );
+
+  // 4. Validar expiración
   if (stored.expires_at < new Date()) {
+    console.warn(
+      `⏰ Refresh expirado en sesión id=${stored.id}, fecha=${stored.expires_at}`
+    );
     stored.is_revoked = true;
     await stored.save();
     return res.status(403).json({ error: "Refresh token expirado" });
   }
 
-  // Rotar: revocar el viejo
+  // 5. Rotación: revocar viejo
   stored.is_revoked = true;
   await stored.save();
+  console.log(`♻️ Sesión ${stored.id} revocada (refresh usado)`);
 
-  // Emitir nuevos tokens
+  // 6. Emitir nuevos tokens
   const usuario = await Usuario.findByPk(stored.user_id);
-  if (!usuario) return res.status(403).json({ error: "Usuario no válido" });
+  if (!usuario) {
+    console.error(
+      `🚨 Usuario no encontrado asociado a la sesión id=${stored.id}`
+    );
+    return res.status(403).json({ error: "Usuario no válido" });
+  }
 
   const { accessToken, refreshToken: newRefresh } = await generateTokens(
     usuario
   );
+  console.log(`🎟️ Nuevos tokens generados para user_id=${usuario.id}`);
 
-  // Setear nuevo refresh en cookie
+  // 7. Enviar cookie nueva
   res.cookie("refresh_token", newRefresh, {
     httpOnly: true,
-    secure: true,
+    secure: false, // ⚠️ pon false en localhost, true en producción HTTPS
     sameSite: "strict",
     maxAge: 1000 * 60 * 60 * 24 * 7,
   });
+  console.log("🍪 Refresh token actualizado en cookie");
 
   return res.json({ accessToken });
 };

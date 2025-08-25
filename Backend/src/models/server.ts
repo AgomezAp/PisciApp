@@ -91,7 +91,7 @@ class Server {
   async DBconnect() {
     try {
       await sequelize.authenticate();
-      await sequelize.sync({ force: true });
+      await sequelize.sync({ alter: true });
 
       console.log(
         "✅ Conexión establecida y tablas sincronizadas correctamente"
