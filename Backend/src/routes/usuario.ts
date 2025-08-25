@@ -5,7 +5,7 @@ import {
   activar2FA,
   verificar2FALogin,
 } from "../controllers/usuario";
-import { verifyToken } from "../middlewares/verifyToken"; // este middleware lo haces para verificar JWT
+import { verifyToken } from "../middlewares/verifyToken"; 
 
 const router = Router();
 

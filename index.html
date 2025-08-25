@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Probar Google Login</title>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script>
+    function handleCredentialResponse(response) {
+      console.log("✅ ID Token:", response.credential);   // se ve en DevTools -> Console
+      alert("Tu ID Token es:\n\n" + response.credential); // popup sencillo
+    }
+  </script>
+</head>
+<body>
+  <h2>Probar Google Sign-In</h2>
+  <div id="g_id_onload"
+       data-client_id="686048642614-rn8l8btsrt7cfg16chpukrmk39n6g3vn.apps.googleusercontent.com"
+       data-callback="handleCredentialResponse">
+  </div>
+  <div class="g_id_signin" data-type="standard"></div>
+</body>
+</html>

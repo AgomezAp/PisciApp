@@ -5,11 +5,12 @@ import * as path from "path";
 import sequelize from "../database/connection";
 import "../models";
 import { iniciarCronJobs } from "../services/cronJobs";
-
+import helmet from "helmet";
 // Importar rutas (cuando las tengas creadas)
 import RUsuario from "../routes/usuario";
 import RAuth from "../routes/auth";
-
+import cookieParser from "cookie-parser";
+import rateLimit from "express-rate-limit";
 /* 
 import RTanque from "../routes/tanque";
 import RCiclo from "../routes/ciclo";
@@ -27,8 +28,16 @@ class Server {
 
   constructor() {
     this.app = express();
-
-    this.port = process.env.PORT || "3010";
+    this.app.use(helmet());
+    this.app.use((req, res, next) => {
+      // 👇 Cambiá tudominio.com por el dominio real de tu frontend Angular
+      res.setHeader(
+        "Content-Security-Policy",
+        "default-src 'self' http://localhost:4200 https://tudominio.com"// CAMBIAR ESTO POR LA URL DE PRODUCCIÓN 
+      );
+      next();
+    });
+    this.port = process.env.PORT!;
     this.middlewares();
     this.router();
     this.DBconnect();
@@ -42,6 +51,12 @@ class Server {
   }
 
   router() {
+    const authLimiter = rateLimit({
+      windowMs: 60 * 1000, // 1 minuto
+      max: 5, // 5 requests
+      message: { message: "Demasiados intentos, espere un momento" },
+    });
+
     this.app.use("/usuarios", RUsuario);
     this.app.use("/auth", RAuth);
     /*     this.app.use("/usuarios", RUsuario);
@@ -58,8 +73,12 @@ class Server {
       "/uploads",
       express.static(path.join(__dirname, "../../uploads"))
     );
-    this.app.use("/assets", express.static(path.join(__dirname, "../../src/assets")));
+    this.app.use(
+      "/assets",
+      express.static(path.join(__dirname, "../../src/assets"))
+    );
     this.app.use(express.json());
+    this.app.use(cookieParser());
     this.app.use(
       cors({
         origin: "*",
@@ -72,8 +91,8 @@ class Server {
   async DBconnect() {
     try {
       await sequelize.authenticate();
-      await sequelize.sync({ force: true });
- 
+      await sequelize.sync({ alter: true });
+
       console.log(
         "✅ Conexión establecida y tablas sincronizadas correctamente"
       );
