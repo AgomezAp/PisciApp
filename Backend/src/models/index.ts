@@ -24,7 +24,7 @@ Usuario.hasMany(Compra, { foreignKey: "usuario_id", as: "compras" });
 Compra.belongsTo(Usuario, { foreignKey: "usuario_id", as: "comprador" });
 
 // Usuario - Inventario
-Usuario.hasMany(Inventario, { foreignKey: "usuario_id", as: "inventario" });
+Usuario.hasOne(Inventario, { foreignKey: "usuario_id", as: "inventario" });
 Inventario.belongsTo(Usuario, { foreignKey: "usuario_id", as: "usuario" });
 
 // Tanque - Ciclo

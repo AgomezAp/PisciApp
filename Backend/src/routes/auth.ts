@@ -2,9 +2,10 @@ import { Router } from "express";
 import {
   registrarUsuario,
   verificarCodigo,
-  loginUsuario,
   loginConGoogle,
-  refreshAccessToken,
+  loginHandler,
+  refreshTokenHandler,
+  logoutHandler,
 } from "../controllers/usuario";
 
 const router = Router();
@@ -14,12 +15,12 @@ router.post("/register", registrarUsuario);
 router.post("/verify", verificarCodigo);
 
 // Login tradicional
-router.post("/login", loginUsuario);
-
+router.post("/login", loginHandler);
 // Login con Google OAuth2
 router.post("/google", loginConGoogle);
 
 // Refresh Tokens
-router.post("/refresh", refreshAccessToken);
+router.post("/refresh", refreshTokenHandler);
 
+router.post("/logout", logoutHandler);
 export default router;  
