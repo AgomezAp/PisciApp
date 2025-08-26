@@ -1,7 +1,7 @@
 import { Router } from "express";
 import {
   solicitarRecuperacion,
-  resetearContraseña,
+  resetearcontraseña,
   activar2FA,
   verificar2FALogin,
 } from "../controllers/usuario";
@@ -11,7 +11,7 @@ const router = Router();
 
 // Recuperar contraseña
 router.post("/forgot-password", solicitarRecuperacion);
-router.post("/reset-password/:token", resetearContraseña);
+router.post("/reset-password/:token", resetearcontraseña);
 
 // 2FA
 router.post("/2fa/enable", verifyToken, activar2FA);
