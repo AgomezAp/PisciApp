@@ -6,7 +6,7 @@ interface UsuarioAttributes {
   id: number;
   nombre: string;
   correo: string;
-  contraseña?: string | null;
+  contrasena?: string | null;
   google_id?: string | null;
   foto_perfil?: string | null;
   periodo_gracia: boolean;
@@ -18,17 +18,26 @@ interface UsuarioAttributes {
   verification_code?: string | null;
   verification_expires_at?: Date | null;
   periodo_gracia_expira?: Date | null;
+
+  // ⚡ 2FA
   twofa_secret?: string | null;
+  pending_twofa_secret?: string | null;
+  twofa_enabled?: boolean;
+  backup_codes?: string | null; // JSON con array de códigos opcional
+
+  departamento?: string | null;
+  ciudad?: string | null;
+  eliminado?: boolean;
   createdAt?: Date;
   updatedAt?: Date;
 }
 
-// Para crear usuario → algunos campos opcionales
+// Para creación → algunos campos opcionales
 interface UsuarioCreationAttributes
   extends Optional<
     UsuarioAttributes,
     | "id"
-    | "contraseña"
+    | "contrasena"
     | "google_id"
     | "foto_perfil"
     | "fecha_cobro"
@@ -36,6 +45,8 @@ interface UsuarioCreationAttributes
     | "verification_code"
     | "verification_expires_at"
     | "twofa_secret"
+    | "departamento"
+    | "ciudad"
     | "createdAt"
     | "updatedAt"
   > {}
@@ -44,11 +55,10 @@ export class Usuario
   extends Model<UsuarioAttributes, UsuarioCreationAttributes>
   implements UsuarioAttributes
 {
-  // 👇 ahora con declare (no public!)
   declare id: number;
   declare nombre: string;
   declare correo: string;
-  declare contraseña: string | null;
+  declare contrasena: string | null;
   declare google_id: string | null;
   declare foto_perfil: string | null;
   declare periodo_gracia: boolean;
@@ -61,6 +71,13 @@ export class Usuario
   declare verification_expires_at: Date | null;
   declare periodo_gracia_expira: Date | null;
   declare twofa_secret: string | null;
+  declare eliminado: boolean;
+  // 👇 Declaración nueva
+  declare departamento: string | null;
+  declare ciudad: string | null;
+  declare pending_twofa_secret?: string | null;
+  declare twofa_enabled?: boolean;
+  declare backup_codes?: string | null;
   declare readonly createdAt: Date;
   declare readonly updatedAt: Date;
 }
@@ -71,19 +88,25 @@ Usuario.init(
     id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
     nombre: { type: DataTypes.STRING, allowNull: false },
     correo: { type: DataTypes.STRING, allowNull: false, unique: true },
-    contraseña: { type: DataTypes.STRING, allowNull: true }, // null si es login Google
+    contrasena: { type: DataTypes.STRING, allowNull: true },
     google_id: { type: DataTypes.STRING, allowNull: true },
     foto_perfil: { type: DataTypes.STRING, allowNull: true },
+
     periodo_gracia: { type: DataTypes.BOOLEAN, defaultValue: false },
     periodo_gracia_expira: { type: DataTypes.DATE, allowNull: true },
     periodo_prueba: { type: DataTypes.BOOLEAN, defaultValue: false },
     fecha_cobro: { type: DataTypes.DATE, allowNull: true },
     telefono: { type: DataTypes.STRING, allowNull: true },
+    departamento: { type: DataTypes.STRING, allowNull: true },
+    ciudad: { type: DataTypes.STRING, allowNull: true },
+    eliminado: { type: DataTypes.BOOLEAN, defaultValue: false },
+
     rol: {
       type: DataTypes.ENUM("Admin", "Cliente", "Trabajador"),
       allowNull: false,
       defaultValue: "Cliente",
     },
+
     is_verified: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
@@ -91,11 +114,16 @@ Usuario.init(
     },
     verification_code: { type: DataTypes.STRING, allowNull: true },
     verification_expires_at: { type: DataTypes.DATE, allowNull: true },
+
+    // ⚡ NUEVOS CAMPOS PARA 2FA
     twofa_secret: { type: DataTypes.STRING, allowNull: true },
+    pending_twofa_secret: { type: DataTypes.STRING, allowNull: true },
+    twofa_enabled: { type: DataTypes.BOOLEAN, defaultValue: false },
+    backup_codes: { type: DataTypes.TEXT, allowNull: true }, // opcional: almacenar JSON
   },
   {
     sequelize,
     tableName: "usuarios",
-    timestamps: true, // ahora true para manejar createdAt y updatedAt
+    timestamps: true,
   }
 );

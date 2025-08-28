@@ -82,9 +82,10 @@ class Server {
     this.app.use(cookieParser());
     this.app.use(
       cors({
-        origin: "*",
+        origin: "http://localhost:4200",
         methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
         allowedHeaders: ["Content-Type", "Authorization"],
+        credentials: true,
       })
     );
   }
