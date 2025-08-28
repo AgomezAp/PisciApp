@@ -12,6 +12,7 @@ export class Tanque extends Model {
   public nitratos!: number;
   public dureza!: number;
   public salinidad!: number;
+  public disponible!: boolean;
 }
 
 Tanque.init(
@@ -26,6 +27,7 @@ Tanque.init(
     nitratos: { type: DataTypes.FLOAT, allowNull: true },
     dureza: { type: DataTypes.FLOAT, allowNull: true },
     salinidad: { type: DataTypes.FLOAT, allowNull: true },
+    disponible: { type: DataTypes.BOOLEAN, allowNull: true },
   },
   {
     sequelize,
