@@ -217,6 +217,7 @@ export const loginConGoogle = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Error autenticando con Google" });
   }
 };
+
 export const loginHandler = async (req: Request, res: Response) => {
   const { correo, contrasena } = req.body;
 
@@ -239,11 +240,10 @@ export const loginHandler = async (req: Request, res: Response) => {
   // Guardar refresh token en cookie segura
   res.cookie("refresh_token", refreshToken, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production", // true en prod
-    sameSite: "strict",
-    maxAge: 1000 * 60 * 60 * 24 * 7, // 7 días
+    secure: false, // ⚠️ en localhost ponlo en false
+    sameSite: "lax", // "lax" te deja trabajar con frontend en otro puerto
+    maxAge: 1000 * 60 * 60 * 24 * 7,
   });
-
   return res.json({
     message: "Inicio de sesión exitoso",
     usuario: {
@@ -357,10 +357,10 @@ export const refreshTokenHandler = async (req: Request, res: Response) => {
   console.log(`🎟️ Nuevos tokens generados para user_id=${usuario.id}`);
 
   // 7. Enviar cookie nueva
-  res.cookie("refresh_token", newRefresh, {
+  res.cookie("refresh_token", refreshToken, {
     httpOnly: true,
-    secure: false, // ⚠️ pon false en localhost, true en producción HTTPS
-    sameSite: "strict",
+    secure: false, // ⚠️ true sólo en HTTPS (producción)
+    sameSite: "lax", // ⚠️ usa lax, no strict en local dev
     maxAge: 1000 * 60 * 60 * 24 * 7,
   });
   console.log("🍪 Refresh token actualizado en cookie");
@@ -445,12 +445,17 @@ export const activar2FA = async (req: Request, res: Response) => {
     return res.status(404).json({ message: "Usuario no encontrado" });
 
   const secret = speakeasy.generateSecret({ length: 20 });
-  usuario.twofa_secret = secret.base32;
+  usuario.pending_twofa_secret = secret.base32;
   await usuario.save();
 
   const qrCodeUrl = await QRCode.toDataURL(secret.otpauth_url!);
 
-  res.json({ message: "2FA activado", qrCodeUrl });
+  res.json({
+    success: true,
+    message: "2FA activado",
+    qrCodeUrl,
+    twofa_enabled: true,
+  });
 };
 
 export const verificar2FALogin = async (req: Request, res: Response) => {
@@ -464,6 +469,7 @@ export const verificar2FALogin = async (req: Request, res: Response) => {
     secret: usuario.twofa_secret,
     encoding: "base32",
     token,
+    window: 1,
   });
 
   if (!verified)
@@ -475,8 +481,75 @@ export const verificar2FALogin = async (req: Request, res: Response) => {
     process.env.JWT_SECRET || "secret",
     { expiresIn: "15m" }
   );
+  const refreshToken = jwt.sign(
+    { id: usuario.id },
+    process.env.JWT_REFRESH_SECRET || "refresh_secret",
+    { expiresIn: "7d" }
+  );
 
-  res.json({ message: "2FA validado correctamente", accessToken });
+  res.json({
+    success: true,
+    message: "2FA validado correctamente",
+    accessToken,
+    refreshToken,
+    twofa_enabled: false,
+  });
+};
+export const desactivar2FA = async (req: Request, res: Response) => {
+  const userId = (req as any).usuario.id;
+  const { token } = req.body;
+
+  const usuario = await Usuario.findByPk(userId);
+  if (!usuario || !usuario.twofa_secret) {
+    return res.status(400).json({ message: "El usuario no tiene 2FA activo" });
+  }
+
+  const verified = speakeasy.totp.verify({
+    secret: usuario.twofa_secret,
+    encoding: "base32",
+    token,
+    window: 1,
+  });
+
+  if (!verified) {
+    return res.status(401).json({ message: "Código inválido" });
+  }
+
+  usuario.twofa_secret = null;
+  usuario.twofa_enabled = false;
+  await usuario.save();
+
+  res.json({ message: "2FA desactivado correctamente" });
+};
+export const confirmar2FA = async (req: Request, res: Response) => {
+  const userId = (req as any).usuario.id;
+  const { token } = req.body;
+
+  const usuario = await Usuario.findByPk(userId);
+  if (!usuario || !usuario.pending_twofa_secret) {
+    return res
+      .status(400)
+      .json({ message: "No hay 2FA pendiente de activación" });
+  }
+
+  const verified = speakeasy.totp.verify({
+    secret: usuario.pending_twofa_secret,
+    encoding: "base32",
+    token,
+    window: 1, // tolerancia de 30 segs
+  });
+
+  if (!verified) {
+    return res.status(401).json({ message: "Código inválido" });
+  }
+
+  // Confirmar activación
+  usuario.twofa_secret = usuario.pending_twofa_secret;
+  usuario.pending_twofa_secret = null;
+  usuario.twofa_enabled = true;
+  await usuario.save();
+
+  res.json({ message: "2FA habilitado correctamente" });
 };
 
 export const logoutHandler = async (req: Request, res: Response) => {

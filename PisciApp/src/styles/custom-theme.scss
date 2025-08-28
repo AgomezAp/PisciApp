@@ -1,0 +1,22 @@
+// ===== TODAS LAS REGLAS @use AL INICIO =====
+@use '@angular/material' as mat;
+
+// ===== LUEGO IMPORTS Y CSS =====
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+/* Tu CSS personalizado aquí */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* Resto de tu CSS... */

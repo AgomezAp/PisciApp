@@ -5,10 +5,13 @@
   background: linear-gradient(to right, #0097a7, #009688);
   padding: 0.5rem 2rem;
   color: white;
+  position: relative;
+  min-height: 60px;
 }
 
 .logo {
   height: 50px;
+  flex-shrink: 0; /* Evita que el logo se reduzca */
 }
 
 .nav-links {
@@ -27,6 +30,7 @@
   padding: 8px 12px;
   border-radius: 6px;
   transition: background 0.3s;
+  white-space: nowrap; /* Evita que el texto se rompa */
 }
 
 .nav-links a:hover {
@@ -41,6 +45,7 @@
   display: flex;
   align-items: center;
   gap: 1rem;
+  flex-shrink: 0;
 }
 
 .user-info {
@@ -59,6 +64,7 @@
   font-weight: bold;
   border-radius: 50%;
   padding: 6px 10px;
+  font-size: 14px;
 }
 
 .username {
@@ -78,4 +84,176 @@
 
 .logout-btn:hover {
   background: #f2f2f2;
+}
+
+/* ===== MENU HAMBURGUESA ===== */
+.menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 5px;
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+
+/* Tablets grandes (1024px y menos) */
+@media (max-width: 1024px) {
+  .navbar {
+    padding: 0.5rem 1.5rem;
+  }
+  
+  .nav-links {
+    gap: 15px;
+  }
+  
+  .nav-links a {
+    font-size: 16px;
+    padding: 6px 10px;
+  }
+  
+  .nav-right {
+    gap: 0.8rem;
+  }
+}
+
+/* Tablets (768px y menos) */
+@media (max-width: 768px) {
+  .navbar {
+    padding: 0.5rem 1rem;
+  }
+  
+  .logo {
+    height: 40px;
+  }
+  
+  .nav-links {
+    gap: 10px;
+  }
+  
+  .nav-links a {
+    font-size: 14px;
+    padding: 6px 8px;
+  }
+  
+  .username {
+    display: none; /* Ocultar nombre en tablets */
+  }
+  
+  .logout-btn {
+    padding: 6px 12px;
+    font-size: 14px;
+  }
+}
+
+/* Móviles grandes (640px y menos) */
+@media (max-width: 640px) {
+  .navbar {
+    flex-wrap: wrap;
+    padding: 0.5rem 1rem;
+  }
+  
+  .nav-links {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to right, #0097a7, #009688);
+    flex-direction: column;
+    gap: 0;
+    padding: 1rem;
+    transform: translateY(-100%);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    z-index: 1000;
+  }
+  
+  .nav-links.active {
+    transform: translateY(0);
+    opacity: 1;
+    visibility: visible;
+  }
+  
+  .nav-links a {
+    padding: 12px 16px;
+    font-size: 16px;
+    border-radius: 8px;
+    text-align: center;
+  }
+  
+  .menu-toggle {
+    display: block;
+    order: 2;
+  }
+  
+  .nav-right {
+    order: 3;
+  }
+  
+  .user-info {
+    padding: 2px 8px;
+  }
+  
+  .avatar {
+    padding: 4px 8px;
+    font-size: 12px;
+  }
+}
+
+/* Móviles pequeños (480px y menos) */
+@media (max-width: 480px) {
+  .navbar {
+    padding: 0.5rem 0.8rem;
+  }
+  
+  .logo {
+    height: 35px;
+  }
+  
+  .nav-right {
+    gap: 0.5rem;
+  }
+  
+  .logout-btn {
+    padding: 5px 10px;
+    font-size: 12px;
+  }
+  
+  .user-info {
+    border: none;
+    background: none;
+    padding: 0;
+  }
+  
+  .avatar {
+    padding: 4px 6px;
+  }
+}
+
+/* Móviles muy pequeños (360px y menos) */
+@media (max-width: 360px) {
+  .navbar {
+    padding: 0.3rem 0.5rem;
+  }
+  
+  .logo {
+    height: 30px;
+  }
+  
+  .logout-btn {
+    padding: 4px 8px;
+    font-size: 11px;
+  }
+  
+  /* Simplificar usuario en pantallas muy pequeñas */
+  .username {
+    display: none;
+  }
+  
+  .user-info {
+    gap: 4px;
+  }
 }

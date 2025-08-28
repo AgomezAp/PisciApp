@@ -29,6 +29,13 @@ export const routes: Routes = [
       { path: '', redirectTo: 'inventory', pathMatch: 'full' },
     ],
   },
+  {
+    path: 'configuracion',
+    loadComponent: () =>
+      import(
+        './features/configuracion/pages/configuracion/configuracion.component'
+      ).then((m) => m.ConfiguracionComponent),
+  },
 
   { path: '**', redirectTo: 'login' },
 ];

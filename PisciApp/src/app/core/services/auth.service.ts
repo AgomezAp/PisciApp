@@ -8,6 +8,11 @@ export interface User {
   nombre: string;
   email: string;
   role: string;
+  telefono?: string | null;
+  twofa_enabled?: boolean;
+  foto_perfil?: string | null;
+  departamento?: string | null;
+  ciudad?: string | null;
 }
 
 interface JwtPayload {
@@ -35,7 +40,9 @@ export class AuthService {
   // ---------------- LOGIN ----------------
   login(credentials: { correo: string; contrasena: string }): Observable<any> {
     return this.http
-      .post<{ accessToken: string }>(`${this.apiUrl}auth/login`, credentials)
+      .post<{ accessToken: string }>(`${this.apiUrl}auth/login`, credentials, {
+        withCredentials: true,
+      })
       .pipe(
         tap((response) => {
           localStorage.setItem('accessToken', response.accessToken);
@@ -54,7 +61,9 @@ export class AuthService {
     ciudad: string;
   }): Observable<any> {
     return this.http
-      .post<{ accessToken?: string }>(`${this.apiUrl}auth/register`, data)
+      .post<{ accessToken?: string }>(`${this.apiUrl}auth/register`, data, {
+        withCredentials: true,
+      })
       .pipe(
         tap((response) => {
           if (response.accessToken) {
@@ -78,7 +87,13 @@ export class AuthService {
   // ---------------- REFRESH TOKEN ----------------
   refreshAccessToken(): Observable<string> {
     return this.http
-      .post<{ accessToken: string }>(`${this.apiUrl}auth/refresh`, {})
+      .post<{ accessToken: string }>(
+        `${this.apiUrl}auth/refresh`,
+        {},
+        {
+          withCredentials: true,
+        }
+      )
       .pipe(
         map((res) => {
           localStorage.setItem('accessToken', res.accessToken);
@@ -89,9 +104,16 @@ export class AuthService {
   }
 
   // ---------------- LOGOUT ----------------
-  logout() {
+  logout(): Observable<any> {
     localStorage.removeItem('accessToken');
     this.currentUserSubject.next(null);
+    return this.http.post(
+      `${this.apiUrl}/auth/logout`,
+      {},
+      {
+        withCredentials: true, // 👈 imprescindible
+      }
+    );
   }
 
   // ---------------- AUTH HELPERS ----------------

@@ -18,7 +18,13 @@ interface UsuarioAttributes {
   verification_code?: string | null;
   verification_expires_at?: Date | null;
   periodo_gracia_expira?: Date | null;
+
+  // ⚡ 2FA
   twofa_secret?: string | null;
+  pending_twofa_secret?: string | null;
+  twofa_enabled?: boolean;
+  backup_codes?: string | null; // JSON con array de códigos opcional
+
   departamento?: string | null;
   ciudad?: string | null;
   eliminado?: boolean;
@@ -69,7 +75,9 @@ export class Usuario
   // 👇 Declaración nueva
   declare departamento: string | null;
   declare ciudad: string | null;
-
+  declare pending_twofa_secret?: string | null;
+  declare twofa_enabled?: boolean;
+  declare backup_codes?: string | null;
   declare readonly createdAt: Date;
   declare readonly updatedAt: Date;
 }
@@ -83,24 +91,22 @@ Usuario.init(
     contrasena: { type: DataTypes.STRING, allowNull: true },
     google_id: { type: DataTypes.STRING, allowNull: true },
     foto_perfil: { type: DataTypes.STRING, allowNull: true },
+
     periodo_gracia: { type: DataTypes.BOOLEAN, defaultValue: false },
     periodo_gracia_expira: { type: DataTypes.DATE, allowNull: true },
     periodo_prueba: { type: DataTypes.BOOLEAN, defaultValue: false },
     fecha_cobro: { type: DataTypes.DATE, allowNull: true },
     telefono: { type: DataTypes.STRING, allowNull: true },
-
-    // 👇 Nuevos campos
     departamento: { type: DataTypes.STRING, allowNull: true },
     ciudad: { type: DataTypes.STRING, allowNull: true },
-    eliminado: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
-    },
+    eliminado: { type: DataTypes.BOOLEAN, defaultValue: false },
+
     rol: {
       type: DataTypes.ENUM("Admin", "Cliente", "Trabajador"),
       allowNull: false,
       defaultValue: "Cliente",
     },
+
     is_verified: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
@@ -108,7 +114,12 @@ Usuario.init(
     },
     verification_code: { type: DataTypes.STRING, allowNull: true },
     verification_expires_at: { type: DataTypes.DATE, allowNull: true },
+
+    // ⚡ NUEVOS CAMPOS PARA 2FA
     twofa_secret: { type: DataTypes.STRING, allowNull: true },
+    pending_twofa_secret: { type: DataTypes.STRING, allowNull: true },
+    twofa_enabled: { type: DataTypes.BOOLEAN, defaultValue: false },
+    backup_codes: { type: DataTypes.TEXT, allowNull: true }, // opcional: almacenar JSON
   },
   {
     sequelize,
