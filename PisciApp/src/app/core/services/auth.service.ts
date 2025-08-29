@@ -1,8 +1,17 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, map, Observable, tap } from 'rxjs';
+import {
+  BehaviorSubject,
+  catchError,
+  map,
+  Observable,
+  tap,
+  throwError,
+} from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { jwtDecode } from 'jwt-decode';
+import { ErrorService } from './error.service';
+
 export interface User {
   id: number;
   nombre: string;
@@ -28,25 +37,35 @@ interface JwtPayload {
 })
 export class AuthService {
   private apiUrl = environment.apiUrl;
-
-  // ✅ Aquí guardamos el usuario actual de forma reactiva
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   currentUser$ = this.currentUserSubject.asObservable();
 
-  constructor(private http: HttpClient) {
-    this.loadUserFromToken(); // al inicializar, intenta cargar usuario desde localStorage
+  constructor(private http: HttpClient, private errorService: ErrorService) {
+    this.loadUserFromToken();
   }
 
   // ---------------- LOGIN ----------------
-  login(credentials: { correo: string; contrasena: string }): Observable<any> {
+  login(credentials: {
+    correo: string;
+    contrasena: string;
+    rememberMe?: boolean;
+  }): Observable<any> {
     return this.http
       .post<{ accessToken: string }>(`${this.apiUrl}auth/login`, credentials, {
         withCredentials: true,
       })
       .pipe(
         tap((response) => {
-          localStorage.setItem('accessToken', response.accessToken);
-          this.loadUserFromToken(); // 👈 cargar Usuario desde JWT
+          if (credentials.rememberMe) {
+            localStorage.setItem('accessToken', response.accessToken);
+          } else {
+            sessionStorage.setItem('accessToken', response.accessToken);
+          }
+          this.loadUserFromToken();
+        }),
+        catchError((error) => {
+          // 🔥 Usar el servicio de errores mejorado
+          return this.errorService.handleError(error);
         })
       );
   }
@@ -70,62 +89,75 @@ export class AuthService {
             localStorage.setItem('accessToken', response.accessToken);
             this.loadUserFromToken();
           }
+        }),
+        catchError((error) => {
+          return this.errorService.handleError(error);
         })
       );
   }
 
-  // ---------------- Google OAuth ----------------
+  // ---------------- RESTO DE MÉTODOS (mantener igual) ----------------
   registerWithGoogle(): void {
     window.location.href = `${this.apiUrl}auth/google`;
   }
 
-  // ---------------- EMAIL VERIFY ----------------
   verifyEmail(correo: string, codigo: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}auth/verify`, { correo, codigo });
+    return this.http.post(`${this.apiUrl}auth/verify`, { correo, codigo }).pipe(
+      catchError((error) => {
+        return this.errorService.handleError(error);
+      })
+    );
   }
 
-  // ---------------- REFRESH TOKEN ----------------
   refreshAccessToken(): Observable<string> {
     return this.http
       .post<{ accessToken: string }>(
         `${this.apiUrl}auth/refresh`,
         {},
-        {
-          withCredentials: true,
-        }
+        { withCredentials: true }
       )
       .pipe(
         map((res) => {
-          localStorage.setItem('accessToken', res.accessToken);
+          const storage = sessionStorage.getItem('accessToken')
+            ? sessionStorage
+            : localStorage;
+          storage.setItem('accessToken', res.accessToken);
           this.loadUserFromToken();
           return res.accessToken;
+        }),
+        catchError((error) => {
+          return this.errorService.handleError(error);
         })
       );
   }
 
-  // ---------------- LOGOUT ----------------
   logout(): Observable<any> {
     localStorage.removeItem('accessToken');
+    sessionStorage.removeItem('accessToken');
     this.currentUserSubject.next(null);
-    return this.http.post(
-      `${this.apiUrl}/auth/logout`,
-      {},
-      {
-        withCredentials: true, // 👈 imprescindible
-      }
+    return this.http
+      .post(`${this.apiUrl}auth/logout`, {}, { withCredentials: true })
+      .pipe(
+        catchError((error) => {
+          return this.errorService.handleError(error);
+        })
+      );
+  }
+
+  isLoggedIn(): boolean {
+    return !!(
+      localStorage.getItem('accessToken') ||
+      sessionStorage.getItem('accessToken')
     );
   }
 
-  // ---------------- AUTH HELPERS ----------------
-  isLoggedIn(): boolean {
-    return !!localStorage.getItem('accessToken');
-  }
-
   getToken(): string | null {
-    return localStorage.getItem('accessToken');
+    return (
+      localStorage.getItem('accessToken') ||
+      sessionStorage.getItem('accessToken')
+    );
   }
 
-  // ✅ Obtener usuario desde el JWT guardado
   private loadUserFromToken(): void {
     const token = this.getToken();
     if (!token) {
@@ -134,7 +166,7 @@ export class AuthService {
     }
 
     try {
-      const decoded: JwtPayload = jwtDecode<JwtPayload>(token); // 👈 aquí
+      const decoded: JwtPayload = jwtDecode<JwtPayload>(token);
       const user: User = {
         id: decoded.id,
         nombre: decoded.nombre,
@@ -147,7 +179,7 @@ export class AuthService {
       this.currentUserSubject.next(null);
     }
   }
-  // ✅ Acceso directo al usuario actual (no reactivo)
+
   getCurrentUser(): User | null {
     return this.currentUserSubject.value;
   }

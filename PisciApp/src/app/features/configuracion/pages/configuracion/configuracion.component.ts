@@ -11,6 +11,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatSelectModule } from '@angular/material/select';
+import { NotificationService } from '../../../../core/services/notification.service';
 @Component({
   selector: 'app-configuracion',
   imports: [
@@ -44,7 +45,8 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
   tokenInput: string = '';
   constructor(
     private authService: AuthService,
-    private twofaService: TwofaService
+    private twofaService: TwofaService,
+    private notification: NotificationService
   ) {}
 
   ngOnInit(): void {
@@ -75,9 +77,13 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
   activar2FA() {
     this.twofaService.activar().subscribe({
       next: (res) => {
-        this.qrCodeUrl = res.qrCodeUrl; // Mostrar el QR en template
+        this.qrCodeUrl = res.qrCodeUrl;
+        this.notification.info(
+          'Escanea el código QR y confirma con tu app de autenticación.',
+          '2FA activación'
+        );
       },
-      error: () => alert('Error al activar 2FA'),
+      error: () => this.notification.error('Error al activar 2FA'),
     });
   }
 
@@ -88,19 +94,34 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
           this.user!.twofa_enabled = res.twofa_enabled;
           this.qrCodeUrl = null;
           this.tokenInput = '';
+          this.notification.success(
+            'La verificación 2FA fue habilitada correctamente.'
+          );
+        } else {
+          this.notification.error(
+            'No se pudo confirmar 2FA, intenta de nuevo.'
+          );
         }
       },
+      error: () => this.notification.error('El código ingresado no es válido.'),
     });
   }
 
   desactivar2FA() {
-    this.twofaService.desactivar(this.tokenInput).subscribe({
-      next: (res) => {
-        if (res.success) {
-       this.user!.twofa_enabled = false;
-          this.tokenInput = '';
-        }
-      },
+    this.notification.confirm('¿Seguro que deseas desactivar el 2FA?', () => {
+      this.twofaService.desactivar(this.tokenInput).subscribe({
+        next: (res) => {
+          if (res.success) {
+            this.user!.twofa_enabled = false;
+            this.tokenInput = '';
+            this.notification.success('2FA desactivado correctamente.');
+          } else {
+            this.notification.error('No se pudo desactivar el 2FA.');
+          }
+        },
+        error: () =>
+          this.notification.error('El código ingresado no es válido.'),
+      });
     });
   }
 }

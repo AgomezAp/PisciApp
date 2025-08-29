@@ -219,41 +219,62 @@ export const loginConGoogle = async (req: Request, res: Response) => {
 };
 
 export const loginHandler = async (req: Request, res: Response) => {
-  const { correo, contrasena } = req.body;
+  try {
+    const { correo, contrasena } = req.body;
 
-  const usuario = await Usuario.findOne({ where: { correo } });
-  if (!usuario) {
-    return res.status(401).json({ error: "Credenciales inválidas" });
+    // 👉 Buscar usuario por correo
+    const usuario = await Usuario.findOne({ where: { correo } });
+    if (!usuario) {
+      return res.status(401).json({ error: "Credenciales inválidas" });
+    }
+
+    // 👉 Verificar correo confirmado
+    if (!usuario.is_verified) {
+      return res.status(400).json({ message: "Debes verificar tu correo" });
+    }
+
+    // 👉 Validar contraseña
+    const valid = await bcrypt.compare(contrasena, usuario.contrasena || "");
+    if (!valid) {
+      return res.status(401).json({ error: "Credenciales inválidas" });
+    }
+
+    // 👉 Generar access y refresh tokens (función auxiliar tuya generateTokens)
+    const { accessToken, refreshToken } = await generateTokens(usuario);
+
+    // 👉 Guardar refresh token en BD (HASH con Argon2)
+    const hash = await argon2.hash(refreshToken);
+    await Sesion.create({
+      user_id: usuario.id,
+      refresh_token_hash: hash,
+      is_revoked: false,
+      created_at: new Date(),
+      expires_at: addDays(new Date(), 7), // token válido por 7 días
+    });
+
+    // 👉 Guardar refresh en una cookie httpOnly
+    res.cookie("refresh_token", refreshToken, {
+      httpOnly: true,
+      secure: false, // ⚠️ en producción -> true (solo https)
+      sameSite: "lax", // ⚠️ evita problemas CORS si usas frontend separado
+      maxAge: 1000 * 60 * 60 * 24 * 7, // 7 días
+    });
+
+    // 👉 Respuesta
+    return res.json({
+      message: "Inicio de sesión exitoso",
+      usuario: {
+        id: usuario.id,
+        nombre: usuario.nombre,
+        correo: usuario.correo,
+        rol: usuario.rol,
+      },
+      accessToken,
+    });
+  } catch (error) {
+    console.error("❌ Error en loginHandler:", error);
+    res.status(500).json({ message: "Error interno en el servidor" });
   }
-
-  if (!usuario.is_verified) {
-    return res.status(400).json({ message: "Debes verificar tu correo" });
-  }
-
-  const valid = await bcrypt.compare(contrasena, usuario.contrasena || "");
-  if (!valid) {
-    return res.status(401).json({ error: "Credenciales inválidas" });
-  }
-
-  const { accessToken, refreshToken } = await generateTokens(usuario);
-
-  // Guardar refresh token en cookie segura
-  res.cookie("refresh_token", refreshToken, {
-    httpOnly: true,
-    secure: false, // ⚠️ en localhost ponlo en false
-    sameSite: "lax", // "lax" te deja trabajar con frontend en otro puerto
-    maxAge: 1000 * 60 * 60 * 24 * 7,
-  });
-  return res.json({
-    message: "Inicio de sesión exitoso",
-    usuario: {
-      id: usuario.id,
-      nombre: usuario.nombre,
-      correo: usuario.correo,
-      rol: usuario.rol,
-    },
-    accessToken,
-  });
 };
 
 export const refreshTokenHandler = async (req: Request, res: Response) => {
