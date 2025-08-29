@@ -21,13 +21,6 @@ interface UsuarioAttributes {
 
   // ⚡ 2FA
   twofa_secret?: string | null;
-  pending_twofa_secret?: string | null;
-  twofa_enabled?: boolean;
-  backup_codes?: string | null; // JSON con array de códigos opcional
-
-  departamento?: string | null;
-  ciudad?: string | null;
-  eliminado?: boolean;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -71,13 +64,6 @@ export class Usuario
   declare verification_expires_at: Date | null;
   declare periodo_gracia_expira: Date | null;
   declare twofa_secret: string | null;
-  declare eliminado: boolean;
-  // 👇 Declaración nueva
-  declare departamento: string | null;
-  declare ciudad: string | null;
-  declare pending_twofa_secret?: string | null;
-  declare twofa_enabled?: boolean;
-  declare backup_codes?: string | null;
   declare readonly createdAt: Date;
   declare readonly updatedAt: Date;
 }
@@ -97,10 +83,6 @@ Usuario.init(
     periodo_prueba: { type: DataTypes.BOOLEAN, defaultValue: false },
     fecha_cobro: { type: DataTypes.DATE, allowNull: true },
     telefono: { type: DataTypes.STRING, allowNull: true },
-    departamento: { type: DataTypes.STRING, allowNull: true },
-    ciudad: { type: DataTypes.STRING, allowNull: true },
-    eliminado: { type: DataTypes.BOOLEAN, defaultValue: false },
-
     rol: {
       type: DataTypes.ENUM("Admin", "Cliente", "Trabajador"),
       allowNull: false,

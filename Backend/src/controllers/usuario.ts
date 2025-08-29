@@ -219,8 +219,7 @@ export const loginConGoogle = async (req: Request, res: Response) => {
 };
 
 export const loginHandler = async (req: Request, res: Response) => {
-  try {
-    const { correo, contrasena } = req.body;
+  const { correo, contraseña } = req.body;
 
     // 👉 Buscar usuario por correo
     const usuario = await Usuario.findOne({ where: { correo } });
@@ -233,32 +232,21 @@ export const loginHandler = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Debes verificar tu correo" });
     }
 
-    // 👉 Validar contraseña
-    const valid = await bcrypt.compare(contrasena, usuario.contrasena || "");
-    if (!valid) {
-      return res.status(401).json({ error: "Credenciales inválidas" });
-    }
+  const valid = await bcrypt.compare(contraseña, usuario.contraseña || "");
+  if (!valid) {
+    return res.status(401).json({ error: "Credenciales inválidas" });
+  }
 
-    // 👉 Generar access y refresh tokens (función auxiliar tuya generateTokens)
-    const { accessToken, refreshToken } = await generateTokens(usuario);
+  // Generamos tokens (Access + Refresh)
+  const { accessToken, refreshToken } = await generateTokens(usuario);
 
-    // 👉 Guardar refresh token en BD (HASH con Argon2)
-    const hash = await argon2.hash(refreshToken);
-    await Sesion.create({
-      user_id: usuario.id,
-      refresh_token_hash: hash,
-      is_revoked: false,
-      created_at: new Date(),
-      expires_at: addDays(new Date(), 7), // token válido por 7 días
-    });
-
-    // 👉 Guardar refresh en una cookie httpOnly
-    res.cookie("refresh_token", refreshToken, {
-      httpOnly: true,
-      secure: false, // ⚠️ en producción -> true (solo https)
-      sameSite: "lax", // ⚠️ evita problemas CORS si usas frontend separado
-      maxAge: 1000 * 60 * 60 * 24 * 7, // 7 días
-    });
+  // Mandamos el refresh en cookie HttpOnly
+  res.cookie("refresh_token", refreshToken, {
+    httpOnly: true,
+    secure: true,
+    sameSite: "strict",
+    maxAge: 1000 * 60 * 60 * 24 * 7, // 7 días
+  });
 
     // 👉 Respuesta
     return res.json({
@@ -516,63 +504,6 @@ export const verificar2FALogin = async (req: Request, res: Response) => {
     twofa_enabled: false,
   });
 };
-export const desactivar2FA = async (req: Request, res: Response) => {
-  const userId = (req as any).usuario.id;
-  const { token } = req.body;
-
-  const usuario = await Usuario.findByPk(userId);
-  if (!usuario || !usuario.twofa_secret) {
-    return res.status(400).json({ message: "El usuario no tiene 2FA activo" });
-  }
-
-  const verified = speakeasy.totp.verify({
-    secret: usuario.twofa_secret,
-    encoding: "base32",
-    token,
-    window: 1,
-  });
-
-  if (!verified) {
-    return res.status(401).json({ message: "Código inválido" });
-  }
-
-  usuario.twofa_secret = null;
-  usuario.twofa_enabled = false;
-  await usuario.save();
-
-  res.json({ message: "2FA desactivado correctamente" });
-};
-export const confirmar2FA = async (req: Request, res: Response) => {
-  const userId = (req as any).usuario.id;
-  const { token } = req.body;
-
-  const usuario = await Usuario.findByPk(userId);
-  if (!usuario || !usuario.pending_twofa_secret) {
-    return res
-      .status(400)
-      .json({ message: "No hay 2FA pendiente de activación" });
-  }
-
-  const verified = speakeasy.totp.verify({
-    secret: usuario.pending_twofa_secret,
-    encoding: "base32",
-    token,
-    window: 1, // tolerancia de 30 segs
-  });
-
-  if (!verified) {
-    return res.status(401).json({ message: "Código inválido" });
-  }
-
-  // Confirmar activación
-  usuario.twofa_secret = usuario.pending_twofa_secret;
-  usuario.pending_twofa_secret = null;
-  usuario.twofa_enabled = true;
-  await usuario.save();
-
-  res.json({ message: "2FA habilitado correctamente" });
-};
-
 export const logoutHandler = async (req: Request, res: Response) => {
   const refreshToken = req.cookies.refresh_token || req.body.refreshToken;
 

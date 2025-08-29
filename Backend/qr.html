@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>Ver QR</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body { font-family: system-ui, sans-serif; display:flex; min-height:100vh; align-items:center; justify-content:center; background:#f6f7f9; margin:0; }
+    .card { background:#fff; padding:24px; border-radius:16px; box-shadow:0 10px 30px rgba(0,0,0,.08); text-align:center; max-width: 560px; }
+    img { width: 320px; max-width: 90vw; height: auto; image-rendering: pixelated; }
+    .actions { margin-top:16px; display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
+    button, a.button { padding:10px 16px; border-radius:10px; border:1px solid #e5e7eb; background:#111; color:#fff; text-decoration:none; cursor:pointer; }
+    .copy { background:#fff; color:#111; }
+    textarea { width:100%; height:120px; margin-top:16px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>QR Code</h1>
+    <img id="qr" alt="QR" src="data:image/png;base64,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" />
+
+    <div class="actions">
+      <a class="button" id="download" download="qr.png">Descargar PNG</a>
+      <button class="copy" id="copy">Copiar data URL</button>
+    </div>
+
+    <!-- Opcional: ver/editar el data URL -->
+    <textarea id="dataUrl" readonly></textarea>
+  </div>
+
+  <script>
+    const img = document.getElementById('qr');
+    const data = img.src;
+    document.getElementById('download').href = data;
+    document.getElementById('dataUrl').value = data;
+
+    document.getElementById('copy').addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(data);
+        alert('Data URL copiada al portapapeles');
+      } catch (e) {
+        alert('No se pudo copiar automáticamente, copia desde el textarea.');
+      }
+    });
+  </script>
+</body>
+</html>
