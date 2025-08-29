@@ -1,7 +1,5 @@
 import { DataTypes, Model } from "sequelize";
 import sequelize from "../database/connection";
-import { Usuario } from "./usuario";
-import { Tanque } from "./tanque";
 
 export class Ciclo extends Model {
   public id!: number;
@@ -142,7 +140,7 @@ export class Bajas extends Model {
 Bajas.init(
   {
     ciclo_id: { type: DataTypes.INTEGER,  allowNull: false },
-    tanque_id: { type: DataTypes.DATE,  allowNull: false },
+    tanque_id: { type: DataTypes.INTEGER,  allowNull: false },
     cantidad: { type: DataTypes.INTEGER,  allowNull: false },
   },
   {
@@ -151,19 +149,3 @@ Bajas.init(
     timestamps: false
   }
 )
-
-Ciclo.belongsTo(Usuario, { foreignKey: 'usuario_id'});
-Ciclo.belongsTo(Tanque, { foreignKey: 'tanque_id'});
-Alimento.belongsTo(Ciclo, {foreignKey: 'ciclo_id'});
-Quimico.belongsTo(Ciclo, {foreignKey: 'ciclo_id'});
-MovimientoTanque.belongsTo(Ciclo, {foreignKey: 'ciclo_id'});
-Bajas.belongsTo(Ciclo, {foreignKey: 'ciclo_id'});
-
-Ciclo.hasMany(Alimento, { foreignKey: 'ciclo_id'});
-Ciclo.hasMany(Quimico, { foreignKey: 'ciclo_id'});
-Ciclo.hasMany(MovimientoTanque, { foreignKey: 'ciclo_id'});
-Ciclo.hasMany(Bajas, { foreignKey: 'ciclo_id'});
-
-Ciclo.belongsToMany(Tanque, { through: CicloTanque, foreignKey: "ciclo_id"});
-Tanque.belongsToMany(Ciclo, { through: CicloTanque, foreignKey: "ciclo_id"});
-

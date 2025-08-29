@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import { Ciclo, Alimento, Quimico, Bajas, CicloTanque, MovimientoTanque } from "../models/ciclo";
-import { Tanque } from "../models";
-import { error } from "console";
+import { Tanque } from "../models/tanque";
 
 export const crearCiclo = async (req: Request, res: Response) => {
     try {
@@ -101,12 +100,20 @@ export const cambiarTanque = async (req: Request, res: Response) => {
         if (!ciclo_id || !origen || !destino || !cantidad) {
             return res.status(400).json({error: "Todos los campos son requeridos."})
         }
+        // Verificar que el tanque de origen pertenece al ciclo
+        const cicloTanqueOrigenCheck = await CicloTanque.findOne({ where: { ciclo_id, tanque_id: origen } });
+        if (!cicloTanqueOrigenCheck) {
+            return res.status(400).json({ error: "El tanque de origen no pertenece al ciclo." });
+        }
         const ciclo = await Ciclo.findByPk(ciclo_id);
         if (!ciclo) {
             return res.status(404).json({ error: "Ciclo no encontrado." });
         }
         const tanqueOrigen = await Tanque.findByPk(origen);
         const tanqueDestino = await Tanque.findByPk(destino);
+        if (origen === destino) {
+            return res.status(400).json({ error: "El tanque de origen y destino no pueden ser el mismo." });
+        }
         if (!tanqueOrigen || !tanqueDestino) {
             return res.status(404).json({ error: "Tanque origen o destino no encontrado." });
         }
@@ -115,11 +122,6 @@ export const cambiarTanque = async (req: Request, res: Response) => {
         }
 
         await MovimientoTanque.create({ciclo_id, origen, destino, cantidad});
-        //Actualizar disponibillidad
-        tanqueDestino.disponible = true;
-        tanqueOrigen.disponible = false;
-        await tanqueDestino.save();        
-        await tanqueOrigen.save();    
         
         const cicloTanqueOrigen = await CicloTanque.findOne({where: { ciclo_id, tanque_id: origen}});
         const cicloTanqueDestino = await CicloTanque.findOne({where: { ciclo_id, tanque_id: destino}});
@@ -139,8 +141,13 @@ export const cambiarTanque = async (req: Request, res: Response) => {
         }
 
         if (cicloTanqueOrigen.numero_peces === 0) {
+            tanqueOrigen.disponible = true;
+            await tanqueOrigen.save();
             await CicloTanque.destroy({where: { ciclo_id, tanque_id: origen}});
         }
+
+        tanqueDestino.disponible = false;
+        await tanqueDestino.save();
         res.status(200).json(ciclo);
     } catch (error) {
         return res.status(500).json({error: "Error interno del servidor"})
