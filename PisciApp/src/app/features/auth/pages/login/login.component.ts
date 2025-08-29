@@ -9,6 +9,7 @@ import {
 } from '@angular/forms';
 import { AuthService } from '../../../../core/services/auth.service';
 import { Router } from '@angular/router';
+import { TwofaService } from '../../../../core/services/twofa.service';
 
 @Component({
   selector: 'app-login',
@@ -21,11 +22,14 @@ export class LoginComponent {
   loginForm: FormGroup;
   errorMessage: string | null = null;
   loading: boolean = false;
-
+  showTwofa = false;
+  twofaCode: string = '';
+  userId: number | null = null;
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private twofaService: TwofaService
   ) {
     this.loginForm = this.fb.group({
       correo: ['', [Validators.required, Validators.email]],
@@ -37,9 +41,8 @@ export class LoginComponent {
   onSubmit() {
     if (this.loginForm.valid) {
       this.loading = true;
-      this.errorMessage = null; // 🔥 Limpiar error anterior
+      this.errorMessage = null; // Limpiar error anterior
 
-      // 🔥 Limpiar errores anteriores del backend
       this.loginForm.get('contrasena')?.setErrors(null);
 
       const formValues = { ...this.loginForm.value };
@@ -47,47 +50,57 @@ export class LoginComponent {
       this.authService.login(formValues).subscribe({
         next: (response) => {
           this.loading = false;
-          console.log('Login exitoso:', response);
-          this.router.navigate(['/inventory']);
+          console.log('Respuesta de login:', response);
+
+          if (response.requires2FA) {
+            // Caso login con 2FA habilitado ⚡
+            this.showTwofa = true; // flag UI
+            this.userId = response.userId; // guardamos userId para el paso 2FA
+          } else {
+            // Caso login normal ✅
+            this.router.navigate(['/inventory']);
+          }
         },
         error: (error) => {
           this.loading = false;
 
-          // 🔥 El servicio ErrorService ya procesó el error
           console.error('Error de login:', error.message);
 
-          // ✅ Mostrar error general (opcional)
           this.errorMessage = error.message;
 
-          // ✅ Mostrar error específico en el campo contraseña
-          this.loginForm.get('contrasena')?.setErrors({
-            backend: error.message,
-          });
-
-          // 🔥 Si quieres mostrar diferentes errores según el tipo:
+          // Errores específicos
           if (error.message.toLowerCase().includes('credencial')) {
-            this.loginForm.get('contrasena')?.setErrors({
-              backend: error.message,
-            });
+            this.loginForm
+              .get('contrasena')
+              ?.setErrors({ backend: error.message });
           } else if (
             error.message.toLowerCase().includes('correo') ||
             error.message.toLowerCase().includes('email')
           ) {
-            this.loginForm.get('correo')?.setErrors({
-              backend: error.message,
-            });
+            this.loginForm.get('correo')?.setErrors({ backend: error.message });
           } else {
-            // Error general
-            this.errorMessage = error.message;
+            this.errorMessage = error.message; // Error general
           }
         },
       });
     } else {
-      // 🔥 Marcar todos los campos como tocados para mostrar errores
       this.loginForm.markAllAsTouched();
     }
   }
+  verificar2FA() {
+    if (!this.userId || !this.twofaCode) return;
 
+    this.twofaService.verificarLogin(this.userId, this.twofaCode).subscribe({
+      next: (res) => {
+        // 🚀 Guardar token de acceso
+        localStorage.setItem('accessToken', res.accessToken);
+        this.router.navigate(['/inventory']);
+      },
+      error: (err) => {
+        this.errorMessage = err.message || 'Error al validar 2FA';
+      },
+    });
+  }
   // 🔥 Método auxiliar para limpiar errores cuando el usuario empiece a escribir
   onInputChange() {
     if (this.errorMessage) {

@@ -51,17 +51,19 @@ export class AuthService {
     rememberMe?: boolean;
   }): Observable<any> {
     return this.http
-      .post<{ accessToken: string }>(`${this.apiUrl}auth/login`, credentials, {
+      .post<any>(`${this.apiUrl}auth/login`, credentials, {
         withCredentials: true,
       })
       .pipe(
         tap((response) => {
-          if (credentials.rememberMe) {
-            localStorage.setItem('accessToken', response.accessToken);
-          } else {
-            sessionStorage.setItem('accessToken', response.accessToken);
+          // ⚡ Solo guardamos token si no requiere 2FA
+          if (!response.requires2FA && response.accessToken) {
+            const storage = credentials.rememberMe
+              ? localStorage
+              : sessionStorage;
+            storage.setItem('accessToken', response.accessToken);
+            this.loadUserFromToken();
           }
-          this.loadUserFromToken();
         }),
         catchError((error) => {
           // 🔥 Usar el servicio de errores mejorado

@@ -248,3 +248,179 @@ body {
   background: linear-gradient(135deg, #0a617a 0%, #0ebc86 100%) !important;
   box-shadow: 0 2px 8px rgba(10, 97, 122, 0.2) !important;
 }
+
+.twofa-box {
+  background: #ffffff;
+  padding: 40px 45px;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.06),
+    0 0 0 1px rgba(255, 255, 255, 0.05);
+  text-align: center;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  animation: slideUp 0.6s ease-out;
+}
+
+/* ===== TÍTULO 2FA ===== */
+.twofa-box h3 {
+  font-weight: 700;
+  color: #083344;
+  margin-bottom: 15px;
+  font-size: 24px;
+  letter-spacing: -0.5px;
+}
+
+/* ===== PÁRRAFO DESCRIPTIVO ===== */
+.twofa-box p {
+  color: #4a5568;
+  font-size: 16px;
+  margin-bottom: 30px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+/* ===== INPUT DEL CÓDIGO 2FA ===== */
+.twofa-box input[type="text"] {
+  width: 100%;
+  max-width: 200px;
+  padding: 16px 20px;
+  border: 2px solid #e1e8ed;
+  border-radius: 10px;
+  outline: none;
+  font-size: 24px;
+  font-weight: 600;
+  background-color: #f8f9fa;
+  transition: all 0.3s ease;
+  font-family: "Courier New", monospace; /* Fuente monoespaciada para códigos */
+  text-align: center;
+  letter-spacing: 8px; /* Espaciado entre números */
+  margin-bottom: 25px;
+  color: #2c3e50;
+}
+
+.twofa-box input[type="text"]:focus {
+  border-color: #0a617a;
+  background-color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(10, 97, 122, 0.1);
+  transform: translateY(-1px);
+}
+
+.twofa-box input[type="text"]::placeholder {
+  color: #cbd5e1;
+  font-weight: 400;
+  letter-spacing: 6px;
+}
+
+/* ===== BOTÓN 2FA ===== */
+.twofa-box button {
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(135deg, #0a617a 0%, #0ebc86 100%);
+  border: none;
+  border-radius: 10px;
+  color: #ffffff;
+  font-size: 17px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(10, 97, 122, 0.3);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-bottom: 15px;
+}
+
+.twofa-box button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(10, 97, 122, 0.4);
+  background: linear-gradient(135deg, #0a617a 0%, #12d195 100%);
+}
+
+.twofa-box button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 10px rgba(10, 97, 122, 0.3);
+}
+
+/* ===== BOTÓN DESHABILITADO 2FA ===== */
+.twofa-box button:disabled {
+  background: linear-gradient(135deg, #94a3b8 0%, #cbd5e1 100%) !important;
+  color: #ffffff !important;
+  cursor: not-allowed !important;
+  opacity: 0.7;
+  transform: none !important;
+  box-shadow: 0 2px 8px rgba(148, 163, 184, 0.2) !important;
+}
+
+.twofa-box button:disabled:hover {
+  transform: none !important;
+  box-shadow: 0 2px 8px rgba(148, 163, 184, 0.2) !important;
+}
+
+/* ===== ERROR 2FA ===== */
+.twofa-box .error {
+  font-size: 14px;
+  font-weight: 500;
+  color: #e53e3e;
+  text-align: center;
+  padding: 10px;
+  background-color: #fed7d7;
+  border: 1px solid #feb2b2;
+  border-radius: 8px;
+  margin-top: 15px;
+}
+
+/* ===== RESPONSIVE PARA 2FA ===== */
+@media (max-width: 480px) {
+  .twofa-box {
+    padding: 30px 25px;
+    max-width: 100%;
+  }
+
+  .twofa-box h3 {
+    font-size: 20px;
+    margin-bottom: 12px;
+  }
+
+  .twofa-box p {
+    font-size: 14px;
+    margin-bottom: 25px;
+  }
+
+  .twofa-box input[type="text"] {
+    max-width: 180px;
+    font-size: 20px;
+    letter-spacing: 6px;
+    padding: 14px 16px;
+  }
+}
+
+/* ===== ANIMACIÓN PARA ENTRADA ===== */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===== EFECTO FOCUS EN EL INPUT (OPCIONAL) ===== */
+.twofa-box input[type="text"]:focus {
+  animation: pulse 0.3s ease-in-out;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+  100% {
+    transform: scale(1);
+  }
+}

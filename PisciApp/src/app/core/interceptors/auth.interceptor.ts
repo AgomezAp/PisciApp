@@ -16,26 +16,40 @@ export class AuthInterceptor implements HttpInterceptor {
 
   constructor(private authService: AuthService) {}
 
-  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+  intercept(
+    req: HttpRequest<any>,
+    next: HttpHandler
+  ): Observable<HttpEvent<any>> {
     const token = this.authService.getToken();
 
+    // 🛑 Excluir rutas públicas donde NO queremos meter token ni refrescar
+    const isAuthRoute =
+      req.url.includes('/auth/login') ||
+      req.url.includes('/auth/register') ||
+      req.url.includes('/auth/verify') ||
+      req.url.includes('/auth/refresh') ||
+      req.url.includes('/auth/2fa/verificar');
+
     let authReq = req;
-    if (token) {
+
+    if (token && !isAuthRoute) {
       authReq = req.clone({
-        setHeaders: { Authorization: `Bearer ${token}` }
+        setHeaders: { Authorization: `Bearer ${token}` },
       });
     }
 
     return next.handle(authReq).pipe(
       catchError((error: HttpErrorResponse) => {
-        // Si el accessToken expira, intentamos refrescar
-        if (error.status === 401 && !this.isRefreshing) {
+        // ✅ Solo refrescar si NO estamos en rutas públicas
+        if (error.status === 401 && !this.isRefreshing && !isAuthRoute) {
           this.isRefreshing = true;
           return this.authService.refreshAccessToken().pipe(
             switchMap((newToken) => {
               this.isRefreshing = false;
               return next.handle(
-                req.clone({ setHeaders: { Authorization: `Bearer ${newToken}` } })
+                req.clone({
+                  setHeaders: { Authorization: `Bearer ${newToken}` },
+                })
               );
             }),
             catchError((err) => {

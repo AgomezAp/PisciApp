@@ -3,7 +3,7 @@
     <img src="/assets/logo.png" alt="Logo" class="logo" />
     <h2>Inicia sesión</h2>
 
-    <!-- 🔥 Mensaje de error general (opcional) -->
+    <!-- 🔥 Mensaje de error general -->
     <div
       class="error"
       *ngIf="errorMessage"
@@ -12,7 +12,8 @@
       {{ errorMessage }}
     </div>
 
-    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+    <!-- 🔐 FORM LOGIN NORMAL -->
+    <form *ngIf="!showTwofa" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
       <div class="form-group">
         <label for="correo">Usuario</label>
         <input
@@ -75,7 +76,29 @@
       </button>
     </form>
 
-    <div class="links">
+    <!-- 🔐 SEGUNDO PASO: VERIFICACIÓN 2FA -->
+    <div *ngIf="showTwofa" class="twofa-box">
+      <h3>Verificación de dos factores</h3>
+      <p>Introduce el código de tu app autenticadora</p>
+
+      <input
+        type="text"
+        [(ngModel)]="twofaCode"
+        maxlength="6"
+        placeholder="123456"
+        class="form-control"
+      />
+
+      <button (click)="verificar2FA()" [disabled]="loading">
+        {{ loading ? "Verificando..." : "Confirmar código" }}
+      </button>
+
+      <div class="error" *ngIf="errorMessage" style="margin-top: 10px">
+        {{ errorMessage }}
+      </div>
+    </div>
+
+    <div class="links" *ngIf="!showTwofa">
       <a href="/forgot-password">¿Olvidaste tu contraseña?</a>
       <a href="/register">Crear cuenta</a>
     </div>
