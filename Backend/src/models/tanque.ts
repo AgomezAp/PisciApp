@@ -8,6 +8,7 @@ export class Tanque extends Model {
   public volumen!: number;
   public tipoTanque!: string;
   public disponible!: boolean;
+  public usuario_id!: number;
 }
 
 Tanque.init(
@@ -17,6 +18,9 @@ Tanque.init(
     volumen: { type: DataTypes.FLOAT, allowNull: true },
     tipoTanque: {type: DataTypes.FLOAT, allowNull: true},
     disponible: { type: DataTypes.BOOLEAN, allowNull: false },
+    usuario_id: {
+      type: DataTypes.INTEGER, references: {model: "usuarios", key: "id"}, allowNull: false,
+    },
   },
   {
     sequelize,
