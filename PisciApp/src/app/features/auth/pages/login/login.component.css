@@ -5,12 +5,13 @@
   box-sizing: border-box;
 }
 
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
   width: 100%;
   height: 100%;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
 /* ===== FONDO COMPLETO ===== */
@@ -33,9 +34,7 @@ html, body {
   border-radius: 16px;
   width: 100%;
   max-width: 420px;
-  box-shadow: 
-    0 20px 40px rgba(0, 0, 0, 0.1),
-    0 8px 16px rgba(0, 0, 0, 0.06),
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.06),
     0 0 0 1px rgba(255, 255, 255, 0.05);
   text-align: center;
   backdrop-filter: blur(10px);
@@ -165,7 +164,7 @@ html, body {
 }
 
 .links a:hover::after {
-  content: '';
+  content: "";
   position: absolute;
   width: 100%;
   height: 2px;
@@ -180,16 +179,16 @@ html, body {
   .login-wrapper {
     padding: 15px;
   }
-  
+
   .login-card {
     padding: 30px 25px;
     max-width: 100%;
   }
-  
+
   .login-card .logo {
     width: 150px;
   }
-  
+
   .login-card h2 {
     font-size: 24px;
     margin-bottom: 25px;
@@ -211,12 +210,41 @@ html, body {
     transform: translateY(0);
   }
 }
-
+.error {
+  margin-top: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #e53e3e; /* rojo fuerte */
+  display: block;
+}
+.error small {
+  display: block;
+  margin-top: 2px;
+  color: #e53e3e; /* mismo rojo para consistencia */
+}
 /* ===== MEJORAS ADICIONALES ===== */
-.form-group input:invalid {
+.form-group input[type="text"]:invalid,
+.form-group input[type="email"]:invalid,
+.form-group input[type="password"]:invalid {
   border-color: #e53e3e;
 }
 
-.form-group input:valid {
+.form-group input[type="text"]:valid,
+.form-group input[type="email"]:valid,
+.form-group input[type="password"]:valid {
   border-color: #0ebc86;
+}
+.login-card button:disabled {
+  background: linear-gradient(135deg, #0a617a 0%, #0ebc86 100%) !important;
+  color: #ffffff !important; /* 👈 FUERZA que el texto sea visible */
+  opacity: 0.6 !important;
+  cursor: not-allowed !important;
+  transform: none !important;
+  box-shadow: 0 2px 8px rgba(10, 97, 122, 0.2) !important;
+}
+
+.login-card button:disabled:hover {
+  transform: none !important;
+  background: linear-gradient(135deg, #0a617a 0%, #0ebc86 100%) !important;
+  box-shadow: 0 2px 8px rgba(10, 97, 122, 0.2) !important;
 }
