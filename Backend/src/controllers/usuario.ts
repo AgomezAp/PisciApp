@@ -475,6 +475,7 @@ export const verificar2FALogin = async (req: Request, res: Response) => {
   console.log("userId:", userId);
   console.log("token ingresado:", token);
   console.log("secret almacenado:", usuario.twofa_secret);
+  
   const verified = speakeasy.totp.verify({
     secret: usuario.twofa_secret,
     encoding: "base32",
