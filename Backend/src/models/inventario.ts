@@ -14,24 +14,32 @@ export class Inventario extends Model {
 
 Inventario.init(
   {
-    id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
-    usuario_id: {
+    id: { 
+      type: DataTypes.INTEGER, 
+      autoIncrement: true, 
+      primaryKey: true 
+    },
+    nombre: {
+      type: DataTypes.STRING,
+      allowNull: false,   // Siempre se pide
+    },
+    descripcion: {
+      type: DataTypes.STRING,
+    },
+    cantidad: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      references: { model: "usuarios", key: "id" },
+      defaultValue: 0,
     },
-    nombre: { type: DataTypes.STRING, allowNull: false },
-    descripcion: { type: DataTypes.STRING },
-    cantidad: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 },
     unidad: {
       type: DataTypes.STRING,
       allowNull: false,
-      defaultValue: "unidad",
+      defaultValue: "unidad", // Ej: "kg", "litros", etc
     },
   },
   {
     sequelize,
     tableName: "inventario",
-    timestamps: true,
+    timestamps: true,   // Para createdAt y updatedAt
   }
 );
