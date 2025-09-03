@@ -1,0 +1,56 @@
+<div class="register-container">
+  <h2>Crear usuario</h2>
+
+  <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+    <div class="form-row">
+      <input type="text" placeholder="Tus nombres" formControlName="nombre" />
+      <input
+        type="email"
+        placeholder="tu@correo.com"
+        formControlName="correo"
+      />
+    </div>
+
+    <div class="form-row">
+      <input
+        type="tel"
+        placeholder="+57 3006821133"
+        formControlName="telefono"
+      />
+      <input
+        type="text"
+        placeholder="Risaralda"
+        formControlName="departamento"
+      />
+    </div>
+
+    <div class="form-row">
+      <input type="text" placeholder="Pereira" formControlName="ciudad" />
+    </div>
+    <div class="form-row">
+      <input
+        type="password"
+        placeholder="Crea una contraseña"
+        formControlName="contrasena"
+      />
+      <input
+        type="password"
+        placeholder="Confirma tu contraseña"
+        formControlName="confirmarContrasena"
+      />
+    </div>
+
+    <div class="terms">
+      <input type="checkbox" formControlName="terms" />
+      <label>Acepto los <a href="#">términos y condiciones</a></label>
+    </div>
+
+    <button type="submit" [disabled]="registerForm.invalid || loading">
+      {{ loading ? "Guardando..." : "Guardar y continuar" }}
+    </button>
+
+    <div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
+  </form>
+
+  <a href="/login" class="back-link">Volver al inicio de sesión</a>
+</div>

@@ -1,0 +1,83 @@
+<div class="login-wrapper">
+  <div class="login-card">
+    <img src="/assets/logo.png" alt="Logo" class="logo" />
+    <h2>Inicia sesión</h2>
+
+    <!-- 🔥 Mensaje de error general (opcional) -->
+    <div
+      class="error"
+      *ngIf="errorMessage"
+      style="text-align: center; margin-bottom: 15px"
+    >
+      {{ errorMessage }}
+    </div>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label for="correo">Usuario</label>
+        <input
+          formControlName="correo"
+          type="text"
+          placeholder="Tu usuario"
+          id="correo"
+          (input)="onInputChange()"
+        />
+        <div
+          class="error"
+          *ngIf="
+            loginForm.get('correo')?.touched && loginForm.get('correo')?.invalid
+          "
+        >
+          <small *ngIf="loginForm.get('correo')?.errors?.['required']">
+            El correo es obligatorio
+          </small>
+          <small *ngIf="loginForm.get('correo')?.errors?.['email']">
+            Debe ser un correo válido
+          </small>
+          <small *ngIf="loginForm.get('correo')?.errors?.['backend']">
+            {{ loginForm.get('correo')?.errors?.['backend'] }}
+          </small>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="contrasena">Contraseña</label>
+        <input
+          formControlName="contrasena"
+          type="password"
+          placeholder="Tu contraseña"
+          id="contrasena"
+          (input)="onInputChange()"
+        />
+        <div
+          class="error"
+          *ngIf="
+            loginForm.get('contrasena')?.touched &&
+            loginForm.get('contrasena')?.invalid
+          "
+        >
+          <small *ngIf="loginForm.get('contrasena')?.errors?.['required']">
+            La contraseña es obligatoria
+          </small>
+          <small *ngIf="loginForm.get('contrasena')?.errors?.['backend']">
+            {{ loginForm.get('contrasena')?.errors?.['backend'] }}
+          </small>
+        </div>
+      </div>
+
+      <div class="remember">
+        <input type="checkbox" id="rememberMe" formControlName="rememberMe" />
+        <label for="rememberMe">Recordarme</label>
+      </div>
+
+      <button type="submit" [disabled]="loginForm.invalid || loading">
+        {{ loading ? "Ingresando..." : "Ingresar" }}
+      </button>
+    </form>
+
+    <div class="links">
+      <a href="/forgot-password">¿Olvidaste tu contraseña?</a>
+      <a href="/register">Crear cuenta</a>
+    </div>
+  </div>
+</div>
