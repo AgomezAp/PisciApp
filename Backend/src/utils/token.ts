@@ -24,13 +24,16 @@ export async function generateTokens(user: Usuario) {
   const accessToken = jwt.sign(
     {
       id: user.id,
+      nombre: (user as any).nombre,
       correo: (user as any).correo,
       rol: (user as any).rol,
+      telefono: (user as any).telefono,
+      twofa_enabled: (user as any).twofa_enabled,
     },
     process.env.JWT_SECRET!,
     {
       algorithm: "HS256",
-      expiresIn: "15m",
+      expiresIn: "1m",
       jwtid: session.id.toString(), // 👈 aquí va el id de sesión
     }
   );

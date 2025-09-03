@@ -1,20 +1,29 @@
 import { Router } from "express";
 import {
   solicitarRecuperacion,
-  resetearContraseña,
+  resetearcontraseña,
   activar2FA,
   verificar2FALogin,
+  desactivar2FA,
+  confirmar2FA,
+  actualizarPreferencias,
+  getProfile,
 } from "../controllers/usuario";
-import { verifyToken } from "../middlewares/verifyToken"; 
+import { verifyToken } from "../middlewares/verifyToken";
 
 const router = Router();
 
 // Recuperar contraseña
 router.post("/forgot-password", solicitarRecuperacion);
-router.post("/reset-password/:token", resetearContraseña);
+router.post("/reset-password/:token", resetearcontraseña);
 
 // 2FA
-router.post("/2fa/enable", verifyToken, activar2FA);
-router.post("/2fa/verify", verificar2FALogin);
+router.post("/auth/2fa/activar", verifyToken, activar2FA);
+router.post("/auth/2fa/confirmar", verifyToken, confirmar2FA);
+router.post("/auth/2fa/desactivar", verifyToken, desactivar2FA);
+router.post("/auth/2fa/verificar", verificar2FALogin);
+// routes/usuario.ts
+router.put("/preferencias", verifyToken, actualizarPreferencias);
+router.get("/perfil", verifyToken, getProfile);
 
 export default router;

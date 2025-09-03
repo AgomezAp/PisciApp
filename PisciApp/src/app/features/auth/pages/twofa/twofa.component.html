@@ -1,0 +1,6 @@
+<div class="twofa-box">
+  <h3>⚡ Introduce tu código 2FA</h3>
+  <input [(ngModel)]="code" maxlength="6" placeholder="123456" />
+  <button (click)="verificar()">Verificar</button>
+  <div *ngIf="error" class="error">{{ error }}</div>
+</div>
