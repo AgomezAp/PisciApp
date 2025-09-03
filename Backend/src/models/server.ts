@@ -12,11 +12,12 @@ import RAuth from "../routes/auth";
 import cookieParser from "cookie-parser";
 import rateLimit from "express-rate-limit";
 import RInventario from "../routes/inventario";
+import RProducto from "../routes/producto";
 import RTanque from "../routes/tanque";
+/* 
 /* 
 import RCiclo from "../routes/ciclo";
 import RTarea from "../routes/tarea";
-import RProducto from "../routes/producto";
 import RCompra from "../routes/compra"; */
 
 dotenv.config();
@@ -61,10 +62,10 @@ class Server {
     this.app.use("/auth", RAuth);
     this.app.use("/inventario", RInventario);
     this.app.use("/tanque", RTanque);
+    this.app.use("/productos", RProducto);
     /*     this.app.use("/usuarios", RUsuario);
     this.app.use("/ciclos", RCiclo);
     this.app.use("/tareas", RTarea);
-    this.app.use("/productos", RProducto);
     this.app.use("/inventario", RInventario);
     this.app.use("/compras", RCompra); */
   }

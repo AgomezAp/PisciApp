@@ -257,24 +257,15 @@ export const loginHandler = async (req: Request, res: Response) => {
     expires_at: addDays(new Date(), 7),
   });
 
-<<<<<<< HEAD
   // Guardar refresh en cookie
   res.cookie("refresh_token", refreshToken, {
     httpOnly: true,
     secure: false, // true en producción
-=======
-  res.cookie("refresh_token", refreshToken, {
-    httpOnly: true,
-    secure: false, // true en prod
->>>>>>> dilian
     sameSite: "lax",
     maxAge: 1000 * 60 * 60 * 24 * 7,
   });
 
-<<<<<<< HEAD
   // 🚨 Aquí antes SOLO devolvías accessToken
-=======
->>>>>>> dilian
   return res.json({
     message: "Inicio de sesión exitoso",
     usuario: {
@@ -307,10 +298,6 @@ export const refreshTokenHandler = async (req: Request, res: Response) => {
   console.log(`🔎 Se encontraron ${sesiones.length} sesiones activas en DB`);
   let stored: Sesion | null = null;
 
-<<<<<<< HEAD
-
-=======
->>>>>>> dilian
   for (const sesion of sesiones) {
     if (!sesion.refresh_token_hash) continue;
 
@@ -381,11 +368,7 @@ export const refreshTokenHandler = async (req: Request, res: Response) => {
   res.cookie("refresh_token", newRefresh, {
     httpOnly: true,
     secure: false, // ⚠️ en producción -> true
-<<<<<<< HEAD
     sameSite: "none",
-=======
-    sameSite: "lax",
->>>>>>> dilian
     maxAge: 1000 * 60 * 60 * 24 * 7,
   });
   console.log("🍪 Refresh token actualizado en cookie");
@@ -494,10 +477,6 @@ export const verificar2FALogin = async (req: Request, res: Response) => {
   console.log("userId:", userId);
   console.log("token ingresado:", token);
   console.log("secret almacenado:", usuario.twofa_secret);
-<<<<<<< HEAD
-
-=======
->>>>>>> dilian
   const verified = speakeasy.totp.verify({
     secret: usuario.twofa_secret,
     encoding: "base32",
@@ -541,14 +520,10 @@ export const desactivar2FA = async (req: Request, res: Response) => {
 
   const usuario = await Usuario.findByPk(userId);
   if (!usuario || !usuario.twofa_secret) {
-<<<<<<< HEAD
     return res.status(400).json({
       success: false,
       message: "El usuario no tiene 2FA activo",
     });
-=======
-    return res.status(400).json({ message: "El usuario no tiene 2FA activo" });
->>>>>>> dilian
   }
 
   const verified = speakeasy.totp.verify({
@@ -559,29 +534,21 @@ export const desactivar2FA = async (req: Request, res: Response) => {
   });
 
   if (!verified) {
-<<<<<<< HEAD
     return res.status(401).json({
       success: false,
       message: "Código inválido",
     });
-=======
-    return res.status(401).json({ message: "Código inválido" });
->>>>>>> dilian
   }
 
   usuario.twofa_secret = null;
   usuario.twofa_enabled = false;
   await usuario.save();
 
-<<<<<<< HEAD
   return res.json({
     success: true,
     message: "2FA desactivado correctamente",
     twofa_enabled: false,
   });
-=======
-  res.json({ message: "2FA desactivado correctamente" });
->>>>>>> dilian
 };
 export const confirmar2FA = async (req: Request, res: Response) => {
   const userId = (req as any).usuario.id;
@@ -615,14 +582,11 @@ export const confirmar2FA = async (req: Request, res: Response) => {
     success: true,
     message: "2FA habilitado correctamente",
     twofa_enabled: true,
-<<<<<<< HEAD
   });
   res.json({
     success: true,
     message: "2FA habilitado correctamente",
     twofa_enabled: true,
-=======
->>>>>>> dilian
   });
 };
 export const logoutHandler = async (req: Request, res: Response) => {
