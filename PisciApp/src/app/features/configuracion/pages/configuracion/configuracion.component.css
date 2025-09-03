@@ -8,8 +8,9 @@
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08), 0 8px 16px rgba(0, 0, 0, 0.04);
   position: relative;
   overflow: hidden;
+  animation: slideUp 0.6s ease-out;
 }
-/* Efecto decorativo */
+
 .configuracion::before {
   content: "";
   position: absolute;
@@ -21,6 +22,7 @@
   background-size: 200% 100%;
   animation: gradientFlow 3s ease-in-out infinite;
 }
+
 .configuracion h2 {
   margin-bottom: 2.5rem;
   font-weight: 700;
@@ -43,7 +45,7 @@
   border-radius: 2px;
 }
 
-/* ===== ACCORDION STYLING ===== */
+/* ===== ACCORDION ===== */
 .configuracion ::ng-deep .mat-accordion {
   width: 100% !important;
   display: block !important;
@@ -65,27 +67,18 @@
 }
 
 .configuracion ::ng-deep .mat-expansion-panel.mat-expanded {
-  box-shadow: 0 15px 40px rgba(0, 151, 167, 0.15),
-    0 8px 20px rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 15px 40px rgba(0, 151, 167, 0.15), 0 8px 20px rgba(0, 0, 0, 0.08) !important;
   border-color: rgba(0, 151, 167, 0.2) !important;
 }
 
 .configuracion ::ng-deep .mat-expansion-panel-header {
   padding: 1.5rem 2rem !important;
-  background: linear-gradient(
-    135deg,
-    rgba(0, 151, 167, 0.02) 0%,
-    rgba(0, 150, 136, 0.02) 100%
-  ) !important;
+  background: linear-gradient(135deg, rgba(0, 151, 167, 0.02) 0%, rgba(0, 150, 136, 0.02) 100%) !important;
   border-radius: 16px !important;
 }
 
 .configuracion ::ng-deep .mat-expansion-panel-header:hover {
-  background: linear-gradient(
-    135deg,
-    rgba(0, 151, 167, 0.05) 0%,
-    rgba(0, 150, 136, 0.05) 100%
-  ) !important;
+  background: linear-gradient(135deg, rgba(0, 151, 167, 0.05) 0%, rgba(0, 150, 136, 0.05) 100%) !important;
 }
 
 .configuracion ::ng-deep .mat-expansion-panel-header-title {
@@ -105,98 +98,91 @@
   margin-right: 12px;
 }
 
-.configuracion
-  ::ng-deep
-  .mat-expansion-panel-content
-  .mat-expansion-panel-body {
+.configuracion ::ng-deep .mat-expansion-panel-content .mat-expansion-panel-body {
   padding: 2rem !important;
   background: white !important;
 }
 
-/* ===== FORM FIELDS MODERNOS ===== */
+/* ===== FORM FIELDS ===== */
 .configuracion ::ng-deep .mat-mdc-form-field {
   width: 100% !important;
-  margin-bottom: 1.5rem !important;
+  margin-bottom: 1rem !important;
 }
 
 .configuracion ::ng-deep .mat-mdc-form-field .mat-mdc-text-field-wrapper {
-  border-radius: 14px !important;
+  border-radius: 12px !important;
   background: rgba(248, 250, 252, 0.9) !important;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06) !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04) !important;
   transition: all 0.3s ease !important;
-  border: 2px solid rgba(226, 232, 240, 0.5) !important;
+  border: 1px solid rgba(226, 232, 240, 0.6) !important;
+  height: 48px !important;
 }
 
 .configuracion ::ng-deep .mat-mdc-form-field:hover .mat-mdc-text-field-wrapper {
   background: white !important;
-  box-shadow: 0 6px 20px rgba(0, 151, 167, 0.12) !important;
-  border-color: rgba(0, 151, 167, 0.4) !important;
-  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 12px rgba(0, 151, 167, 0.08) !important;
+  border-color: rgba(0, 151, 167, 0.3) !important;
+  transform: translateY(-1px) !important;
 }
 
-.configuracion
-  ::ng-deep
-  .mat-mdc-form-field.mat-focused
-  .mat-mdc-text-field-wrapper {
+.configuracion ::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-text-field-wrapper {
   background: white !important;
-  box-shadow: 0 8px 25px rgba(0, 151, 167, 0.2) !important;
+  box-shadow: 0 6px 16px rgba(0, 151, 167, 0.15) !important;
   border-color: #0097a7 !important;
   border-width: 2px !important;
 }
 
-/* Labels modernos */
 .configuracion ::ng-deep .mat-mdc-form-field .mat-mdc-floating-label {
   color: #64748b !important;
   font-weight: 500 !important;
-  font-size: 14px !important;
+  font-size: 13px !important;
   top: 50% !important;
   transform: translateY(-50%) !important;
 }
 
-.configuracion
-  ::ng-deep
-  .mat-mdc-form-field.mat-focused
-  .mat-mdc-floating-label,
-.configuracion
-  ::ng-deep
-  .mat-mdc-form-field
-  .mat-mdc-floating-label.mdc-floating-label--float-above {
+.configuracion ::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-floating-label,
+.configuracion ::ng-deep .mat-mdc-form-field .mat-mdc-floating-label.mdc-floating-label--float-above {
   color: #0097a7 !important;
   font-weight: 600 !important;
-  top: 8px !important;
-  transform: translateY(0) scale(0.85) !important;
+  font-size: 11px !important;
+  top: 6px !important;
+  transform: translateY(0) scale(0.9) !important;
 }
 
-/* Input text styling */
 .configuracion ::ng-deep .mat-mdc-form-field .mat-mdc-input-element {
   color: #1e293b !important;
   font-weight: 500 !important;
-  font-size: 15px !important;
-  padding: 18px 16px 18px 16px !important;
+  font-size: 14px !important;
+  padding: 12px 14px !important;
   background: transparent !important;
+  height: auto !important;
+  line-height: 1.4 !important;
 }
 
-.configuracion
-  ::ng-deep
-  .mat-mdc-form-field
-  .mat-mdc-input-element::placeholder {
+.configuracion ::ng-deep .mat-mdc-form-field .mat-mdc-input-element::placeholder {
   color: #94a3b8 !important;
   opacity: 0.7 !important;
+  font-size: 13px !important;
 }
 
-/* Iconos en los inputs */
 .configuracion ::ng-deep .mat-mdc-form-field .mat-icon {
   color: #64748b !important;
-  font-size: 22px !important;
+  font-size: 18px !important;
   transition: all 0.3s ease !important;
-  margin-right: 8px !important;
+  margin-right: 6px !important;
 }
 
 .configuracion ::ng-deep .mat-mdc-form-field.mat-focused .mat-icon {
   color: #0097a7 !important;
-  transform: scale(1.1) !important;
+  transform: scale(1.05) !important;
 }
-/* Outline borders más suaves */
+
+.configuracion ::ng-deep .mat-mdc-text-field-wrapper .mat-mdc-form-field-infix {
+  padding-top: 14px !important;
+  padding-bottom: 6px !important;
+  min-height: auto !important;
+}
+
 .configuracion ::ng-deep .mdc-notched-outline__leading,
 .configuracion ::ng-deep .mdc-notched-outline__notch,
 .configuracion ::ng-deep .mdc-notched-outline__trailing {
@@ -204,15 +190,15 @@
   border-color: transparent !important;
 }
 
-/* ===== BOTONES MODERNOS ===== */
+/* ===== BOTONES ===== */
 .configuracion ::ng-deep .mat-mdc-raised-button {
-  border-radius: 14px !important;
-  padding: 16px 32px !important;
-  font-weight: 700 !important;
-  font-size: 16px !important;
-  letter-spacing: 0.5px !important;
+  border-radius: 10px !important;
+  padding: 12px 24px !important;
+  font-weight: 600 !important;
+  font-size: 14px !important;
+  letter-spacing: 0.3px !important;
   text-transform: none !important;
-  box-shadow: 0 6px 20px rgba(0, 151, 167, 0.3) !important;
+  box-shadow: 0 4px 12px rgba(0, 151, 167, 0.25) !important;
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
   border: none !important;
 }
@@ -223,83 +209,77 @@
 }
 
 .configuracion ::ng-deep .mat-mdc-raised-button.mat-primary:hover {
-  transform: translateY(-3px) !important;
+  transform: translateY(-2px) !important;
   box-shadow: 0 12px 30px rgba(0, 151, 167, 0.4) !important;
   background: linear-gradient(135deg, #00bcd4 0%, #26a69a 100%) !important;
 }
 
-.configuracion ::ng-deep .mat-mdc-raised-button.mat-primary:active {
-  transform: translateY(-1px) !important;
-  box-shadow: 0 6px 20px rgba(0, 151, 167, 0.35) !important;
+.configuracion ::ng-deep .mat-mdc-raised-button.mat-warn {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+  color: white !important;
 }
 
-/* ===== CHECKBOXES MODERNOS ===== */
-.configuracion .mat-mdc-checkbox {
+/* ===== CHECKBOXES ===== */
+.configuracion ::ng-deep .mat-mdc-checkbox {
   margin: 0 !important;
   padding: 8px 0 !important;
 }
 
-.configuracion .mat-mdc-checkbox .mdc-checkbox {
+.configuracion ::ng-deep .mat-mdc-checkbox .mdc-checkbox {
   padding: 8px !important;
 }
 
-.configuracion .mat-mdc-checkbox .mdc-checkbox .mdc-checkbox__background {
+.configuracion ::ng-deep .mat-mdc-checkbox .mdc-checkbox .mdc-checkbox__background {
   border: 2px solid #cbd5e1 !important;
   border-radius: 6px !important;
   background-color: transparent !important;
   transition: all 0.3s ease !important;
 }
 
-.configuracion .mat-mdc-checkbox:hover .mdc-checkbox .mdc-checkbox__background {
+.configuracion ::ng-deep .mat-mdc-checkbox:hover .mdc-checkbox .mdc-checkbox__background {
   border-color: #0097a7 !important;
   box-shadow: 0 0 0 8px rgba(0, 151, 167, 0.08) !important;
 }
 
-.configuracion
-  .mat-mdc-checkbox
-  .mdc-checkbox.mdc-checkbox--selected
-  .mdc-checkbox__background {
+.configuracion ::ng-deep .mat-mdc-checkbox .mdc-checkbox.mdc-checkbox--selected .mdc-checkbox__background {
   background: linear-gradient(135deg, #0097a7, #009688) !important;
   border-color: #0097a7 !important;
   box-shadow: 0 2px 8px rgba(0, 151, 167, 0.3) !important;
 }
 
-.configuracion .mat-mdc-checkbox .mdc-form-field {
+.configuracion ::ng-deep .mat-mdc-checkbox .mdc-form-field {
   color: #475569 !important;
   font-weight: 500 !important;
   font-size: 15px !important;
 }
 
-/* ===== SELECT DROPDOWN MODERNO ===== */
-.configuracion .mat-mdc-select {
+/* ===== SELECT ===== */
+.configuracion ::ng-deep .mat-mdc-select {
   padding: 16px 12px !important;
   font-weight: 500 !important;
   color: #1e293b !important;
 }
 
-.configuracion .mat-mdc-select-trigger {
-  border-radius: 14px !important;
-}
-
-.configuracion .mat-mdc-select-arrow {
+.configuracion ::ng-deep .mat-mdc-select-arrow {
   color: #64748b !important;
 }
 
-.configuracion .mat-mdc-form-field.mat-focused .mat-mdc-select-arrow {
+.configuracion ::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-select-arrow {
   color: #0097a7 !important;
 }
 
-/* ===== PERFIL SECTION ===== */
+/* ===== PERFIL ===== */
 .perfil-form {
   padding: 0;
 }
 
 .perfil-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 2rem;
-  margin-bottom: 2.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
 }
+
 .perfil-actions {
   display: flex;
   justify-content: flex-end;
@@ -308,48 +288,34 @@
   border-top: 2px solid rgba(0, 151, 167, 0.1);
   margin-top: 2rem;
 }
-@keyframes gradientFlow {
-  0%,
-  100% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-}
 
-.configuracion {
-  animation: slideUp 0.6s ease-out;
-}
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-/* ===== SECCIONES ESPECÍFICAS MEJORADAS ===== */
-
-/* Status Card para Seguridad */
+/* ===== STATUS CARD ===== */
 .status-card {
-  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
   border: 2px solid #e2e8f0;
   border-radius: 16px;
-  padding: 2rem;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
   display: flex;
   align-items: center;
-  gap: 1.5rem;
-  transition: all 0.3s ease;
+  justify-content: space-between;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  position: relative;
+  overflow: hidden;
 }
 
-.status-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
-  border-color: #cbd5e1;
+.status-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: #ef4444;
+}
+
+.status-card.enabled::before {
+  background: #10b981;
 }
 
 .status-card.enabled {
@@ -362,99 +328,406 @@
   border-color: #fca5a5;
 }
 
-.status-icon {
-  font-size: 2.5rem;
-  width: 60px;
-  height: 60px;
-  background: white;
-  border-radius: 50%;
+.status-info {
   display: flex;
   align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.status-text {
+  gap: 1rem;
   flex: 1;
 }
 
+.status-icon {
+  font-size: 2.2rem;
+  width: 56px;
+  height: 56px;
+  background: linear-gradient(135deg, #fee2e2, #fecaca);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 3px 10px rgba(239, 68, 68, 0.2);
+}
+
+.status-card.enabled .status-icon {
+  background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+  box-shadow: 0 3px 10px rgba(16, 185, 129, 0.2);
+}
+
 .status-text h4 {
-  margin: 0 0 8px 0;
+  margin: 0 0 6px 0;
   color: #1e293b;
   font-weight: 700;
-  font-size: 1.1rem;
+  font-size: 1.2rem;
 }
 
 .status-text p {
   margin: 0;
   color: #64748b;
-  font-weight: 500;
+  font-size: 0.9rem;
 }
 
-/* Checkbox Items */
-.checkbox-group {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
+.status-badge {
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
 }
 
-.checkbox-item {
-  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-  border-radius: 14px;
-  padding: 1.5rem 2rem;
+.status-badge.active {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+}
+
+.status-badge.inactive {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+}
+
+/* ===== 2FA SECCIONES ===== */
+.activation-section {
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
   border: 2px solid #e2e8f0;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-}
-
-.checkbox-item:hover {
-  background: white;
-  box-shadow: 0 6px 20px rgba(0, 151, 167, 0.08);
-  border-color: rgba(0, 151, 167, 0.2);
-  transform: translateY(-1px);
-}
-
-/* Preference Fields */
-.preferencias-content {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1.5rem;
-}
-
-.preference-field {
-  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
   border-radius: 16px;
   padding: 2rem;
-  border: 2px solid #e2e8f0;
-  transition: all 0.3s ease;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
-.preference-field:hover {
-  background: white;
-  box-shadow: 0 8px 25px rgba(0, 151, 167, 0.08);
-  border-color: rgba(0, 151, 167, 0.2);
-  transform: translateY(-2px);
+.deactivation-section {
+  background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+  border: 2px solid #fca5a5;
+  border-radius: 16px;
+  padding: 2rem;
 }
 
-.preference-field mat-form-field {
-  width: 100%;
+.initial-action {
+  text-align: center;
+  padding: 1rem 0;
+}
+
+.action-info h5 {
+  margin: 0 0 8px 0;
+  color: #1e293b;
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+
+.action-info p {
+  margin: 0 0 2rem 0;
+  color: #64748b;
+  font-size: 0.95rem;
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: center;
+}
+
+.setup-process {
+  max-width: 100%;
+}
+
+.setup-header {
+  text-align: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 2px solid rgba(0, 151, 167, 0.1);
+}
+
+.setup-header h5 {
+  margin: 0 0 8px 0;
+  color: #0097a7;
+  font-weight: 700;
+  font-size: 1.4rem;
+}
+
+.setup-header p {
   margin: 0;
+  color: #64748b;
+  font-size: 0.95rem;
+}
+
+.setup-steps {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.setup-step {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border: 2px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.step-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.step-number {
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, #0097a7, #009688);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 3px 10px rgba(0, 151, 167, 0.3);
+}
+
+.step-details h6 {
+  margin: 0 0 8px 0;
+  color: #1e293b;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.step-details p {
+  margin: 0;
+  color: #64748b;
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.qr-display {
+  display: flex;
+  justify-content: center;
+}
+
+.qr-display img {
+  width: 180px;
+  height: 180px;
+  border: 4px solid white;
+  border-radius: 14px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+.verification-area {
+  width: 100%;
+  max-width: 200px;
+}
+
+.code-input {
+  width: 100% !important;
+}
+
+.code-input .mat-mdc-text-field-wrapper {
+  border-radius: 12px !important;
+  background: rgba(248, 250, 252, 0.9) !important;
+  border: 2px solid #e2e8f0 !important;
+  height: 54px !important;
+}
+
+.code-input.mat-focused .mat-mdc-text-field-wrapper {
+  border-color: #0097a7 !important;
+  background: white !important;
+  box-shadow: 0 0 0 3px rgba(0, 151, 167, 0.1) !important;
+}
+
+.token-field {
+  text-align: center !important;
+  font-size: 1.3rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 3px !important;
+  color: #1e293b !important;
+}
+
+.setup-actions,
+.deactivate-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  padding-top: 1.5rem;
+  border-top: 2px solid rgba(0, 151, 167, 0.1);
+}
+
+.btn-activate,
+.btn-confirm,
+.btn-deactivate {
+  padding: 14px 28px !important;
+  font-weight: 700 !important;
+  font-size: 0.9rem !important;
+  border-radius: 12px !important;
+  box-shadow: 0 4px 16px rgba(0, 151, 167, 0.3) !important;
+  text-transform: none !important;
+}
+
+.btn-deactivate {
+  box-shadow: 0 4px 16px rgba(239, 68, 68, 0.3) !important;
+}
+
+.deactivate-warning {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: white;
+  border-radius: 12px;
+  border-left: 4px solid #ef4444;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.1);
+}
+
+.warning-icon {
+  color: #ef4444 !important;
+  font-size: 3rem !important;
+  width: 60px !important;
+  height: 60px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: linear-gradient(135deg, #fee2e2, #fecaca) !important;
+  border-radius: 50% !important;
+  flex-shrink: 0 !important;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2) !important;
+}
+
+.warning-text h5 {
+  margin: 0 0 6px 0;
+  color: #dc2626;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.warning-text p {
+  margin: 0;
+  color: #991b1b;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.deactivate-form {
+  max-width: 350px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+/* ===== NOTIFICACIONES ===== */
+.simple-notifications {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.simple-item {
+  flex: 1;
+  min-width: 280px;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.simple-item:hover {
+  border-color: #0097a7;
+  box-shadow: 0 2px 8px rgba(0, 151, 167, 0.1);
+}
+
+.simple-item ::ng-deep .mdc-form-field {
+  color: #374151 !important;
+  font-weight: 500 !important;
+}
+
+.simple-item ::ng-deep .mdc-checkbox__background {
+  border-color: #9ca3af !important;
+}
+
+.simple-item ::ng-deep .mdc-checkbox--selected .mdc-checkbox__background {
+  background: #0097a7 !important;
+  border-color: #0097a7 !important;
+}
+
+.actions {
+  display: flex;
+  justify-content: center;
+  padding: 2rem 0 0 0;
+  border-top: 2px solid rgba(0, 151, 167, 0.1);
+  margin-top: 1.5rem;
+}
+
+/* ===== PREFERENCIAS ===== */
+.preferences-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.2rem;
+  margin-bottom: 2rem;
+}
+
+.preference-item {
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  border: 2px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 1.5rem;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  position: relative;
+  overflow: hidden;
+}
+
+.preference-item:hover {
+  background: linear-gradient(135deg, #ffffff 0%, #f0f7ff 100%);
+  box-shadow: 0 8px 25px rgba(0, 151, 167, 0.08);
+  border-color: rgba(0, 151, 167, 0.3);
+  transform: translateY(-3px);
+}
+
+.preference-actions {
+  display: flex;
+  justify-content: center;
+  padding: 2rem 0 0 0;
+  border-top: 2px solid rgba(0, 151, 167, 0.1);
+  margin-top: 1.5rem;
+}
+
+/* ===== SELECT PANEL ===== */
+::ng-deep .select-ajustado {
+  background: #fff !important;
+  border-radius: 0 0 12px 12px !important;
+  margin-top: -2px !important;
+  border: 2px solid #e2e8f0 !important;
+  border-top: none !important;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12) !important;
+  max-height: 300px !important;
+  overflow-y: auto !important;
+}
+
+::ng-deep .select-ajustado .mat-mdc-option {
+  background: #fff !important;
+  color: #1e293b !important;
+  font-weight: 500 !important;
+}
+
+::ng-deep .select-ajustado .mat-mdc-option:hover {
+  background: #f0f9ff !important;
+}
+
+::ng-deep .select-ajustado .mat-mdc-option.mdc-list-item--selected {
+  background: #e0f7fa !important;
+  color: #0097a7 !important;
+  font-weight: 600 !important;
 }
 
 /* ===== ANIMACIONES ===== */
 @keyframes gradientFlow {
-  0%,
-  100% {
+  0%, 100% {
     background-position: 0% 50%;
   }
   50% {
     background-position: 100% 50%;
   }
-}
-
-.configuracion {
-  animation: slideUp 0.6s ease-out;
 }
 
 @keyframes slideUp {
@@ -468,7 +741,7 @@
   }
 }
 
-/* ===== RESPONSIVE DESIGN ===== */
+/* ===== RESPONSIVE ===== */
 @media (max-width: 1024px) {
   .configuracion {
     max-width: 95%;
@@ -485,62 +758,6 @@
 @media (max-width: 768px) {
   .configuracion {
     margin: 1rem auto;
-    padding: 1rem;
-    border-radius: 16px;
-  }
-
-  .configuracion h2 {
-    font-size: 1.6rem;
-    margin-bottom: 2rem;
-  }
-
-  .configuracion .mat-expansion-panel-header {
-    padding: 1rem 1.5rem !important;
-  }
-
-  .configuracion .mat-expansion-panel-content .mat-expansion-panel-body {
-    padding: 1.5rem !important;
-  }
-
-  .perfil-actions {
-    justify-content: center;
-  }
-
-  .perfil-actions button {
-    padding: 10px 24px !important;
-    font-size: 0.9rem !important;
-  }
-
-  .preferencias-content {
-    grid-template-columns: 1fr;
-  }
-
-  .perfil-grid {
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-  }
-
-  .checkbox-item,
-  .preference-field {
-    padding: 1.2rem 1.5rem;
-  }
-
-  .status-card {
-    padding: 1.5rem;
-    flex-direction: column;
-    text-align: center;
-    gap: 1rem;
-  }
-
-  .status-icon {
-    width: 50px;
-    height: 50px;
-    font-size: 2rem;
-  }
-}
-@media (max-width: 768px) {
-  .configuracion {
-    margin: 1rem auto;
     padding: 1.2rem;
     border-radius: 16px;
   }
@@ -554,10 +771,7 @@
     padding: 1.2rem 1.5rem !important;
   }
 
-  .configuracion
-    ::ng-deep
-    .mat-expansion-panel-content
-    .mat-expansion-panel-body {
+  .configuracion ::ng-deep .mat-expansion-panel-content .mat-expansion-panel-body {
     padding: 1.5rem !important;
   }
 
@@ -565,11 +779,60 @@
     justify-content: center;
   }
 
-  .configuracion ::ng-deep .mat-mdc-raised-button {
-    padding: 14px 28px !important;
-    font-size: 15px !important;
+  .status-card {
+    padding: 1rem;
+    flex-direction: row;
+    text-align: left;
+  }
+
+  .status-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 1.6rem;
+  }
+
+  .setup-steps {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .setup-actions,
+  .deactivate-actions {
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+
+  .btn-activate,
+  .btn-confirm,
+  .btn-deactivate {
+    width: 100%;
+    padding: 16px 24px !important;
+  }
+
+  .deactivate-warning {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .qr-display img {
+    width: 150px;
+    height: 150px;
+  }
+
+  .preferences-container {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .simple-notifications {
+    flex-direction: column;
+  }
+
+  .simple-item {
+    min-width: auto;
   }
 }
+
 @media (max-width: 480px) {
   .configuracion {
     margin: 0.5rem;
@@ -586,16 +849,6 @@
 
   .perfil-grid {
     gap: 0.8rem;
-  }
-
-  .configuracion ::ng-deep .mat-mdc-form-field .mat-mdc-input-element {
-    padding: 16px 14px !important;
-    font-size: 14px !important;
-  }
-
-  .configuracion .mat-mdc-raised-button {
-    padding: 12px 20px !important;
-    font-size: 14px !important;
   }
 
   .perfil-actions {

@@ -26,19 +26,40 @@ export class RegisterComponent {
     private authService: AuthService,
     private router: Router
   ) {
-    this.registerForm = this.fb.group({
-      nombre: ['', Validators.required],
-      correo: ['', [Validators.required, Validators.email]],
-      telefono: [
-        '',
-        [Validators.required, Validators.pattern(/^\+?\d{7,15}$/)],
-      ],
-      departamento: ['', Validators.required],
-      ciudad: ['', Validators.required],
-      contrasena: ['', [Validators.required, Validators.minLength(8)]],
-      confirmarContrasena: ['', Validators.required],
-      terms: [false, Validators.requiredTrue],
-    });
+    // 👉 Regex de contraseña fuerte (igual que el backend)
+    const strongPasswordRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+    this.registerForm = this.fb.group(
+      {
+        nombre: ['', Validators.required],
+        correo: ['', [Validators.required, Validators.email]],
+        telefono: [
+          '',
+          [Validators.required, Validators.pattern(/^\+?\d{7,15}$/)],
+        ],
+        departamento: ['', Validators.required],
+        ciudad: ['', Validators.required],
+        contrasena: [
+          '',
+          [Validators.required, Validators.pattern(strongPasswordRegex)], // 👈 aquí validamos igual que backend
+        ],
+        confirmarContrasena: ['', Validators.required],
+        terms: [false, Validators.requiredTrue],
+      },
+      {
+        validators: this.passwordsMatchValidator, // 👈 validador custom
+      }
+    );
+  }
+
+  // 👇 Validador personalizado para comparar contraseñas
+  private passwordsMatchValidator(form: FormGroup) {
+    const contrasena = form.get('contrasena')?.value;
+    const confirmarContrasena = form.get('confirmarContrasena')?.value;
+    return contrasena === confirmarContrasena
+      ? null
+      : { passwordsMismatch: true };
   }
 
   onSubmit() {
@@ -49,18 +70,15 @@ export class RegisterComponent {
 
     const { confirmarContrasena, terms, ...userData } = this.registerForm.value;
 
-    if (userData.contrasena !== confirmarContrasena) {
-      this.errorMessage = 'Las contraseñas no coinciden';
-      return;
-    }
-
     this.loading = true;
     this.errorMessage = null;
 
     this.authService.register(userData).subscribe({
       next: () => {
         this.loading = false;
-         this.router.navigate(['/verify-email'], { queryParams: { correo: userData.correo } });
+        this.router.navigate(['/verify-email'], {
+          queryParams: { correo: userData.correo },
+        });
       },
       error: (err) => {
         this.loading = false;

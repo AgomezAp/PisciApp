@@ -50,8 +50,6 @@ export class LoginComponent {
       this.authService.login(formValues).subscribe({
         next: (response) => {
           this.loading = false;
-          console.log('Respuesta de login:', response);
-
           if (response.requires2FA) {
             // Caso login con 2FA habilitado ⚡
             this.showTwofa = true; // flag UI

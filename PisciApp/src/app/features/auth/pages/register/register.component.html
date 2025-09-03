@@ -1,56 +1,189 @@
-<div class="register-container">
-  <h2>Crear usuario</h2>
+<div class="background">
+  <div class="register-container">
+    <h2>Crear usuario</h2>
 
-  <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
-    <div class="form-row">
-      <input type="text" placeholder="Tus nombres" formControlName="nombre" />
-      <input
-        type="email"
-        placeholder="tu@correo.com"
-        formControlName="correo"
-      />
-    </div>
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+      <div class="form-row">
+        <!-- 🔥 Contenedor para nombre -->
+        <div class="input-container">
+          <input
+            type="text"
+            placeholder="Tus nombres"
+            formControlName="nombre"
+          />
+          <div
+            *ngIf="
+              registerForm.get('nombre')?.hasError('required') &&
+              registerForm.get('nombre')?.touched
+            "
+            class="error"
+          >
+            El nombre es obligatorio.
+          </div>
+        </div>
 
-    <div class="form-row">
-      <input
-        type="tel"
-        placeholder="+57 3006821133"
-        formControlName="telefono"
-      />
-      <input
-        type="text"
-        placeholder="Risaralda"
-        formControlName="departamento"
-      />
-    </div>
+        <!-- 🔥 Contenedor para correo -->
+        <div class="input-container">
+          <input
+            type="email"
+            placeholder="tu@correo.com"
+            formControlName="correo"
+          />
+          <div
+            *ngIf="
+              registerForm.get('correo')?.hasError('required') &&
+              registerForm.get('correo')?.touched
+            "
+            class="error"
+          >
+            El correo es obligatorio.
+          </div>
+          <div
+            *ngIf="
+              registerForm.get('correo')?.hasError('email') &&
+              registerForm.get('correo')?.touched
+            "
+            class="error"
+          >
+            El correo no es válido.
+          </div>
+        </div>
+      </div>
 
-    <div class="form-row">
-      <input type="text" placeholder="Pereira" formControlName="ciudad" />
-    </div>
-    <div class="form-row">
-      <input
-        type="password"
-        placeholder="Crea una contraseña"
-        formControlName="contrasena"
-      />
-      <input
-        type="password"
-        placeholder="Confirma tu contraseña"
-        formControlName="confirmarContrasena"
-      />
-    </div>
+      <div class="form-row">
+        <!-- 🔥 Contenedor para teléfono -->
+        <div class="input-container">
+          <input
+            type="tel"
+            placeholder="+57 3006821133"
+            formControlName="telefono"
+          />
+          <div
+            *ngIf="
+              registerForm.get('telefono')?.hasError('required') &&
+              registerForm.get('telefono')?.touched
+            "
+            class="error"
+          >
+            El teléfono es obligatorio.
+          </div>
+          <div
+            *ngIf="
+              registerForm.get('telefono')?.hasError('pattern') &&
+              registerForm.get('telefono')?.touched
+            "
+            class="error"
+          >
+            El teléfono debe tener entre 7 y 15 dígitos (con o sin +).
+          </div>
+        </div>
 
-    <div class="terms">
-      <input type="checkbox" formControlName="terms" />
-      <label>Acepto los <a href="#">términos y condiciones</a></label>
-    </div>
+        <!-- 🔥 Contenedor para departamento -->
+        <div class="input-container">
+          <input
+            type="text"
+            placeholder="Risaralda"
+            formControlName="departamento"
+          />
+          <div
+            *ngIf="
+              registerForm.get('departamento')?.hasError('required') &&
+              registerForm.get('departamento')?.touched
+            "
+            class="error"
+          >
+            El departamento es obligatorio.
+          </div>
+        </div>
+      </div>
 
-    <button type="submit" [disabled]="registerForm.invalid || loading">
-      {{ loading ? "Guardando..." : "Guardar y continuar" }}
-    </button>
+      <div class="form-row">
+        <!-- 🔥 Contenedor para ciudad -->
+        <div class="input-container">
+          <input type="text" placeholder="Pereira" formControlName="ciudad" />
+          <div
+            *ngIf="
+              registerForm.get('ciudad')?.hasError('required') &&
+              registerForm.get('ciudad')?.touched
+            "
+            class="error"
+          >
+            La ciudad es obligatoria.
+          </div>
+        </div>
+      </div>
 
-    <div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
-  </form>
+      <div class="form-row">
+        <!-- 🔥 Contenedor para contraseña -->
+        <div class="input-container">
+          <input
+            type="password"
+            placeholder="Crea una contraseña"
+            formControlName="contrasena"
+          />
+          <div
+            *ngIf="
+              registerForm.get('contrasena')?.hasError('required') &&
+              registerForm.get('contrasena')?.touched
+            "
+            class="error"
+          >
+            La contraseña es obligatoria.
+          </div>
+          <div
+            *ngIf="
+              registerForm.get('contrasena')?.hasError('pattern') &&
+              registerForm.get('contrasena')?.touched
+            "
+            class="error"
+          >
+            La contraseña debe tener mínimo 8 caracteres, una mayúscula, una
+            minúscula, un número y un caracter especial.
+          </div>
+        </div>
 
-  <a href="/login" class="back-link">Volver al inicio de sesión</a>
+        <!-- 🔥 Contenedor para confirmar contraseña -->
+        <div class="input-container">
+          <input
+            type="password"
+            placeholder="Confirma tu contraseña"
+            formControlName="confirmarContrasena"
+          />
+          <div
+            *ngIf="
+              registerForm.hasError('passwordsMismatch') &&
+              registerForm.get('confirmarContrasena')?.touched
+            "
+            class="error"
+          >
+            Las contraseñas no coinciden.
+          </div>
+        </div>
+      </div>
+
+      <div class="terms">
+        <input type="checkbox" formControlName="terms" />
+        <label>Acepto los <a href="#">términos y condiciones</a></label>
+        <!-- Error términos -->
+        <div
+          *ngIf="
+            registerForm.get('terms')?.hasError('required') &&
+            registerForm.get('terms')?.touched
+          "
+          class="error"
+        >
+          Debes aceptar los términos y condiciones.
+        </div>
+      </div>
+
+      <button type="submit" [disabled]="registerForm.invalid || loading">
+        {{ loading ? "Guardando..." : "Guardar y continuar" }}
+      </button>
+
+      <!-- Error general -->
+      <div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
+    </form>
+
+    <a href="/login" class="back-link">Volver al inicio de sesión</a>
+  </div>
 </div>

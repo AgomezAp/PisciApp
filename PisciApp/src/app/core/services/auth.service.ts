@@ -15,21 +15,31 @@ import { ErrorService } from './error.service';
 export interface User {
   id: number;
   nombre: string;
-  email: string;
-  role: string;
+  correo: string;
+  rol: string;
   telefono?: string | null;
   twofa_enabled?: boolean;
   foto_perfil?: string | null;
   departamento?: string | null;
   ciudad?: string | null;
+  noti_alertas?: boolean | null;
+  noti_email?: boolean | null;
+  tema?: string | null;
+  idioma?: string | null;
 }
 
 interface JwtPayload {
   id: number;
   nombre: string;
-  email: string;
-  role: string;
+  correo: string;
+  telefono: string;
+  rol: string;
   exp: number;
+  twofa_enabled: boolean;
+  noti_email: boolean;
+  noti_alertas: boolean;
+  tema: string | null;
+  idioma: string | null;
 }
 
 @Injectable({
@@ -172,8 +182,14 @@ export class AuthService {
       const user: User = {
         id: decoded.id,
         nombre: decoded.nombre,
-        email: decoded.email,
-        role: decoded.role,
+        correo: decoded.correo,
+        telefono: decoded.telefono ?? null,
+        rol: decoded.rol,
+        twofa_enabled: decoded.twofa_enabled ?? false,
+        noti_email: decoded.noti_email ?? false,
+        noti_alertas: decoded.noti_alertas ?? false,
+        tema: decoded.tema ?? null,
+        idioma: decoded.idioma ?? null
       };
       this.currentUserSubject.next(user);
     } catch (err) {
@@ -185,4 +201,14 @@ export class AuthService {
   getCurrentUser(): User | null {
     return this.currentUserSubject.value;
   }
+  getProfile(): Observable<User> {
+  return this.http
+    .get<{ success: boolean; usuario: User }>(`${this.apiUrl}usuarios/perfil`, {
+      withCredentials: true
+    })
+    .pipe(
+      map((res) => res.usuario),
+      tap((usuario) => this.currentUserSubject.next(usuario))
+    );
+}
 }

@@ -24,7 +24,10 @@ interface UsuarioAttributes {
   pending_twofa_secret?: string | null;
   twofa_enabled?: boolean;
   backup_codes?: string | null; // JSON con array de códigos opcional
-
+  noti_email?: boolean | null;
+  noti_alertas?: boolean | null;
+  tema?: string | null;
+  idioma?: string | null;
   departamento?: string | null;
   ciudad?: string | null;
   eliminado?: boolean;
@@ -72,12 +75,15 @@ export class Usuario
   declare periodo_gracia_expira: Date | null;
   declare twofa_secret: string | null;
   declare eliminado: boolean;
-  // 👇 Declaración nueva
   declare departamento: string | null;
   declare ciudad: string | null;
   declare pending_twofa_secret?: string | null;
   declare twofa_enabled?: boolean;
   declare backup_codes?: string | null;
+  declare noti_email?: boolean | null;
+  declare noti_alertas?: boolean | null;
+  declare tema?: string | null;
+  declare idioma?: string | null;
   declare readonly createdAt: Date;
   declare readonly updatedAt: Date;
 }
@@ -120,6 +126,10 @@ Usuario.init(
     pending_twofa_secret: { type: DataTypes.STRING, allowNull: true },
     twofa_enabled: { type: DataTypes.BOOLEAN, defaultValue: false },
     backup_codes: { type: DataTypes.TEXT, allowNull: true }, // opcional: almacenar JSON
+    noti_email: { type: DataTypes.BOOLEAN, defaultValue: false },
+    noti_alertas: { type: DataTypes.BOOLEAN, defaultValue: false },
+    tema: { type: DataTypes.STRING, allowNull: true },
+    idioma: { type: DataTypes.STRING, allowNull: true },
   },
   {
     sequelize,

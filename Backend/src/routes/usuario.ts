@@ -6,6 +6,8 @@ import {
   verificar2FALogin,
   desactivar2FA,
   confirmar2FA,
+  actualizarPreferencias,
+  getProfile,
 } from "../controllers/usuario";
 import { verifyToken } from "../middlewares/verifyToken";
 
@@ -20,4 +22,8 @@ router.post("/auth/2fa/activar", verifyToken, activar2FA);
 router.post("/auth/2fa/confirmar", verifyToken, confirmar2FA);
 router.post("/auth/2fa/desactivar", verifyToken, desactivar2FA);
 router.post("/auth/2fa/verificar", verificar2FALogin);
+// routes/usuario.ts
+router.put("/preferencias", verifyToken, actualizarPreferencias);
+router.get("/perfil", verifyToken, getProfile);
+
 export default router;

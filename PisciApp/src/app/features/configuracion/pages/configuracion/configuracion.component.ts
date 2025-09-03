@@ -12,6 +12,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatSelectModule } from '@angular/material/select';
 import { NotificationService } from '../../../../core/services/notification.service';
+import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { PreferenciaService } from '../../../../core/services/preferencias.service';
 @Component({
   selector: 'app-configuracion',
   imports: [
@@ -19,11 +22,13 @@ import { NotificationService } from '../../../../core/services/notification.serv
     FormsModule,
     NavbarComponent,
     MatExpansionModule,
-    MatFormFieldModule, // 👈 Asegúrate de tener estos
+    MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
     MatCheckboxModule,
     MatSelectModule,
+    MatIconModule,
+    MatProgressSpinnerModule,
   ],
   standalone: true,
   templateUrl: './configuracion.component.html',
@@ -34,7 +39,9 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
 
   user: User | null = null; // 👈 usuario real desde el AuthService
   private sub!: Subscription;
-
+  isActivating2FA = false;
+  isConfirming2FA = false;
+  isDeactivating2FA = false;
   // otras preferencias
   notiEmail: boolean = false;
   notiAlertas: boolean = false;
@@ -46,16 +53,23 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
   constructor(
     private authService: AuthService,
     private twofaService: TwofaService,
-    private notification: NotificationService
+    private notification: NotificationService,
+    private preferenciaService: PreferenciaService
   ) {}
 
   ngOnInit(): void {
-    // me suscribo al usuario real
     this.sub = this.authService.currentUser$.subscribe((u) => {
       if (u) {
-        this.user = { ...u }; // clonar para edición local
+        this.user = { ...u };
+        this.notiEmail = u.noti_email ?? false;
+        this.notiAlertas = u.noti_alertas ?? false;
+        this.tema = u.tema ?? 'claro';
+        this.idioma = u.idioma ?? 'es';
       }
     });
+
+    // 👇 fuerza a traer siempre datos frescos desde backend
+    this.authService.getProfile().subscribe();
   }
 
   ngOnDestroy(): void {
@@ -75,6 +89,8 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
     // this.http.put(`${apiUrl}/users/${this.user.id}`, this.user)...
   }
   activar2FA() {
+    this.isActivating2FA = true;
+
     this.twofaService.activar().subscribe({
       next: (res) => {
         this.qrCodeUrl = res.qrCodeUrl;
@@ -82,12 +98,27 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
           'Escanea el código QR y confirma con tu app de autenticación.',
           '2FA activación'
         );
+        this.isActivating2FA = false;
       },
-      error: () => this.notification.error('Error al activar 2FA'),
+      error: (error) => {
+        this.notification.error('Error al activar 2FA');
+        this.isActivating2FA = false;
+        console.error('Error al activar 2FA:', error);
+      },
     });
   }
 
   confirmar2FA() {
+    // Validación básica
+    if (!this.tokenInput || this.tokenInput.length < 6) {
+      this.notification.error(
+        'Por favor ingresa un código de 6 dígitos válido.'
+      );
+      return;
+    }
+
+    this.isConfirming2FA = true;
+
     this.twofaService.confirmar(this.tokenInput).subscribe({
       next: (res) => {
         if (res.success) {
@@ -97,31 +128,111 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
           this.notification.success(
             'La verificación 2FA fue habilitada correctamente.'
           );
+          this.isConfirming2FA = false;
         } else {
           this.notification.error(
             'No se pudo confirmar 2FA, intenta de nuevo.'
           );
+          this.isConfirming2FA = false;
         }
       },
-      error: () => this.notification.error('El código ingresado no es válido.'),
+      error: (error) => {
+        this.notification.error('El código ingresado no es válido.');
+        this.isConfirming2FA = false;
+        console.error('Error al confirmar 2FA:', error);
+      },
     });
   }
 
   desactivar2FA() {
+    // Validación básica
+    if (!this.tokenInput || this.tokenInput.length < 6) {
+      this.notification.error(
+        'Por favor ingresa un código de 6 dígitos válido.'
+      );
+      return;
+    }
+
     this.notification.confirm('¿Seguro que deseas desactivar el 2FA?', () => {
+      this.isDeactivating2FA = true;
+
       this.twofaService.desactivar(this.tokenInput).subscribe({
         next: (res) => {
           if (res.success) {
             this.user!.twofa_enabled = false;
             this.tokenInput = '';
-            this.notification.success('2FA desactivado correctamente.');
+            this.notification.success(
+              res.message || '2FA desactivado correctamente.'
+            );
           } else {
-            this.notification.error('No se pudo desactivar el 2FA.');
+            this.notification.error(
+              res.message || 'No se pudo desactivar el 2FA.'
+            );
           }
+          this.isDeactivating2FA = false;
         },
-        error: () =>
-          this.notification.error('El código ingresado no es válido.'),
+        error: (error) => {
+          this.notification.error('El código ingresado no es válido.');
+          this.isDeactivating2FA = false;
+          console.error('Error al desactivar 2FA:', error);
+        },
       });
     });
+  }
+
+  cancelar2FA() {
+    this.qrCodeUrl = null;
+    this.tokenInput = '';
+    this.isActivating2FA = false;
+    this.isConfirming2FA = false;
+
+    this.notification.info('Proceso de activación 2FA cancelado.');
+  }
+
+  cancelarDesactivacion() {
+    this.tokenInput = '';
+    this.isDeactivating2FA = false;
+
+    this.notification.info('Cancelaste la desactivación del 2FA.');
+  }
+  guardarNotificaciones() {
+    this.preferenciaService
+      .actualizarPreferencias({
+        noti_email: this.notiEmail,
+        noti_alertas: this.notiAlertas,
+      })
+      .subscribe({
+        next: (res) => {
+          if (res.success) {
+            this.notification.success(res.message);
+          } else {
+            this.notification.error(res.message);
+          }
+        },
+        error: (err) => {
+          this.notification.error('Error al guardar notificaciones');
+          console.error(err);
+        },
+      });
+  }
+  guardarPreferencias() {
+    this.preferenciaService
+      .actualizarPreferencias({
+        tema: this.tema,
+        idioma: this.idioma,
+      })
+      .subscribe({
+        next: (res) => {
+          if (res.success) {
+            this.notification.success(res.message);
+          } else {
+            this.notification.error(res.message);
+          }
+        },
+        error: (err) => {
+          this.notification.error('Error al guardar preferencias');
+          console.error(err);
+        },
+      });
   }
 }

@@ -257,13 +257,15 @@ export const loginHandler = async (req: Request, res: Response) => {
     expires_at: addDays(new Date(), 7),
   });
 
+  // Guardar refresh en cookie
   res.cookie("refresh_token", refreshToken, {
     httpOnly: true,
-    secure: false, // true en prod
+    secure: false, // true en producción
     sameSite: "lax",
     maxAge: 1000 * 60 * 60 * 24 * 7,
   });
 
+  // 🚨 Aquí antes SOLO devolvías accessToken
   return res.json({
     message: "Inicio de sesión exitoso",
     usuario: {
@@ -366,7 +368,7 @@ export const refreshTokenHandler = async (req: Request, res: Response) => {
   res.cookie("refresh_token", newRefresh, {
     httpOnly: true,
     secure: false, // ⚠️ en producción -> true
-    sameSite: "lax",
+    sameSite: "none",
     maxAge: 1000 * 60 * 60 * 24 * 7,
   });
   console.log("🍪 Refresh token actualizado en cookie");
@@ -475,7 +477,7 @@ export const verificar2FALogin = async (req: Request, res: Response) => {
   console.log("userId:", userId);
   console.log("token ingresado:", token);
   console.log("secret almacenado:", usuario.twofa_secret);
-  
+
   const verified = speakeasy.totp.verify({
     secret: usuario.twofa_secret,
     encoding: "base32",
@@ -519,7 +521,10 @@ export const desactivar2FA = async (req: Request, res: Response) => {
 
   const usuario = await Usuario.findByPk(userId);
   if (!usuario || !usuario.twofa_secret) {
-    return res.status(400).json({ message: "El usuario no tiene 2FA activo" });
+    return res.status(400).json({
+      success: false,
+      message: "El usuario no tiene 2FA activo",
+    });
   }
 
   const verified = speakeasy.totp.verify({
@@ -530,14 +535,21 @@ export const desactivar2FA = async (req: Request, res: Response) => {
   });
 
   if (!verified) {
-    return res.status(401).json({ message: "Código inválido" });
+    return res.status(401).json({
+      success: false,
+      message: "Código inválido",
+    });
   }
 
   usuario.twofa_secret = null;
   usuario.twofa_enabled = false;
   await usuario.save();
 
-  res.json({ message: "2FA desactivado correctamente" });
+  return res.json({
+    success: true,
+    message: "2FA desactivado correctamente",
+    twofa_enabled: false,
+  });
 };
 export const confirmar2FA = async (req: Request, res: Response) => {
   const userId = (req as any).usuario.id;
@@ -593,4 +605,68 @@ export const logoutHandler = async (req: Request, res: Response) => {
 
   res.clearCookie("refresh_token");
   return res.json({ message: "Sesión cerrada" });
+};
+
+// controllers/usuario.ts
+export const actualizarPreferencias = async (req: Request, res: Response) => {
+  const userId = (req as any).usuario.id;
+  const { noti_email, noti_alertas, tema, idioma } = req.body;
+
+  try {
+    const usuario = await Usuario.findByPk(userId);
+    if (!usuario) {
+      return res.status(404).json({ success: false, message: "Usuario no encontrado" });
+    }
+
+    usuario.noti_email = noti_email;
+    usuario.noti_alertas = noti_alertas;
+    usuario.tema = tema;
+    usuario.idioma = idioma;
+    await usuario.save();
+
+    return res.json({
+      success: true,
+      message: "Preferencias actualizadas correctamente",
+      noti_email: usuario.noti_email,
+      noti_alertas: usuario.noti_alertas,
+      tema: usuario.tema,
+      idioma: usuario.idioma,
+    });
+  } catch (error) {
+    console.error("Error guardando preferencias:", error);
+    return res.status(500).json({ success: false, message: "Error en servidor" });
+  }
+};
+// controllers/usuario.ts
+export const getProfile = async (req: Request, res: Response) => {
+  const userId = (req as any).usuario.id;
+
+  try {
+    const usuario = await Usuario.findByPk(userId, {
+      attributes: [
+        "id",
+        "nombre",
+        "correo",
+        "rol",
+        "telefono",
+        "twofa_enabled",
+        "noti_email",
+        "noti_alertas",
+        "tema",
+        "idioma",
+      ],
+    });
+
+    if (!usuario) {
+      return res.status(404).json({ success: false, message: "Usuario no encontrado" });
+    }
+
+    return res.json({
+      success: true,
+      usuario, // 👈 siempre actualizado desde BD
+    });
+  } catch (error) {
+    console.error("Error al traer perfil:", error);
+    return res.status(500).json({ success: false, message: "Error en servidor" });
+  }
 };
