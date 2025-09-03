@@ -219,57 +219,67 @@ export const loginConGoogle = async (req: Request, res: Response) => {
 };
 
 export const loginHandler = async (req: Request, res: Response) => {
-  const { correo, contraseña } = req.body;
+  const { correo, contrasena } = req.body;
 
-    // 👉 Buscar usuario por correo
-    const usuario = await Usuario.findOne({ where: { correo } });
-    if (!usuario) {
-      return res.status(401).json({ error: "Credenciales inválidas" });
-    }
+  const usuario = await Usuario.findOne({ where: { correo } });
+  if (!usuario) {
+    return res.status(401).json({ error: "Credenciales inválidas" });
+  }
 
-    // 👉 Verificar correo confirmado
-    if (!usuario.is_verified) {
-      return res.status(400).json({ message: "Debes verificar tu correo" });
-    }
+  if (!usuario.is_verified) {
+    return res.status(400).json({ message: "Debes verificar tu correo" });
+  }
 
-  const valid = await bcrypt.compare(contraseña, usuario.contraseña || "");
+  const valid = await bcrypt.compare(contrasena, usuario.contrasena || "");
   if (!valid) {
     return res.status(401).json({ error: "Credenciales inválidas" });
   }
 
-  // Generamos tokens (Access + Refresh)
+  // ✅ SI TIENE 2FA activo, pedir el código primero
+  if (usuario.twofa_enabled) {
+    return res.json({
+      requires2FA: true,
+      userId: usuario.id,
+      message: "Se requiere validación de 2FA",
+    });
+  }
+
+  // ✅ Si no tiene 2FA, login normal con tokens
   const { accessToken, refreshToken } = await generateTokens(usuario);
 
-  // Mandamos el refresh en cookie HttpOnly
-  res.cookie("refresh_token", refreshToken, {
-    httpOnly: true,
-    secure: true,
-    sameSite: "strict",
-    maxAge: 1000 * 60 * 60 * 24 * 7, // 7 días
+  // Guardar refresh token en DB hasheado
+  const hash = await argon2.hash(refreshToken);
+  await Sesion.create({
+    user_id: usuario.id,
+    refresh_token_hash: hash,
+    is_revoked: false,
+    created_at: new Date(),
+    expires_at: addDays(new Date(), 7),
   });
 
-    // 👉 Respuesta
-    return res.json({
-      message: "Inicio de sesión exitoso",
-      usuario: {
-        id: usuario.id,
-        nombre: usuario.nombre,
-        correo: usuario.correo,
-        rol: usuario.rol,
-      },
-      accessToken,
-    });
-  } catch (error) {
-    console.error("❌ Error en loginHandler:", error);
-    res.status(500).json({ message: "Error interno en el servidor" });
-  }
+  res.cookie("refresh_token", refreshToken, {
+    httpOnly: true,
+    secure: false, // true en prod
+    sameSite: "lax",
+    maxAge: 1000 * 60 * 60 * 24 * 7,
+  });
+
+  return res.json({
+    message: "Inicio de sesión exitoso",
+    usuario: {
+      id: usuario.id,
+      nombre: usuario.nombre,
+      correo: usuario.correo,
+      rol: usuario.rol,
+    },
+    accessToken,
+  });
 };
 
 export const refreshTokenHandler = async (req: Request, res: Response) => {
-  // 1. Log de entrada
   console.log("📩 Se llamó a /auth/refresh");
 
-  // 2. Ver qué refresh token llega (de cookie o body)
+  // 1. Extraer refresh token desde cookie o body
   const refreshToken = req.cookies.refresh_token || req.body.refreshToken;
   console.log(
     "🔑 Refresh token recibido:",
@@ -281,31 +291,13 @@ export const refreshTokenHandler = async (req: Request, res: Response) => {
     return res.status(400).json({ error: "Refresh token requerido" });
   }
 
-  // 3. Log: buscar en DB
+  // 2. Buscar sesión activa en DB
   const sesiones = await Sesion.findAll({ where: { is_revoked: false } });
   console.log(`🔎 Se encontraron ${sesiones.length} sesiones activas en DB`);
-  console.log(
-    "📋 Sesiones activas en bruto:",
-    JSON.stringify(sesiones, null, 2)
-  );
-  console.log(
-    "📋 Sesiones con toJSON():",
-    sesiones.map((s) => s.toJSON())
-  );
   let stored: Sesion | null = null;
-  for (const sesion of sesiones) {
-    console.log("➡️ Sesión encontrada en DB:", {
-      id: sesion.id,
-      user_id: sesion.user_id,
-      hash_preview: sesion.refresh_token_hash?.substring(0, 25) + "...",
-      expires_at: sesion.expires_at,
-      is_revoked: sesion.is_revoked,
-    });
 
-    if (!sesion.refresh_token_hash) {
-      console.warn(`⚠️ Sesión ${sesion.id} con hash vacío, se descarta`);
-      continue;
-    }
+  for (const sesion of sesiones) {
+    if (!sesion.refresh_token_hash) continue;
 
     try {
       const match = await argon2.verify(
@@ -326,9 +318,7 @@ export const refreshTokenHandler = async (req: Request, res: Response) => {
   }
 
   if (!stored) {
-    console.warn(
-      "🚫 No se encontró sesión que coincida con el refresh token recibido"
-    );
+    console.warn("🚫 No se encontró sesión que coincida con el refresh token");
     return res.status(403).json({ error: "Refresh token inválido" });
   }
 
@@ -336,27 +326,23 @@ export const refreshTokenHandler = async (req: Request, res: Response) => {
     `✅ Match encontrado en sesión id=${stored.id}, user_id=${stored.user_id}`
   );
 
-  // 4. Validar expiración
+  // 3. Validar expiración
   if (stored.expires_at < new Date()) {
-    console.warn(
-      `⏰ Refresh expirado en sesión id=${stored.id}, fecha=${stored.expires_at}`
-    );
+    console.warn(`⏰ Refresh expirado en sesión id=${stored.id}`);
     stored.is_revoked = true;
     await stored.save();
     return res.status(403).json({ error: "Refresh token expirado" });
   }
 
-  // 5. Rotación: revocar viejo
+  // 4. Revocar la sesión usada (rotación de refresh)
   stored.is_revoked = true;
   await stored.save();
   console.log(`♻️ Sesión ${stored.id} revocada (refresh usado)`);
 
-  // 6. Emitir nuevos tokens
+  // 5. Emitir nuevos tokens
   const usuario = await Usuario.findByPk(stored.user_id);
   if (!usuario) {
-    console.error(
-      `🚨 Usuario no encontrado asociado a la sesión id=${stored.id}`
-    );
+    console.error(`🚨 Usuario no encontrado para sesión id=${stored.id}`);
     return res.status(403).json({ error: "Usuario no válido" });
   }
 
@@ -365,15 +351,27 @@ export const refreshTokenHandler = async (req: Request, res: Response) => {
   );
   console.log(`🎟️ Nuevos tokens generados para user_id=${usuario.id}`);
 
-  // 7. Enviar cookie nueva
-  res.cookie("refresh_token", refreshToken, {
+  // 6. Guardar el nuevo refresh en DB
+  const newHash = await argon2.hash(newRefresh);
+  await Sesion.create({
+    user_id: usuario.id,
+    refresh_token_hash: newHash,
+    is_revoked: false,
+    created_at: new Date(),
+    expires_at: addDays(new Date(), 7), // refresh válido otra semana
+  });
+  console.log("💾 Nueva sesión guardada con refresh token rotado");
+
+  // 7. Enviar el nuevo refresh token en cookie
+  res.cookie("refresh_token", newRefresh, {
     httpOnly: true,
-    secure: false, // ⚠️ true sólo en HTTPS (producción)
-    sameSite: "lax", // ⚠️ usa lax, no strict en local dev
+    secure: false, // ⚠️ en producción -> true
+    sameSite: "lax",
     maxAge: 1000 * 60 * 60 * 24 * 7,
   });
   console.log("🍪 Refresh token actualizado en cookie");
 
+  // 8. Devolver el access token
   return res.json({ accessToken });
 };
 
@@ -389,7 +387,7 @@ export const solicitarRecuperacion = async (req: Request, res: Response) => {
     process.env.JWT_SECRET || "secret",
     { expiresIn: "15m" }
   );
-  const resetLink = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
+  const resetLink = `${process.env.FRONTEND_URL}/reiniciar-contraseña/${resetToken}`;
   await enviarCorreo({
     to: usuario.correo,
     subject: "Recupera tu contrasena",
@@ -463,7 +461,7 @@ export const activar2FA = async (req: Request, res: Response) => {
     success: true,
     message: "2FA activado",
     qrCodeUrl,
-    twofa_enabled: true,
+    twofa_enabled: false, // aún no confirmado
   });
 };
 
@@ -471,8 +469,57 @@ export const verificar2FALogin = async (req: Request, res: Response) => {
   const { userId, token } = req.body;
 
   const usuario = await Usuario.findByPk(userId);
-  if (!usuario || !usuario.twofa_secret)
+  if (!usuario || !usuario.twofa_secret) {
     return res.status(400).json({ message: "Usuario sin 2FA habilitado" });
+  }
+  console.log("userId:", userId);
+  console.log("token ingresado:", token);
+  console.log("secret almacenado:", usuario.twofa_secret);
+  const verified = speakeasy.totp.verify({
+    secret: usuario.twofa_secret,
+    encoding: "base32",
+    token,
+    window: 1,
+  });
+  console.log("Resultado verificación 2FA:", verified);
+  if (!verified) {
+    return res.status(401).json({ message: "Código 2FA inválido" });
+  }
+
+  const { accessToken, refreshToken } = await generateTokens(usuario);
+
+  // Guardar refresh token en DB hasheado
+  const hash = await argon2.hash(refreshToken);
+  await Sesion.create({
+    user_id: usuario.id,
+    refresh_token_hash: hash,
+    is_revoked: false,
+    created_at: new Date(),
+    expires_at: addDays(new Date(), 7),
+  });
+
+  res.cookie("refresh_token", refreshToken, {
+    httpOnly: true,
+    secure: false,
+    sameSite: "lax",
+    maxAge: 1000 * 60 * 60 * 24 * 7,
+  });
+
+  res.json({
+    success: true,
+    message: "2FA validado correctamente",
+    accessToken,
+    twofa_enabled: true,
+  });
+};
+export const desactivar2FA = async (req: Request, res: Response) => {
+  const userId = (req as any).usuario.id;
+  const { token } = req.body;
+
+  const usuario = await Usuario.findByPk(userId);
+  if (!usuario || !usuario.twofa_secret) {
+    return res.status(400).json({ message: "El usuario no tiene 2FA activo" });
+  }
 
   const verified = speakeasy.totp.verify({
     secret: usuario.twofa_secret,
@@ -481,27 +528,48 @@ export const verificar2FALogin = async (req: Request, res: Response) => {
     window: 1,
   });
 
-  if (!verified)
-    return res.status(401).json({ message: "Código 2FA inválido" });
+  if (!verified) {
+    return res.status(401).json({ message: "Código inválido" });
+  }
 
-  // emitir un nuevo token JWT como señal de login válido
-  const accessToken = jwt.sign(
-    { id: usuario.id, correo: usuario.correo, rol: usuario.rol },
-    process.env.JWT_SECRET || "secret",
-    { expiresIn: "15m" }
-  );
-  const refreshToken = jwt.sign(
-    { id: usuario.id },
-    process.env.JWT_REFRESH_SECRET || "refresh_secret",
-    { expiresIn: "7d" }
-  );
+  usuario.twofa_secret = null;
+  usuario.twofa_enabled = false;
+  await usuario.save();
+
+  res.json({ message: "2FA desactivado correctamente" });
+};
+export const confirmar2FA = async (req: Request, res: Response) => {
+  const userId = (req as any).usuario.id;
+  const { token } = req.body;
+
+  const usuario = await Usuario.findByPk(userId);
+  if (!usuario || !usuario.pending_twofa_secret) {
+    return res
+      .status(400)
+      .json({ message: "No hay 2FA pendiente de activación" });
+  }
+
+  const verified = speakeasy.totp.verify({
+    secret: usuario.pending_twofa_secret,
+    encoding: "base32",
+    token,
+    window: 1,
+  });
+
+  if (!verified) {
+    return res.status(401).json({ message: "Código inválido" });
+  }
+
+  // Confirmar activación
+  usuario.twofa_secret = usuario.pending_twofa_secret;
+  usuario.pending_twofa_secret = null;
+  usuario.twofa_enabled = true;
+  await usuario.save();
 
   res.json({
     success: true,
-    message: "2FA validado correctamente",
-    accessToken,
-    refreshToken,
-    twofa_enabled: false,
+    message: "2FA habilitado correctamente",
+    twofa_enabled: true,
   });
 };
 export const logoutHandler = async (req: Request, res: Response) => {

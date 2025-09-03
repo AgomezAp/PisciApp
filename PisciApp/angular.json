@@ -96,6 +96,9 @@
         }
       }
     }
+  },
+  "cli": {
+    "analytics": "741ef411-31c7-4162-870b-cce90b1bf747"
   }
 }{
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
