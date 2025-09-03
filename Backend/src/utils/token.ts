@@ -24,7 +24,6 @@ export async function generateTokens(user: Usuario) {
   const accessToken = jwt.sign(
     {
       id: user.id,
-      nombre: (user as any).nombre,
       correo: (user as any).correo,
       rol: (user as any).rol,
     },
