@@ -4,11 +4,11 @@ import { verifyToken } from '../middlewares/verifyToken';
 
 const router = Router();
 
-router.post("/crear", verifyToken, crearCiclo);
-router.post("/cerrar", verifyToken, cerrarCiclo);
-router.post("/bajas", verifyToken, actualizarBajas);
-router.post("/alimento", verifyToken, ingresarAlimento);
-router.post("/quimico", verifyToken, ingresarQuimico);
-router.post("/cambiar-tanque", verifyToken, cambiarTanque);
+router.post("/ciclo/crear", verifyToken, crearCiclo);
+router.post("/ciclo/cerrar", verifyToken, cerrarCiclo);
+router.post("/ciclo/bajas", verifyToken, actualizarBajas);
+router.post("/ciclo/alimento", verifyToken, ingresarAlimento);
+router.post("/ciclo/quimico", verifyToken, ingresarQuimico);
+router.post("/ciclo/cambiar-tanque", verifyToken, cambiarTanque);
 
 export default router;

@@ -1,23 +1,29 @@
 import { Request, Response } from "express";
 
 import { MedicionesCalidad, Tanque } from "../models/tanque";
+import sequelize from "../database/connection";
 
-export const crearTanque = async (req: Request, res: Response) => {
+export const crearTanque = async (req: Request, res: Response): Promise<any> => {
+    const tra = await sequelize.transaction();
     try {
         const { volumen, nombre, tipoTanque, usuario_id } = req.body;
         if (!volumen || !tipoTanque || !usuario_id){
-            return res.status(400).json({ error: "Todos los campos son requeridos." });
+            await tra.rollback();
+            res.status(400).json({ error: "Todos los campos son requeridos." });
         }
         let nombreFinal = nombre;
         if (!nombreFinal) {
-            const ultimoTanque = await Tanque.findOne({ where: { usuario_id }, order: [['id', 'DESC']] });
-            const siguienteId = ultimoTanque ? ultimoTanque.id + 1 : 1;
+            const cantidadTanques = await Tanque.count({ where: { usuario_id }});
+            const siguienteId = cantidadTanques + 1;
             nombreFinal = `tanque ${siguienteId}`;
         }
-        const nuevoTanque = await Tanque.create({nombre: nombreFinal, volumen, tipoTanque, disponible: true, usuario_id});
+        const nuevoTanque = await Tanque.create(
+            {nombre: nombreFinal, volumen, tipoTanque, disponible: true, usuario_id},
+            { transaction: tra}
+        );
 
         await MedicionesCalidad.create({
-            tanque_id: nuevoTanque.id,
+            tanque_id: nuevoTanque.dataValues.id,
             ph: 0,
             oxigeno_disuelto: 0,
             temperatura: 0,
@@ -25,33 +31,45 @@ export const crearTanque = async (req: Request, res: Response) => {
             amoniaco: 0,
             nitratos: 0,
             dureza: 0,
-            salinidad: 0 })
-        return res.status(201).json(nuevoTanque);
+            salinidad: 0 }, { transaction: tra});
+        await tra.commit();
+        res.status(201).json(nuevoTanque);
     } catch (error) {
-        return res.status(500).json({error: "Error interno del servidor"});
+        await tra.rollback();
+        console.error(error);
+        res.status(500).json({error: "Error interno del servidor"});
     }
 }
 
 export const eliminarTanque = async (req: Request, res: Response) => {
+    const tra = await sequelize.transaction(); 
     try {
         const {tanque_id, usuario_id} = req.body;
         if (!tanque_id || !usuario_id) {
+            await tra.rollback();
             return res.status(400).json({ error: "tanque_id y usuario_id son requeridos." });
         }
         const tanque = await Tanque.findOne({ where: { id: tanque_id, usuario_id } });
         if (!tanque) {
+            await tra.rollback();
             return res.status(404).json({ error: "Tanque no encontrado." });
         }
-        await tanque.destroy();
+        await MedicionesCalidad.destroy({where: {tanque_id}, transaction: tra})
+        await tanque.destroy({transaction: tra});
+        await tra.commit();
         return res.status(200).json({ message: "Tanque eliminado correctamente." });
     } catch (error) {
+        await tra.rollback();
+        console.error(error);
         return res.status(500).json({error: "Error interno del servidor"});
     }
 }
 
-export const editarTanque = async (req: Request, res: Response) => {
+export const editarTanque = async (req: Request, res: Response): Promise<any> => {
+    const tanque_id = req.params.id;
+    const { usuario_id, nombre, volumen, tipoTanque, disponible } = req.body;
     try {
-        const { tanque_id, usuario_id, nombre, volumen, tipoTanque, disponible } = req.body;
+        console.log("Editar tanque:", tanque_id, usuario_id);
         if (!tanque_id || !usuario_id) {
             return res.status(400).json({ error: "tanque_id y usuario_id son requeridos." });
         }
@@ -59,14 +77,18 @@ export const editarTanque = async (req: Request, res: Response) => {
         if (!tanque) {
             return res.status(404).json({ error: "Tanque no encontrado." });
         }
-        if (nombre !== undefined) tanque.nombre = nombre;
-        if (volumen !== undefined) tanque.volumen = volumen;
-        if (tipoTanque !== undefined) tanque.tipoTanque = tipoTanque;
-        if (disponible !== undefined) tanque.disponible = disponible;
+        console.log(tanque.dataValues)
+        tanque.nombre =  nombre || tanque.nombre;
+        tanque.volumen =  volumen || tanque.volumen;
+        tanque.tipoTanque =  tipoTanque || tanque.tipoTanque;
+        tanque.disponible =  disponible || tanque.disponible;
+        console.log(tanque.dataValues)
+
         await tanque.save();
-        return res.status(200).json(tanque);
+        res.status(200).json(tanque);
     } catch (error) {
-        return res.status(500).json({error: "Error interno del servidor"});
+        console.error(error);
+        res.status(500).json({error: "Error interno del servidor"});
     }
 }
 

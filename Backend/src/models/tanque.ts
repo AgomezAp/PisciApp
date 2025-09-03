@@ -16,7 +16,7 @@ Tanque.init(
     id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
     nombre: { type: DataTypes.STRING, allowNull: false},
     volumen: { type: DataTypes.FLOAT, allowNull: true },
-    tipoTanque: {type: DataTypes.FLOAT, allowNull: true},
+    tipoTanque: {type: DataTypes.STRING, allowNull: true},
     disponible: { type: DataTypes.BOOLEAN, allowNull: false },
     usuario_id: {
       type: DataTypes.INTEGER, references: {model: "usuarios", key: "id"}, allowNull: false,

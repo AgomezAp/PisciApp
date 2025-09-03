@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import { Ciclo, Alimento, Quimico, Bajas, CicloTanque, MovimientoTanque } from "../models/ciclo";
 import { Tanque } from "../models/tanque";
-import { error } from "console";
 
 export const crearCiclo = async (req: Request, res: Response) => {
     try {

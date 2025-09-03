@@ -4,8 +4,8 @@ import { verifyToken } from "../middlewares/verifyToken";
 
  const router = Router();
 
-router.post("/crear", verifyToken, crearTanque);
-router.delete("/eliminar/:id", verifyToken, eliminarTanque);
+router.post("/crear",verifyToken, crearTanque);
+router.delete("/eliminar", verifyToken, eliminarTanque);
 router.put("/editar/:id", verifyToken, editarTanque);
 router.put("/mediciones/:tanque_id", verifyToken, actualizarMediciones);
 
