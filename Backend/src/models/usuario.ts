@@ -24,10 +24,13 @@ interface UsuarioAttributes {
   pending_twofa_secret?: string | null;
   twofa_enabled?: boolean;
   backup_codes?: string | null; // JSON con array de códigos opcional
+<<<<<<< HEAD
   noti_email?: boolean | null;
   noti_alertas?: boolean | null;
   tema?: string | null;
   idioma?: string | null;
+=======
+>>>>>>> dilian
 
   departamento?: string | null;
   ciudad?: string | null;
@@ -76,15 +79,22 @@ export class Usuario
   declare periodo_gracia_expira: Date | null;
   declare twofa_secret: string | null;
   declare eliminado: boolean;
+<<<<<<< HEAD
+=======
+  // 👇 Declaración nueva
+>>>>>>> dilian
   declare departamento: string | null;
   declare ciudad: string | null;
   declare pending_twofa_secret?: string | null;
   declare twofa_enabled?: boolean;
   declare backup_codes?: string | null;
+<<<<<<< HEAD
   declare noti_email?: boolean | null;
   declare noti_alertas?: boolean | null;
   declare tema?: string | null;
   declare idioma?: string | null;
+=======
+>>>>>>> dilian
   declare readonly createdAt: Date;
   declare readonly updatedAt: Date;
 }

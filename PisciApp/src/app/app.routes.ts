@@ -43,6 +43,12 @@ export const routes: Routes = [
         './features/configuracion/pages/configuracion/configuracion.component'
       ).then((m) => m.ConfiguracionComponent),
   },
-
-  { path: '**', redirectTo: 'login' },
+  {
+    path: 'producto',
+    loadComponent: () =>
+      import(
+        './features/producto/producto.component'
+      ).then((m) => m.ProductoComponent),
+  }
+  //{ path: '**', redirectTo: 'login' },
 ];
