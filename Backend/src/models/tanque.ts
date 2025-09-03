@@ -18,7 +18,9 @@ Tanque.init(
     volumen: { type: DataTypes.FLOAT, allowNull: true },
     tipoTanque: {type: DataTypes.STRING, allowNull: true},
     disponible: { type: DataTypes.BOOLEAN, allowNull: false },
-    usuario_id: { type: DataTypes.INTEGER, allowNull: false, references: { model: "usuarios", key: "id" } }
+    usuario_id: {
+      type: DataTypes.INTEGER, references: {model: "usuarios", key: "id"}, allowNull: false,
+    },
   },
   {
     sequelize,

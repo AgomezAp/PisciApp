@@ -28,6 +28,7 @@ interface UsuarioAttributes {
   noti_alertas?: boolean | null;
   tema?: string | null;
   idioma?: string | null;
+
   departamento?: string | null;
   ciudad?: string | null;
   eliminado?: boolean;

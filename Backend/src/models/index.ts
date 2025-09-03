@@ -55,6 +55,8 @@ Ciclo.belongsToMany(Tanque, { through: CicloTanque, foreignKey: "ciclo_id" });
 Tanque.hasMany(MedicionesCalidad, {foreignKey: "tanque_id"});
 MedicionesCalidad.belongsTo(Tanque, {foreignKey: "tanque_id"});
 Tanque.belongsToMany(Ciclo, { through: CicloTanque, foreignKey: "tanque_id" });
+Tanque.belongsTo(Usuario, { foreignKey: "usuario_id"});
+Usuario.hasMany(Tanque, {foreignKey: "usuario_id"});
 
 // Relaciones inversas
 Alimento.belongsTo(Ciclo, {foreignKey: 'ciclo_id'});

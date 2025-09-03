@@ -181,14 +181,17 @@ html, body {
     padding: 15px;
   }
 
+
   .login-card {
     padding: 30px 25px;
     max-width: 100%;
   }
 
+
   .login-card .logo {
     width: 150px;
   }
+
 
   .login-card h2 {
     font-size: 24px;

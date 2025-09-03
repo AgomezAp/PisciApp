@@ -298,6 +298,7 @@ export const refreshTokenHandler = async (req: Request, res: Response) => {
   console.log(`🔎 Se encontraron ${sesiones.length} sesiones activas en DB`);
   let stored: Sesion | null = null;
 
+
   for (const sesion of sesiones) {
     if (!sesion.refresh_token_hash) continue;
 
@@ -579,6 +580,11 @@ export const confirmar2FA = async (req: Request, res: Response) => {
   usuario.twofa_enabled = true;
   await usuario.save();
 
+  res.json({
+    success: true,
+    message: "2FA habilitado correctamente",
+    twofa_enabled: true,
+  });
   res.json({
     success: true,
     message: "2FA habilitado correctamente",
