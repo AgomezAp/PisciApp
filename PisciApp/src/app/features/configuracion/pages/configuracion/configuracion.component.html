@@ -11,11 +11,13 @@
 
       <form class="perfil-form" #f="ngForm" (ngSubmit)="actualizarPerfil()">
         <div *ngIf="user" class="perfil-grid">
+          <!-- Nombre -->
           <mat-form-field appearance="outline">
             <mat-label>Nombre completo</mat-label>
             <input matInput [(ngModel)]="user.nombre" name="nombre" />
           </mat-form-field>
 
+          <!-- Correo -->
           <mat-form-field appearance="outline">
             <mat-label>Correo electrónico</mat-label>
             <input
@@ -26,6 +28,7 @@
             />
           </mat-form-field>
 
+          <!-- Teléfono -->
           <mat-form-field appearance="outline">
             <mat-label>Teléfono</mat-label>
             <input
@@ -35,6 +38,44 @@
               name="telefono"
             />
           </mat-form-field>
+
+          <!-- Ciudad -->
+          <mat-form-field appearance="outline">
+            <mat-label>Ciudad</mat-label>
+            <input matInput [(ngModel)]="user.ciudad" name="ciudad" />
+          </mat-form-field>
+
+          <!-- Departamento -->
+          <mat-form-field appearance="outline">
+            <mat-label>Departamento</mat-label>
+            <input
+              matInput
+              [(ngModel)]="user.departamento"
+              name="departamento"
+            />
+          </mat-form-field>
+
+          <!-- Foto de perfil -->
+          <div class="foto-perfil-upload">
+            <label for="fotoPerfil" class="foto-label">
+              <img
+                *ngIf="user.foto_perfil; else defaultAvatar"
+                [src]="user.foto_perfil"
+                alt="Foto de perfil"
+              />
+              <ng-template #defaultAvatar>
+                <mat-icon>account_circle</mat-icon>
+              </ng-template>
+            </label>
+            <input
+              type="file"
+              id="fotoPerfil"
+              name="foto_perfil"
+              (change)="onFotoPerfilChange($event)"
+              hidden
+            />
+            <p>Haz clic en el icono para cambiar tu foto de perfil</p>
+          </div>
         </div>
 
         <div class="perfil-actions">

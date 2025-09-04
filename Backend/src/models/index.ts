@@ -6,6 +6,7 @@ import { Tarea } from "./tarea";
 import { Producto } from "./producto";
 import { Inventario } from "./inventario";
 import { Compra } from "./compra";
+import { Sesion } from "./session";
 
 // =========================
 // DEFINICIÓN DE RELACIONES
@@ -64,6 +65,8 @@ Quimico.belongsTo(Ciclo, {foreignKey: 'ciclo_id'});
 MovimientoTanque.belongsTo(Ciclo, {foreignKey: 'ciclo_id'});
 Bajas.belongsTo(Ciclo, {foreignKey: 'ciclo_id'});
 
+Usuario.hasMany(Sesion, { foreignKey: "user_id", as: "sesiones" });
+Sesion.belongsTo(Usuario, { foreignKey: "user_id", as: "usuario" });
 // ==========================
 // EXPORTAR TODOS LOS MODELOS
 // ==========================

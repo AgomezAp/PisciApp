@@ -5,6 +5,7 @@ import nodemailer from "nodemailer";
 import { Op } from "sequelize";
 import { enviarCorreo } from "./emailService";
 import { getTrialEndingEmailTemplate } from "../templates/emailTemplates";
+import { Sesion } from "../models/session";
 
 export const iniciarCronJobs = () => {
   // ----------------------------------------------
@@ -82,4 +83,19 @@ export const iniciarCronJobs = () => {
       console.log(`✅ ${cantidad} usuarios marcados como eliminados`);
     }
   });
+  // ----------------------------------------------
+  // 3. LIMPIEZA de usuarios sesiones una vez al mes
+  // ----------------------------------------------
+  cron.schedule("0 0 1 * *", async () => {
+  console.log("🧹 Corriendo limpieza de sesiones...");
+  await Sesion.destroy({
+    where: {
+      [Op.or]: [
+        { is_revoked: true },
+        { expires_at: { [Op.lt]: new Date() } }
+      ]
+    }
+  });
+  console.log("✅ Sesiones viejas eliminadas");
+});
 };

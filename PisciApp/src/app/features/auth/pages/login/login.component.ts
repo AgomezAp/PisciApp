@@ -10,7 +10,7 @@ import {
 import { AuthService } from '../../../../core/services/auth.service';
 import { Router } from '@angular/router';
 import { TwofaService } from '../../../../core/services/twofa.service';
-
+declare const google: any;
 @Component({
   selector: 'app-login',
   standalone: true,
@@ -35,6 +35,23 @@ export class LoginComponent {
       correo: ['', [Validators.required, Validators.email]],
       contrasena: ['', [Validators.required, Validators.minLength(6)]],
       rememberMe: [false],
+    });
+  }
+  ngOnInit(): void {
+    this.loadGoogleScript().then(() => {
+      // inicializa Google solo cuando el script ya está cargado
+      google.accounts.id.initialize({
+        client_id: '686048642614-rn8l8btsrt7cfg16chpukrmk39n6g3vn.apps.googleusercontent.com', // ⚡ pon aquí tu client_id
+        callback: (resp: any) => this.handleGoogleResponse(resp),
+      });
+
+      google.accounts.id.renderButton(document.getElementById('google-btn'), {
+        theme: 'outline', // outline | filled_blue | filled_black
+        size: 'large', // small | medium | large
+        text: 'continue_with', // o 'signin_with'
+        locale: 'es', // para el idioma
+        shape: 'rectangular', // o pill
+      });
     });
   }
 
@@ -120,5 +137,36 @@ export class LoginComponent {
       delete errors['backend'];
       contrasenaControl.setErrors(Object.keys(errors).length ? errors : null);
     }
+  }
+  loadGoogleScript(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const id = 'google-script';
+      if (document.getElementById(id)) {
+        resolve();
+        return;
+      }
+      const script = document.createElement('script');
+      script.src = 'https://accounts.google.com/gsi/client';
+      script.id = id;
+      script.async = true;
+      script.defer = true;
+      script.onload = () => resolve();
+      script.onerror = (err) => reject(err);
+      document.head.appendChild(script);
+    });
+  }
+
+  // 👇 callback cuando Google devuelve el idToken
+  handleGoogleResponse(response: any) {
+    console.log('✅ Google ID Token recibido:', response.credential);
+
+    this.authService.loginWithGoogle(response.credential).subscribe({
+      next: () => {
+        this.router.navigate(['/inventory']);
+      },
+      error: (err) => {
+        console.error('❌ Error login con Google:', err);
+      },
+    });
   }
 }

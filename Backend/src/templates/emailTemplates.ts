@@ -1,5 +1,9 @@
 // ✅ Verificación con código
-export const getVerificationEmailTemplate = (nombre: string, code: string) => `
+export const getVerificationEmailTemplate = (
+  nombre: string,
+  code: string,
+  verifyLink: string
+) => `
 <html>
   <body style="font-family:Arial;background:#f4f4f7;">
     <div style="background:#fff;padding:20px;max-width:600px;margin:auto;border-radius:8px;">
@@ -10,14 +14,29 @@ export const getVerificationEmailTemplate = (nombre: string, code: string) => `
       <h2 style="color:#333;">👋 Bienvenido a Pisci App, ${nombre}</h2>
       <p style="font-size:14px;color:#555;">Tu código de verificación es:</p>
       <h1 style="color:#007bff;text-align:center;margin:20px 0;">${code}</h1>
+
+      <p style="text-align:center;margin:20px 0;">
+        <a href="${verifyLink}"
+           style="background:#007bff;color:#fff;padding:12px 20px;border-radius:6px;text-decoration:none;display:inline-block;">
+          Verificar contraseña
+        </a>
+      </p>
+
+      <p style="font-size:13px;color:#999;text-align:center;">
+        Si el botón no funciona, copia y pega la siguiente URL en tu navegador:<br/>
+        <a href="${verifyLink}" style="color:#007bff;text-decoration:underline;">${verifyLink}</a>
+      </p>
+
       <p style="font-size:13px;color:#999;">Expira en 15 minutos.</p>
     </div>
   </body>
 </html>
 `;
-
 // ✅ Link de restablecer contraseña
-export const getResetPasswordEmailTemplate = (nombre: string, resetLink: string) => `
+export const getResetPasswordEmailTemplate = (
+  nombre: string,
+  resetLink: string
+) => `
 <html>
   <body style="font-family:Arial;background:#f4f4f7;">
     <div style="background:#fff;padding:20px;border-radius:8px;max-width:600px;margin:auto;">
@@ -57,7 +76,11 @@ export const getResetConfirmationEmailTemplate = (nombre: string) => `
 `;
 
 // ✅ Notificación de login
-export const getLoginNotificationEmailTemplate = (nombre: string, fecha: string, ip?: string) => `
+export const getLoginNotificationEmailTemplate = (
+  nombre: string,
+  fecha: string,
+  ip?: string
+) => `
 <html>
   <body style="font-family:Arial,sans-serif;background:#f4f4f7;">
     <div style="max-width:600px;margin:auto;background:#fff;padding:20px;border-radius:8px;">
