@@ -44,6 +44,20 @@ export const routes: Routes = [
       ).then((m) => m.ConfiguracionComponent),
   },
   {
+    path: 'inicio',
+    loadComponent: () =>
+      import(
+        './features/inicio/inicio.component'
+      ).then((m) => m.InicioComponent),
+  },
+  {
+    path: 'estanques',
+    loadComponent: () =>
+      import(
+        './features/tanques/tanques.component'
+      ).then((m) => m.TanquesComponent),
+  },
+  {
     path: 'producto',
     loadComponent: () =>
       import(

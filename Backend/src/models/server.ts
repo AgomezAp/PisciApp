@@ -14,9 +14,9 @@ import rateLimit from "express-rate-limit";
 import RInventario from "../routes/inventario";
 import RProducto from "../routes/producto";
 import RTanque from "../routes/tanque";
-/* 
-/* 
 import RCiclo from "../routes/ciclo";
+/* 
+/* 
 import RTarea from "../routes/tarea";
 import RCompra from "../routes/compra"; */
 
@@ -63,8 +63,8 @@ class Server {
     this.app.use("/inventario", RInventario);
     this.app.use("/tanque", RTanque);
     this.app.use("/productos", RProducto);
-    /*     this.app.use("/usuarios", RUsuario);
     this.app.use("/ciclos", RCiclo);
+    /*     this.app.use("/usuarios", RUsuario);
     this.app.use("/tareas", RTarea);
     this.app.use("/inventario", RInventario);
     this.app.use("/compras", RCompra); */

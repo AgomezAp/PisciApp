@@ -39,5 +39,9 @@ export class CicloService {
     return this.http.post(`${this.apiUrl}ciclo/cambiar-tanque`, data)
     .pipe(catchError(error => this.errorService.handleError(error)));
   }
+  obtenerCicloPorUsuario(usuario_id: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}ciclos/obtener/${usuario_id}`)
+      .pipe(catchError(error => this.errorService.handleError(error)));
+  }
 
 }

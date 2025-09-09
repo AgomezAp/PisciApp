@@ -28,4 +28,8 @@ export class TanqueService {
     return this.http.put(`${this.apiUrl}tanque/mediciones/${tanque_id}`, data)
     .pipe(catchError(error => this.errorService.handleError(error)));
   }
+  obtenerTanquesPorUsuario(usuario_id: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}tanque/obtener/${usuario_id}`)
+      .pipe(catchError(error => this.errorService.handleError(error)));
+  }
 }
