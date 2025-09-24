@@ -13,6 +13,7 @@ export const Tanque = sequelize.define(
     usuario_id: {
       type: DataTypes.INTEGER, references: {model: "usuarios", key: "id"}, allowNull: false,
     },
+    tanque_id_usuario: { type: DataTypes.INTEGER, allowNull: false},
   },
   {
     timestamps: false,
@@ -35,5 +36,6 @@ export const MedicionesCalidad = sequelize.define(
   },
   {
     timestamps: true,
+    updatedAt: false,
   }
 )

@@ -1,0 +1,137 @@
+<app-navbar></app-navbar>
+<main class="container">
+    <section class="head">
+        <h1>Reporte diario</h1>
+        <p class="muted">
+            Registra diariamente calidad del agua, alimentación y mortalidad. Los datos se guardan.
+        </p>
+    </section>
+
+    <section class="card">
+        <form id="formReporte" class="form-grid">
+            <div class="group">
+                <h2>Estanque</h2>
+                <div class="grid2">
+                    <label>
+                        Selecciona el estanque
+                        <select [(ngModel)]="tanque_id" id="estanque" name="estanque" (change)="onTanqueChange()">
+                            <option value="" disabled selected>Selecciona un estanque</option>
+                            <option *ngFor="let tanque of tanques" [value]="tanque.id">{{getTanqueNombre(tanque.id)}}
+                            </option>
+                        </select>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Calidad del agua -->
+            <div class="group" id="grp-agua">
+                <h2>1. Calidad del agua</h2>
+                <div class="grid4">
+                    <label>Temperatura (°C)
+                        <input type="number" step="0.1" name="temperatura" [(ngModel)]="calidadAgua['temperatura']"
+                            [placeholder]="ultimaMedicion?.temperatura ?? ''" [disabled]="!tanque_id" />
+                        <span [ngClass]="getSemaforo('temperatura', calidadAgua['temperatura'] ?? 0)">●</span>
+                    </label>
+                    <label>Oxígeno disuelto (mg/L)
+                        <input type="number" step="0.1" name="oxigeno" [(ngModel)]="calidadAgua['oxigeno']"
+                            [placeholder]="ultimaMedicion?.oxigeno ?? ''" [disabled]="!tanque_id" />
+                        <span [ngClass]="getSemaforo('oxigeno', calidadAgua['oxigeno'] ?? 0)">●</span>
+                    </label>
+                    <label>pH
+                        <input type="number" step="0.1" name="ph" [(ngModel)]="calidadAgua['ph']"
+                            [placeholder]="ultimaMedicion?.ph ?? ''" [disabled]="!tanque_id" />
+                        <span [ngClass]="getSemaforo('ph', calidadAgua['ph'] ?? 0)">●</span>
+                    </label>
+                    <label>Nitritos (mg/L)
+                        <input type="number" step="0.01" name="nitritos" [(ngModel)]="calidadAgua['nitritos']"
+                            [placeholder]="ultimaMedicion?.nitritos ?? ''" [disabled]="!tanque_id" />
+                        <span [ngClass]="getSemaforo('nitritos', calidadAgua['nitritos'] ?? 0)">●</span>
+                    </label>
+                    <label>Amoniaco (mg/L)
+                        <input type="number" step="0.01" name="amoniaco" [(ngModel)]="calidadAgua['amoniaco']"
+                            [placeholder]="ultimaMedicion?.amoniaco ?? ''" [disabled]="!tanque_id" />
+                        <span [ngClass]="getSemaforo('amoniaco', calidadAgua['amoniaco'] ?? 0)">●</span>
+                    </label>
+                    <label>Nitratos (mg/L)
+                        <input type="number" step="0.01" name="nitratos" [(ngModel)]="calidadAgua['nitratos']"
+                            [placeholder]="ultimaMedicion?.nitratos ?? ''" [disabled]="!tanque_id" />
+                        <span [ngClass]="getSemaforo('nitratos', calidadAgua['nitratos'] ?? 0)">●</span>
+                    </label>
+                    <label>Dureza (ppm)
+                        <input type="number" step="1" name="dureza" [(ngModel)]="calidadAgua['dureza']"
+                            [placeholder]="ultimaMedicion?.dureza ?? ''" [disabled]="!tanque_id" />
+                        <span [ngClass]="getSemaforo('dureza', calidadAgua['dureza'] ?? 0)">●</span>
+                    </label>
+                    <label>Salinidad (ppt)
+                        <input type="number" step="0.01" name="salinidad" [(ngModel)]="calidadAgua['salinidad']"
+                            [placeholder]="ultimaMedicion?.salinidad ?? ''" [disabled]="!tanque_id" />
+                        <span [ngClass]="getSemaforo('salinidad', calidadAgua['salinidad'] ?? 0)">●</span>
+                    </label>
+                </div>
+                <div class="semaforo" id="sem-agua"></div>
+                <div class="global-chip" *ngIf="tieneDatosCalidadAgua()" [ngClass]="{
+                    'critico': getCalidadAguaGlobal() === 'Crítico',
+                    'vigilancia': getCalidadAguaGlobal() === 'Vigilancia',
+                    'optimo': getCalidadAguaGlobal() === 'Óptimo'
+                }">Calidad del agua {{getCalidadAguaGlobal()}}</div>
+                <div class="tips" id="tips-agua" hidden></div>
+                <div class="info-card" *ngIf="tieneDatosCalidadAgua()">
+                    <div class="info-title">Plan De Acción</div>
+                    <ul class="info-list">
+                        <li *ngFor="let param of calidadAguaParams">
+                            <b>{{ param | titlecase }}:</b>
+                            {{ getPlanAccion(param, getSemaforo(param, calidadAgua[param] ?? 0))}}
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Alimentación -->
+            <div class="group">
+                <h2>2. Alimentación</h2>
+                <div class="grid4">
+                    <label>
+                        Nombre
+                        <input type="text" name="alimentoNombre" [(ngModel)]="nuevoAlimento.nombre" required />
+                    </label>
+                    <label>
+                        Costo ($)
+                        <input type="number" name="alimentoCosto" [(ngModel)]="nuevoAlimento.costo" required />
+                    </label>
+                    <label>
+                        Cantidad (kg)
+                        <input type="number" step="0.01" name="alimentoCantidad" [(ngModel)]="nuevoAlimento.cantidad"
+                            required />
+                    </label>
+                    <label>
+                        Descripción
+                        <input type="text" name="alimentoDescripcion" [(ngModel)]="nuevoAlimento.descripcion" />
+                    </label>
+                </div>
+            </div>
+
+            <!-- Mortalidad -->
+            <div class="group">
+                <h2>3. Mortalidad</h2>
+                <div class="grid2">
+                    <label>
+                        Número de peces muertos en estanque seleccionado
+                        <input type="number" [(ngModel)]="nuevoBajas.cantidad" name="cantidad" required />
+                    </label>
+                    <label>
+                        Causas aparentes
+                        <br><br>
+                        <input type="text" id="mortalidadCausa" placeholder="Ej. Estrés térmico, bajo O2, enfermedad" />
+                    </label>
+                </div>
+            </div>
+
+            <!-- Botones -->
+            <div class="form-actions">
+                <button class="btn" type="button" (click)="guardarDiario()" [disabled]="!tanque_id">Guardar</button>
+                <button class="btn btn-outline" type="button" id="btnHistorial">Ver historial</button>
+            </div>
+        </form>
+    </section>
+
+</main>

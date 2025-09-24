@@ -58,11 +58,25 @@ export const routes: Routes = [
       ).then((m) => m.TanquesComponent),
   },
   {
+    path: 'ciclos',
+    loadComponent: () =>
+      import(
+        './features/ciclos/ciclos.component'
+      ).then((m) => m.CiclosComponent),
+  },
+  {
+    path: 'diario',
+    loadComponent: () =>
+      import(
+        './features/diario/diario.component'
+      ).then((m) => m.DiarioComponent),
+  },
+  {
     path: 'producto',
     loadComponent: () =>
       import(
         './features/producto/producto.component'
       ).then((m) => m.ProductoComponent),
-  }
-  //{ path: '**', redirectTo: 'login' },
+  },
+  { path: '**', redirectTo: 'login' },
 ];

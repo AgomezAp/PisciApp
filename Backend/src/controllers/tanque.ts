@@ -10,27 +10,21 @@ export const crearTanque = async (req: Request, res: Response): Promise<any> => 
             await tra.rollback();
             res.status(400).json({ error: "Todos los campos son requeridos." });
         }
+
+        const ultimo_id_usuario = await Tanque.max('tanque_id_usuario', {
+            where: {usuario_id},
+            transaction: tra,
+        });
+        const siguienteId = (Number(ultimo_id_usuario) || 0) + 1;
         let nombreFinal = nombre;
         if (!nombreFinal) {
-            const cantidadTanques = await Tanque.count({ where: { usuario_id }});
-            const siguienteId = cantidadTanques + 1;
             nombreFinal = `tanque ${siguienteId}`;
         }
         const nuevoTanque = await Tanque.create(
-            {nombre: nombreFinal, volumen, tipoTanque, disponible: true, usuario_id},
+            {nombre: nombreFinal, volumen, tipoTanque, disponible: true, usuario_id, tanque_id_usuario: siguienteId},
             { transaction: tra}
         );
 
-        await MedicionesCalidad.create({
-            tanque_id: nuevoTanque.dataValues.id,
-            ph: 0,
-            oxigeno_disuelto: 0,
-            temperatura: 0,
-            nitritos: 0,
-            amoniaco: 0,
-            nitratos: 0,
-            dureza: 0,
-            salinidad: 0 }, { transaction: tra});
         await tra.commit();
         res.status(201).json(nuevoTanque);
     } catch (error) {
@@ -64,7 +58,12 @@ export const obtenerTanque = async (req: Request, res: Response): Promise<any> =
         if (!usuario_id) {
             res.status(400).json({ error: "usuario_id es requerido." });
         }
-        const tanque = await Tanque.findAll({ where: { usuario_id } });
+        const tanque = await Tanque.findAll({
+            where: { usuario_id },
+            include: [
+                {model: MedicionesCalidad, as: "mediciones"}
+            ]
+        });
         if (!tanque) {
             res.status(404).json({ error: "Tanques no encontrados." });
         }
@@ -172,6 +171,32 @@ export const actualizarMediciones = async (req: Request, res: Response): Promise
         await medicion.update(camposActualizar);
         res.status(200).json(medicion);
     } catch (error) {
+        return res.status(500).json({error:"Error interno del servidor"});
+    }
+}
+
+export const nuevaMedicion = async (req: Request, res: Response): Promise<any> => {
+    try {
+        const tanque_id = req.params.tanque_id;
+        const { ph, oxigeno_disuelto, temperatura, nitritos,
+        amoniaco, nitratos, dureza, salinidad} = req.body;
+        if (!tanque_id) {
+            return res.status(400).json({error: "tanque_id es requerido."});
+        }
+        const nuevaMedicion = await MedicionesCalidad.create({
+            tanque_id,
+            ph,
+            oxigeno_disuelto,
+            temperatura,
+            nitritos,
+            amoniaco,
+            nitratos,
+            dureza,
+            salinidad
+        });
+        return res.status(201).json(nuevaMedicion);
+    } catch (error) {
+        console.error(error)
         return res.status(500).json({error:"Error interno del servidor"});
     }
 }

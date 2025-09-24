@@ -1,0 +1,139 @@
+.tanques-lista {
+  display: flex;
+  gap: 12px;
+  margin: 18px 0;
+  flex-wrap: wrap;
+}
+
+.tanque-item {
+  background: #e0f7fa;
+  border-radius: 10px;
+  padding: 12px 18px;
+  cursor: pointer;
+  border: 2px solid #0097a7;
+  min-width: 180px;
+  transition: box-shadow 0.2s, border-color 0.2s;
+}
+
+.tanque-item.seleccionado {
+  border-color: #00796b;
+  box-shadow: 0 2px 8px rgba(0,151,167,0.12);
+}
+
+.tanque-nombre {
+  font-weight: bold;
+  color: #00796b;
+  font-size: 1.08rem;
+  margin-bottom: 4px;
+}
+
+.tanque-detalle {
+  color: #0097a7;
+  font-size: 0.97rem;
+}
+
+.disponible {
+  color: #388e3c;
+  font-weight: 600;
+}
+
+.no-disponible {
+  color: #d32f2f;
+  font-weight: 600;
+}
+
+.tanques-carrusel {
+  max-width: 900px;
+  margin: 20px auto 0 auto;
+  padding: 0 10px;
+}
+
+.tanques-carrusel h2 {
+  margin-bottom: 12px;
+  color: #00796b;
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.carrusel-lista {
+  display: flex;
+  gap: 18px;
+  overflow-x: auto;
+  padding-bottom: 12px;
+  scrollbar-width: thin;
+  scrollbar-color: #0097a7 #e0f7fa;
+}
+
+.carrusel-lista::-webkit-scrollbar {
+  height: 8px;
+}
+.carrusel-lista::-webkit-scrollbar-thumb {
+  background: #0097a7;
+  border-radius: 8px;
+}
+.carrusel-lista::-webkit-scrollbar-track {
+  background: #e0f7fa;
+  border-radius: 8px;
+}
+
+.carrusel-item {
+  min-width: 180px;
+  max-width: 220px;
+  background: #e0f7fa;
+  border-radius: 12px;
+  padding: 14px 16px;
+  cursor: pointer;
+  border: 2px solid #0097a7;
+  box-shadow: 0 2px 8px rgba(0,151,167,0.08);
+  transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.carrusel-item.seleccionado {
+  background: #b2ebf2;
+  border-color: #00796b;
+  box-shadow: 0 4px 16px rgba(0,151,167,0.15);
+}
+
+.carrusel-item b {
+  color: #00796b;
+  font-size: 1.08rem;
+}
+
+.carrusel-azul {
+  background: #e0f7fa !important;
+  border-color: #0097a7 !important;
+}
+
+.carrusel-rojo {
+  background: #ffebee !important;
+  border-color: #d32f2f !important;
+}
+
+.disponible {
+  color: #388e3c;
+  font-weight: 600;
+}
+
+.no-disponible {
+  color: #d32f2f;
+  font-weight: 600;
+}
+
+/* Responsive */
+@media (max-width: 700px) {
+  .carrusel-item {
+    min-width: 140px;
+    max-width: 170px;
+    padding: 10px 8px;
+    font-size: 0.95rem;
+  }
+  .tanques-carrusel {
+    max-width: 98vw;
+    padding: 0 2vw;
+  }
+}

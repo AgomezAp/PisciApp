@@ -24,8 +24,13 @@ export class TanqueService {
     return this.http.put(`${this.apiUrl}tanque/editar/${id}`, data)
     .pipe(catchError(error => this.errorService.handleError(error)));
   }
-  actualizarMediciones(tanque_id: number, data: any): Observable<any> {
+  crearMediciones(tanque_id: number, data: any): Observable<any> {
     return this.http.put(`${this.apiUrl}tanque/mediciones/${tanque_id}`, data)
+    .pipe(catchError(error => this.errorService.handleError(error)));
+  }
+  
+  obtenerMedicionesTanque(tanque_id: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}tanque/obtenermed/${tanque_id}`)
     .pipe(catchError(error => this.errorService.handleError(error)));
   }
   obtenerTanquesPorUsuario(usuario_id: number): Observable<any> {
