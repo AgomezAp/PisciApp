@@ -29,15 +29,16 @@ class Server {
 
   constructor() {
     this.app = express();
-    this.app.use(helmet());
-    this.app.use((req, res, next) => {
-      // 👇 Cambiá tudominio.com por el dominio real de tu frontend Angular
-      res.setHeader(
-        "Content-Security-Policy",
-        "default-src 'self' http://localhost:4200 https://tudominio.com" // CAMBIAR ESTO POR LA URL DE PRODUCCIÓN
-      );
-      next();
-    });
+    this.app.use(
+      helmet.contentSecurityPolicy({
+        directives: {
+          defaultSrc: ["'self'"],
+          imgSrc: ["'self'", "http://localhost:3010", "data:", "blob:"], // imágenes locales y base64
+          scriptSrc: ["'self'", "http://localhost:4200"],
+          styleSrc: ["'self'", "http://localhost:4200", "'unsafe-inline'"],
+        },
+      })
+    );
     this.port = process.env.PORT!;
     this.middlewares();
     this.router();

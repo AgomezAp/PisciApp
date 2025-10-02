@@ -6,6 +6,7 @@ import { Tarea } from "./tarea";
 import { Producto } from "./producto";
 import { Inventario } from "./inventario";
 import { Compra } from "./compra";
+import { Sesion } from "./session";
 
 // =========================
 // DEFINICIÓN DE RELACIONES
@@ -67,6 +68,8 @@ CicloTanque.belongsTo(Ciclo, { foreignKey: "ciclo_id" });
 CicloTanque.belongsTo(Tanque, { foreignKey: "tanque_id" });
 Ciclo.belongsToMany(Tanque, { through: CicloTanque, foreignKey: "ciclo_id", as: "tanques_ciclo" });
 Tanque.belongsToMany(Ciclo, { through: CicloTanque, foreignKey: "tanque_id", as: "ciclos_tanque" });
+Usuario.hasMany(Sesion, { foreignKey: "user_id", as: "sesiones" });
+Sesion.belongsTo(Usuario, { foreignKey: "user_id", as: "usuario" });
 // ==========================
 // EXPORTAR TODOS LOS MODELOS
 // ==========================

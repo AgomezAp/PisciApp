@@ -179,7 +179,9 @@
       <button type="submit" [disabled]="registerForm.invalid || loading">
         {{ loading ? "Guardando..." : "Guardar y continuar" }}
       </button>
-
+      <div class="google-login">
+        <div id="google-btn"></div>
+      </div>
       <!-- Error general -->
       <div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
     </form>

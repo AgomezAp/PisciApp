@@ -71,9 +71,16 @@
         <label for="rememberMe">Recordarme</label>
       </div>
 
-      <button type="submit" [disabled]="loginForm.invalid || loading">
+      <button
+        class="login-btn"
+        type="submit"
+        [disabled]="loginForm.invalid || loading"
+      >
         {{ loading ? "Ingresando..." : "Ingresar" }}
       </button>
+      <div class="google-login">
+        <div id="google-btn"></div>
+      </div>
     </form>
 
     <!-- 🔐 SEGUNDO PASO: VERIFICACIÓN 2FA -->

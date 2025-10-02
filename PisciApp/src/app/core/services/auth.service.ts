@@ -147,6 +147,9 @@ export class AuthService {
     localStorage.removeItem('accessToken');
     sessionStorage.removeItem('accessToken');
     this.currentUserSubject.next(null);
+
+    console.log('🚪 Cierre de sesión desde frontend, notificando backend...');
+
     return this.http
       .post(`${this.apiUrl}auth/logout`, {}, { withCredentials: true })
       .pipe(
@@ -189,7 +192,7 @@ export class AuthService {
         noti_email: decoded.noti_email ?? false,
         noti_alertas: decoded.noti_alertas ?? false,
         tema: decoded.tema ?? null,
-        idioma: decoded.idioma ?? null
+        idioma: decoded.idioma ?? null,
       };
       this.currentUserSubject.next(user);
     } catch (err) {
@@ -202,13 +205,33 @@ export class AuthService {
     return this.currentUserSubject.value;
   }
   getProfile(): Observable<User> {
-  return this.http
-    .get<{ success: boolean; usuario: User }>(`${this.apiUrl}usuarios/perfil`, {
-      withCredentials: true
-    })
-    .pipe(
-      map((res) => res.usuario),
-      tap((usuario) => this.currentUserSubject.next(usuario))
-    );
-}
+    return this.http
+      .get<{ success: boolean; usuario: User }>(
+        `${this.apiUrl}usuarios/perfil`,
+        {
+          withCredentials: true,
+        }
+      )
+      .pipe(
+        map((res) => res.usuario),
+        tap((usuario) => this.currentUserSubject.next(usuario))
+      );
+  }
+  loginWithGoogle(idToken: string): Observable<any> {
+    return this.http
+      .post<any>(
+        `${this.apiUrl}auth/google`,
+        { idToken },
+        { withCredentials: true }
+      )
+      .pipe(
+        tap((response) => {
+          if (response.accessToken) {
+            localStorage.setItem('accessToken', response.accessToken);
+            this.loadUserFromToken();
+          }
+        }),
+        catchError((error) => this.errorService.handleError(error))
+      );
+  }
 }

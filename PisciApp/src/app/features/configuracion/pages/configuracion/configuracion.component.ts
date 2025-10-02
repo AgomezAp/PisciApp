@@ -15,6 +15,7 @@ import { NotificationService } from '../../../../core/services/notification.serv
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { PreferenciaService } from '../../../../core/services/preferencias.service';
+import { UsuarioService } from '../../../../core/services/usuario.service';
 @Component({
   selector: 'app-configuracion',
   imports: [
@@ -54,7 +55,8 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private twofaService: TwofaService,
     private notification: NotificationService,
-    private preferenciaService: PreferenciaService
+    private preferenciaService: PreferenciaService,
+    private usuarioService: UsuarioService
   ) {}
 
   ngOnInit(): void {
@@ -82,12 +84,6 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
     this.activeTab = tab;
   }
 
-  // método de guardar cambios (ejemplo)
-  actualizarPerfil() {
-    console.log('Datos actualizados:', this.user);
-    // aquí deberías llamar a un servicio que pegue al backend:
-    // this.http.put(`${apiUrl}/users/${this.user.id}`, this.user)...
-  }
   activar2FA() {
     this.isActivating2FA = true;
 
@@ -234,5 +230,39 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
           console.error(err);
         },
       });
+  }
+  actualizarPerfil() {
+    if (!this.user) return;
+
+    this.usuarioService
+      .updateProfile({
+        nombre: this.user.nombre,
+        telefono: this.user.telefono,
+        ciudad: this.user.ciudad,
+        departamento: this.user.departamento,
+        foto_perfil: this.user.foto_perfil,
+      })
+      .subscribe({
+        next: (res) => {
+          this.notification.success('Perfil actualizado correctamente');
+          this.authService.getProfile().subscribe(); // ⚡ refresca datos en frontend
+        },
+        error: (err) => {
+          this.notification.error('Error al actualizar perfil');
+          console.error(err);
+        },
+      });
+  }
+  onFotoPerfilChange(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      this.usuarioService.subirFotoPerfil(file).subscribe({
+        next: (res) => {
+          this.user!.foto_perfil = res.url; // se actualiza a la URL del servidor
+          this.notification.success('Foto actualizada correctamente');
+        },
+        error: () => this.notification.error('Error subiendo foto'),
+      });
+    }
   }
 }
