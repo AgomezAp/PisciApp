@@ -1,48 +1,48 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, catchError } from 'rxjs';
+import { environment } from '../../../environments/environment';
+import { ErrorService } from './error.service';
 
-// Definimos la interfaz para tipar los productos
 export interface Producto {
   id?: number;
   nombre: string;
   precio: number;
-  cuotas: number;
-  imagen: string;
-  envio: string;
-  ubicacion: string;
+  stock: number;
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProductoService {
-  private apiUrl = 'http://localhost:3000/api/productos'; // URL de tu backend
+  private apiUrl = `${environment.apiUrl}productos`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private errorService: ErrorService) {}
 
-  // Obtener todos los productos
-  getProductos(): Observable<Producto[]> {
-    return this.http.get<Producto[]>(this.apiUrl);
+  // 👇 Ajustamos el tipo de respuesta
+  getProductos(): Observable<{ data: Producto[] }> {
+    return this.http.get<{ data: Producto[] }>(`${this.apiUrl}/ver-productos`)
+      .pipe(catchError(error => this.errorService.handleError(error)));
   }
+ /* getProductos(): Observable<{ message: string; producto: Producto[] }> {
+  return this.http.get<{ message: string; producto: Producto[] }>(
+    `${this.apiUrl}/ver-productos` 
+  ).pipe(catchError(error => this.errorService.handleError(error)));
+} */
 
-  // Obtener un producto por ID
-  getProducto(id: number): Observable<Producto> {
-    return this.http.get<Producto>(`${this.apiUrl}/${id}`);
-  }
-
-  // Crear un nuevo producto
+  
   addProducto(producto: Producto): Observable<Producto> {
-    return this.http.post<Producto>(this.apiUrl, producto);
+    return this.http.post<Producto>(`${this.apiUrl}/crear`, producto)
+      .pipe(catchError(error => this.errorService.handleError(error)));
   }
 
-  // Actualizar un producto
-  updateProducto(id: number, producto: Producto): Observable<Producto> {
-    return this.http.put<Producto>(`${this.apiUrl}/${id}`, producto);
+  updateProducto(producto: Producto): Observable<Producto> {
+    return this.http.put<Producto>(`${this.apiUrl}/actualizar`, producto)
+      .pipe(catchError(error => this.errorService.handleError(error)));
   }
+  deleteProdqaucto(id: number): Observable<{ message: string }> {
+  return this.http.delete<{ message: string }>(`${this.apiUrl}/eliminar/${id}`)
+    .pipe(catchError(error => this.errorService.handleError(error)));
+}
 
-  // Eliminar un producto
-  deleteProducto(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`);
-  }
 }

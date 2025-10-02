@@ -14,6 +14,8 @@ import rateLimit from "express-rate-limit";
 import RInventario from "../routes/inventario";
 import RProducto from "../routes/producto";
 import RTanque from "../routes/tanque";
+import compraRoutes from "../routes/compra";
+import productoRoutes from "../routes/producto";
 /* 
 /* 
 import RCiclo from "../routes/ciclo";
@@ -63,11 +65,14 @@ class Server {
     this.app.use("/inventario", RInventario);
     this.app.use("/tanque", RTanque);
     this.app.use("/productos", RProducto);
-    /*     this.app.use("/usuarios", RUsuario);
+    this.app.use("/api/compras", compraRoutes);
+    this.app.use("/api/productos", productoRoutes);
+    /*this.app.use("/usuarios", RUsuario);
     this.app.use("/ciclos", RCiclo);
+    this.app.use("/compras", RCompra); 
     this.app.use("/tareas", RTarea);
     this.app.use("/inventario", RInventario);
-    this.app.use("/compras", RCompra); */
+    */
   }
 
   middlewares() {

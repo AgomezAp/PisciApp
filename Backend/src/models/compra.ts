@@ -1,37 +1,36 @@
 import { DataTypes, Model } from "sequelize";
 import sequelize from "../database/connection";
-import { Usuario } from "./usuario";
 import { Producto } from "./producto";
+import { CompraProducto } from "./compraProducto";
 
-export class Compra extends Model {
-  public id!: number;
-  public usuario_id!: number;
-  public producto_id!: number;
-  public cantidad!: number;
-  public total!: number;
-  public fecha!: Date;
+interface dataCompra {
+  id?: number;
+  fecha: Date;
+  total: number;
+  estado: string;
+  
 }
+
+export class Compra extends Model<dataCompra>{
+  declare id: number;
+  declare fecha: Date;
+  declare total: number;
+  declare estado: string;
+  
+}
+    
 
 Compra.init(
   {
-    id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
-    usuario_id: {
-      type: DataTypes.INTEGER,
-      references: { model: "usuarios", key: "id" },
-      allowNull: false,
-    },
-    producto_id: {
-      type: DataTypes.INTEGER,
-      references: { model: "productos", key: "id" },
-      allowNull: false,
-    },
-    cantidad: { type: DataTypes.INTEGER, allowNull: false },
-    total: { type: DataTypes.FLOAT, allowNull: false },
-    fecha: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
+    id: {type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true},
+    fecha: {type: DataTypes.DATE, allowNull:false, defaultValue: DataTypes.NOW},
+    total: {type: DataTypes.DECIMAL(10, 2), allowNull:false },
+    estado: {type: DataTypes.STRING, allowNull: false, defaultValue: "pendiente"},
+    
   },
   {
     sequelize,
     tableName: "compras",
-    timestamps: false,
+    timestamps: true,
   }
 );

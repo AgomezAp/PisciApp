@@ -1,22 +1,35 @@
-<h1>Lista de Productos</h1>
+<app-navbar></app-navbar>
+
+
+<h1 class="title">🐠 Catálogo del Acuario ignorar por ahora </h1>
+
 
 <div class="grid">
   <div class="card" *ngFor="let producto of productos">
-    <figure class="card__media">
-      <img [src]="producto.imagen" [alt]="producto.nombre" class="card__img" />
-    </figure>
+    <div class="card__media">
+      <!-- Si tuvieras imagen en BD, reemplaza el src -->
+      <img src="https://placehold.co/200x150?text=Acuario" alt="{{ producto.nombre }}">
+    </div>
+
     <div class="card__body">
-      <h2 class="card__title">algo{{ producto.nombre }}</h2>
+      <h2 class="card__title">{{ producto.nombre }}</h2>
+
       <div class="card__price">
-        <span class="price__current">{{ producto.precio | currency:'COP' }}</span>
-        <span class="price__installments" *ngIf="producto.cuotas > 1">
-          en {{ producto.cuotas }}x {{ (producto.precio / producto.cuotas) | currency:'COP' }}
+        <span class="price__current">
+          {{ producto.precio | currency:'COP':'symbol':'1.0-0' }}
         </span>
       </div>
+
       <div class="card__meta">
-        <span>{{ producto.envio }}</span>
-        <span>{{ producto.ubicacion }}</span>
+        <span class="stock" [class.low-stock]="producto.stock - getCantidadEnCarrito(producto) < 5">
+          Stock disponible: {{ producto.stock - getCantidadEnCarrito(producto) }}
+        </span>
       </div>
+
+      <button class="btn-add" (click)="agregarAlCarrito(producto)"
+        [ngClass]="{'btn-sin-stock': getDisponible(producto) === 0}">
+        {{ getDisponible(producto) === 0 ? 'Sin stock' : 'Agregar al carrito' }}
+      </button>
     </div>
   </div>
 </div>

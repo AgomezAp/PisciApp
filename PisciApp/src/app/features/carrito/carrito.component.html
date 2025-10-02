@@ -1,0 +1,60 @@
+<app-navbar></app-navbar>
+
+<div class="aquarium-cart-container">
+  <!-- Efecto de burbujas de fondo -->
+  <div class="bubbles">
+    <div class="bubble" *ngFor="let bubble of bubbles" [ngStyle]="bubble"></div>
+  </div>
+  
+  <div class="cart-card">
+    <h2 class="cart-title">🐠 Carrito de Compras del Acuario</h2>
+    
+    <div *ngIf="items.length === 0" class="empty-cart">
+      <div class="empty-icon">🐟</div>
+      <p>No hay productos en el carrito</p>
+      <p class="empty-subtitle">¡Nada por aquí, nada por allá!</p>
+      <a routerLink="/producto" class="browse-btn">Explorar Productos</a>
+    </div>
+
+    <div *ngIf="items.length > 0" class="cart-content">
+      <div class="cart-items">
+        <div *ngFor="let item of items" class="cart-item">
+          <div class="item-image">
+            <img src="https://placehold.co/80x60?text=🐠" alt="{{ item.producto.nombre }}">
+          </div>
+          <div class="item-details">
+            <h3 class="item-name">{{ item.producto.nombre }}</h3>
+            <div class="item-quantity">
+              <button class="quantity-btn" (click)="decrementar(item.producto.id)">-</button>
+              <span class="quantity">{{ item.cantidad }}</span>
+              <button class="quantity-btn" (click)="incrementar(item.producto.id)">+</button>
+            </div>
+            <p class="item-price">{{ item.producto.precio * item.cantidad | currency:'COP':'symbol':'1.0-0' }}</p>
+          </div>
+          <button 
+            *ngIf="item.producto.id !== undefined" 
+            class="remove-btn"
+            (click)="quitar(item.producto.id)">
+            🗑️
+          </button>
+        </div>
+      </div>
+
+      <div class="cart-summary">
+        <div class="total-section">
+          <div class="total-label">Total del Carrito:</div>
+          <div class="total-amount">{{ total() | currency:'COP':'symbol':'1.0-0' }}</div>
+        </div>
+        
+        <div class="cart-actions">
+          <button class="vaciar-btn" (click)="vaciarCarrito()">
+            🧹 Vaciar Carrito
+          </button>
+          <button class="checkout-btn" (click)="realizarPedido()">
+            🐋 Realizar Pedido
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

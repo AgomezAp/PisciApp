@@ -35,7 +35,8 @@
     "pg": "^8.16.3",
     "qrcode": "^1.5.4",
     "sequelize": "^6.37.7",
-    "speakeasy": "^2.0.0"
+    "speakeasy": "^2.0.0",
+    "zod": "^4.1.11"
   },
   "devDependencies": {
     "@types/argon2": "^0.14.1",

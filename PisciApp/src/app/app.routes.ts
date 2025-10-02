@@ -3,6 +3,8 @@ import { AuthGuard } from './core/guards/auth.guard';
 import { LoginComponent } from './features/auth/pages/login/login.component';
 import { RegisterComponent } from './features/auth/pages/register/register.component';
 import { MainLayoutComponent } from './shared/layout/main-layout/main-layout.component';
+import { ProductoComponent } from './features/producto/producto.component';
+import { CarritoComponent } from './features/carrito/carrito.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -49,6 +51,8 @@ export const routes: Routes = [
       import(
         './features/producto/producto.component'
       ).then((m) => m.ProductoComponent),
-  }
+  },
   //{ path: '**', redirectTo: 'login' },
+  { path: '', component: ProductoComponent },   // catálogo principal
+  { path: 'carrito', component: CarritoComponent } // carrito de compras
 ];

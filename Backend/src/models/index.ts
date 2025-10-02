@@ -3,13 +3,15 @@ import { Usuario } from "./usuario";
 import { Tanque, MedicionesCalidad} from "./tanque";
 import { Ciclo, CicloTanque, Alimento, Quimico, MovimientoTanque, Bajas  } from "./ciclo";
 import { Tarea } from "./tarea";
-import { Producto } from "./producto";
 import { Inventario } from "./inventario";
+import { Producto } from "./producto";
 import { Compra } from "./compra";
+import { CompraProducto } from "./compraProducto";
 
 // =========================
 // DEFINICIÓN DE RELACIONES
-// =========================
+// =
+// ========================
 
 // Usuario - Ciclo
 Usuario.hasMany(Ciclo, { foreignKey: "usuario_id", as: "ciclos" });
@@ -39,11 +41,22 @@ Tarea.belongsTo(Ciclo, { foreignKey: "ciclo_id", as: "ciclo" });
 Producto.hasMany(Inventario, { foreignKey: "producto_id", as: "inventarios" });
 Inventario.belongsTo(Producto, { foreignKey: "producto_id", as: "producto" });
 
-// Producto - Compras
-Producto.hasMany(Compra, { foreignKey: "producto_id", as: "compras" });
-Compra.belongsTo(Producto, { foreignKey: "producto_id", as: "producto" });
 
-// Relaciones de Ciclo
+// Producto - Compras_
+//________________________________________________________________________________________________________________
+// Producto.hasMany(Compra, { foreignKey: "producto_id", as: "compras" });           <----------------------------|
+// Compra.belongsTo(Producto, { foreignKey: "producto_id", as: "producto" });        <----------------------------|
+//________________________________________________________________________________________________________________|
+Compra.belongsToMany(Producto, { through: CompraProducto, foreignKey: "compraId", otherKey: "productoId",as: "productos", });
+Producto.belongsToMany(Compra, { through: CompraProducto, foreignKey: "productoId", otherKey: "compraId", as: "compras", });
+// Relaciones directas con la tabla pivote (para acceder a los detalles)
+Compra.hasMany(CompraProducto, { foreignKey: "compraId", as: "detalles" });
+CompraProducto.belongsTo(Compra, { foreignKey: "compraId", as: "compra" });
+
+Producto.hasMany(CompraProducto, { foreignKey: "productoId", as: "detalles" });
+CompraProducto.belongsTo(Producto, { foreignKey: "productoId", as: "producto" });
+  
+
 Ciclo.belongsTo(Usuario, { foreignKey: 'usuario_id'});
 Ciclo.hasMany(Alimento, { foreignKey: 'ciclo_id'});
 Ciclo.hasMany(Quimico, { foreignKey: 'ciclo_id'});
@@ -80,5 +93,6 @@ export {
   Alimento,
   Quimico,
   MovimientoTanque,
-  Bajas
+  Bajas,
+  CompraProducto
 };
