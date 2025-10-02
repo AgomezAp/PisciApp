@@ -24,13 +24,29 @@ export class TanquesComponent implements OnInit {
 
   graficoMedicioneOptions: ChartOptions = {
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
-      legend: {position: 'top'},
-      title:{display: true, text: 'Temperatura y Oxigeno'}
+      legend: { position: 'top' },
+      title: { display: true, text: 'Temperatura y Oxigeno' }
     },
     scales: {
-      x: {type: 'category', title: {display: true, text: 'Fecha'}},
-      y: {type: 'linear', beginAtZero: true, title: { display: true, text: 'Valor'}}
+      x: {
+        type: 'category',
+        title: { display: true, text: 'Fecha' },
+        ticks: {
+          font: { size: 10 },
+          maxRotation: 45,
+          minRotation: 30,
+          autoSkip: true,
+          maxTicksLimit: 6
+        }
+      },
+      y: {
+        type: 'linear',
+        beginAtZero: true,
+        title: { display: true, text: 'Valor' },
+        ticks: { font: { size: 10 } }
+      }
     }
   }
 

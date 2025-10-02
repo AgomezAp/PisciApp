@@ -29,42 +29,42 @@
                 <div class="grid4">
                     <label>Temperatura (°C)
                         <input type="number" step="0.1" name="temperatura" [(ngModel)]="calidadAgua['temperatura']"
-                            [placeholder]="ultimaMedicion?.temperatura ?? ''" [disabled]="!tanque_id" />
+                            [placeholder]="ultimaMedicion?.temperatura ?? '0'" [disabled]="!tanque_id" />
                         <span [ngClass]="getSemaforo('temperatura', calidadAgua['temperatura'] ?? 0)">●</span>
                     </label>
                     <label>Oxígeno disuelto (mg/L)
-                        <input type="number" step="0.1" name="oxigeno" [(ngModel)]="calidadAgua['oxigeno']"
-                            [placeholder]="ultimaMedicion?.oxigeno ?? ''" [disabled]="!tanque_id" />
-                        <span [ngClass]="getSemaforo('oxigeno', calidadAgua['oxigeno'] ?? 0)">●</span>
+                        <input type="number" step="0.1" name="oxigeno" [(ngModel)]="calidadAgua['oxigeno_disuelto']"
+                            [placeholder]="ultimaMedicion?.oxigeno_disuelto ?? '0'" [disabled]="!tanque_id" />
+                        <span [ngClass]="getSemaforo('oxigeno', calidadAgua['oxigeno_disuelto'] ?? 0)">●</span>
                     </label>
-                    <label>pH
+                    <label>Ph
                         <input type="number" step="0.1" name="ph" [(ngModel)]="calidadAgua['ph']"
-                            [placeholder]="ultimaMedicion?.ph ?? ''" [disabled]="!tanque_id" />
+                            [placeholder]="ultimaMedicion?.ph ?? '0'" [disabled]="!tanque_id" />
                         <span [ngClass]="getSemaforo('ph', calidadAgua['ph'] ?? 0)">●</span>
                     </label>
                     <label>Nitritos (mg/L)
                         <input type="number" step="0.01" name="nitritos" [(ngModel)]="calidadAgua['nitritos']"
-                            [placeholder]="ultimaMedicion?.nitritos ?? ''" [disabled]="!tanque_id" />
+                            [placeholder]="ultimaMedicion?.nitritos ?? '0'" [disabled]="!tanque_id" />
                         <span [ngClass]="getSemaforo('nitritos', calidadAgua['nitritos'] ?? 0)">●</span>
                     </label>
                     <label>Amoniaco (mg/L)
                         <input type="number" step="0.01" name="amoniaco" [(ngModel)]="calidadAgua['amoniaco']"
-                            [placeholder]="ultimaMedicion?.amoniaco ?? ''" [disabled]="!tanque_id" />
+                            [placeholder]="ultimaMedicion?.amoniaco ?? '0'" [disabled]="!tanque_id" />
                         <span [ngClass]="getSemaforo('amoniaco', calidadAgua['amoniaco'] ?? 0)">●</span>
                     </label>
                     <label>Nitratos (mg/L)
                         <input type="number" step="0.01" name="nitratos" [(ngModel)]="calidadAgua['nitratos']"
-                            [placeholder]="ultimaMedicion?.nitratos ?? ''" [disabled]="!tanque_id" />
+                            [placeholder]="ultimaMedicion?.nitratos ?? '0'" [disabled]="!tanque_id" />
                         <span [ngClass]="getSemaforo('nitratos', calidadAgua['nitratos'] ?? 0)">●</span>
                     </label>
                     <label>Dureza (ppm)
                         <input type="number" step="1" name="dureza" [(ngModel)]="calidadAgua['dureza']"
-                            [placeholder]="ultimaMedicion?.dureza ?? ''" [disabled]="!tanque_id" />
+                            [placeholder]="ultimaMedicion?.dureza ?? '0'" [disabled]="!tanque_id" />
                         <span [ngClass]="getSemaforo('dureza', calidadAgua['dureza'] ?? 0)">●</span>
                     </label>
                     <label>Salinidad (ppt)
                         <input type="number" step="0.01" name="salinidad" [(ngModel)]="calidadAgua['salinidad']"
-                            [placeholder]="ultimaMedicion?.salinidad ?? ''" [disabled]="!tanque_id" />
+                            [placeholder]="ultimaMedicion?.salinidad ?? '0'" [disabled]="!tanque_id" />
                         <span [ngClass]="getSemaforo('salinidad', calidadAgua['salinidad'] ?? 0)">●</span>
                     </label>
                 </div>
@@ -79,7 +79,7 @@
                     <div class="info-title">Plan De Acción</div>
                     <ul class="info-list">
                         <li *ngFor="let param of calidadAguaParams">
-                            <b>{{ param | titlecase }}:</b>
+                            <b>{{ formatearParametro(param) | titlecase }}:</b>
                             {{ getPlanAccion(param, getSemaforo(param, calidadAgua[param] ?? 0))}}
                         </li>
                     </ul>
@@ -120,7 +120,7 @@
                     </label>
                     <label>
                         Causas aparentes
-                        <br><br>
+                        <br>
                         <input type="text" id="mortalidadCausa" placeholder="Ej. Estrés térmico, bajo O2, enfermedad" />
                     </label>
                 </div>
@@ -129,9 +129,41 @@
             <!-- Botones -->
             <div class="form-actions">
                 <button class="btn" type="button" (click)="guardarDiario()" [disabled]="!tanque_id">Guardar</button>
-                <button class="btn btn-outline" type="button" id="btnHistorial">Ver historial</button>
+                <button class="btn btn-outline" type="button" (click)="mostrarHistorialF()" >Ver historial</button>
             </div>
         </form>
+    </section>
+
+    <section class="card" *ngIf="mostrarhistorial">
+        <div class="card-head">
+            <h2>Historial</h2>
+            <button class="btn btn-outline">Exportar csv</button>
+            <button class="btn" (click)="mostrarHistorialF()">X</button>
+        </div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Temperatura</th>
+                        <th>Oxigeno</th>
+                        <th>Ph</th>
+                        <th>Alimento</th>
+                        <th>Bajas</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let registro of historial">
+                        <td>{{getTanqueNombre(registro.tanque_id)}}</td>
+                        <td>{{ registro.calidadAgua?.temperatura }}</td>
+                        <td>{{ registro.calidadAgua?.oxigeno_disuelto }}</td>
+                        <td>{{ registro.calidadAgua?.ph }}</td>
+                        <td>{{ registro.alimento?.nombre }}</td>
+                        <td>{{ registro.bajas?.cantidad }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </section>
 
 </main>

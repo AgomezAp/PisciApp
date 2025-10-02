@@ -3,7 +3,7 @@ import { NavbarComponent } from '../../shared/components/navbar/navbar.component
 import { AuthService } from '../../core/services/auth.service';
 import { TanqueService } from '../../core/services/tanque.service';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, NumberValueAccessor } from '@angular/forms';
 import { NotificationService } from '../../core/services/notification.service';
 import { CicloService } from '../../core/services/ciclo.service';
 @Component({
@@ -17,14 +17,16 @@ export class DiarioComponent implements OnInit {
   tanques: any[] = [];
   ciclos: any[] = [];
   mediciones: any[] = [];
+  historial: any[] = [];
   ultimaMedicion: any = {};
   tanque_id: number = 0;
   ciclo_id: number = 0;
+  mostrarhistorial: boolean = false
 
 
   calidadAgua: { [key: string]: number | null } = {
     temperatura: null,
-    oxigeno: null,
+    oxigeno_disuelto: null,
     ph: null,
     nitritos: null,
     amoniaco: null,
@@ -90,7 +92,9 @@ export class DiarioComponent implements OnInit {
         }
       }
     }
-    this.ciclo_id = cicloEncontrado ? cicloEncontrado.id : null
+    this.ciclo_id = cicloEncontrado ? cicloEncontrado.id : null;
+    this.tablaHistorial(Number(this.tanque_id), this.ciclo_id);
+
     console.log(this.ciclo_id)
   }
   getTanqueNombre(tanque_id: number): string {
@@ -99,12 +103,26 @@ export class DiarioComponent implements OnInit {
   }
 
   getMediciones(tanque_id: number): void {
+    console.log("Si las mediciones");
     this.tanqueService.obtenerMedicionesTanque(tanque_id).subscribe({
       next: (data) => {
         this.mediciones = data;
-        this.ultimaMedicion = this.mediciones.length > 0 ? [this.mediciones[this.mediciones.length - 1]] : [];
-        console.log('mediciones', this.ultimaMedicion)
-      }
+        if (this.mediciones.length > 0) {
+          this.ultimaMedicion = [this.mediciones[this.mediciones.length - 1]];
+        } else {
+          this.ultimaMedicion = [{
+            temperatura: 0,
+            oxigeno_disuelto: 0,
+            ph: 0,
+            nitritos: 0,
+            amoniaco: 0,
+            nitratos: 0,
+            dureza: 0,
+            salinidad: 0
+          }];
+        }
+        console.log('Ultima mediciones', this.ultimaMedicion)
+      } 
     })
   }
 
@@ -132,7 +150,7 @@ export class DiarioComponent implements OnInit {
         return 'verde';
       case 'nitratos':
         if (valor > 100) return 'rojo';
-        if (valor > 50 && valor < 100) return 'amarillo'
+        if (valor > 50 && valor <= 100) return 'amarillo'
         return 'verde';
       case 'dureza':
         if (valor < 50 || valor > 300) return 'rojo';
@@ -170,13 +188,17 @@ export class DiarioComponent implements OnInit {
   tieneDatosCalidadAgua(): boolean {
     return Object.values(this.calidadAgua).some(v => v !== null && v !== undefined);
   }
+
+  formatearParametro(param: string): string {
+    return param.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+  }
   getPlanAccion(param: string, color: 'rojo' | 'amarillo' | 'verde'): string {
     switch (param) {
       case 'temperatura':
         if (color === 'rojo') return 'Cambio de agua gradual y aislar el tanque del clima.';
         if (color === 'amarillo') return 'Reducir la alimentación y monitorear 3 veces al día.';
         return 'Mantener rutina y registrar diario.';
-      case 'oxigeno':
+      case 'oxigeno_disuelto':
         if (color === 'rojo') return '¡Emergencia! Parar comida, máxima aireación y cambio de agua.';
         if (color === 'amarillo') return 'Reducir comida, aumentar aireación y medir cada 3 horas.';
         return 'Mantener aireación y limpiar difusores.';
@@ -231,7 +253,7 @@ export class DiarioComponent implements OnInit {
       if (!alimentoCompleto) {
         this.cicloService.ingresarAlimento(this.nuevoAlimento, this.ciclo_id).subscribe({
           next: () => this.notificacionService.success("Alimentación guardada correctamente"),
-          error: () => this.notificacionService.error("Error al guardar alimentación")
+          // error: () => this.notificacionService.error("Error al guardar alimentación")
         });
       } else {
         this.notificacionService.error('La alimentacion no se guardo correctamente')
@@ -241,11 +263,51 @@ export class DiarioComponent implements OnInit {
       if (!bajasCompleto) {
         this.cicloService.actualizarBajas(this.nuevoBajas, this.ciclo_id).subscribe({
           next: () => this.notificacionService.success("Bajas guardadas correctamente"),
-          error: () => this.notificacionService.error("Error al guardar bajas")
+          // error: () => this.notificacionService.error("Error al guardar bajas")
         });
       } else {
         this.notificacionService.error('Las bajas no se guardaron correctamente')
       }
     }
+  }
+
+  tablaHistorial(tanque_id: number, ciclo_id: number) {
+    if (!Array.isArray(this.mediciones)) {
+      this.historial = [];
+      console.log('No mhay')
+      return;
+    }
+    console.log(this.mediciones, tanque_id, ciclo_id)
+    const medicionesTanque = this.mediciones;
+    console.log("medicionesTanque", medicionesTanque)
+    // Filtra el ciclo actual
+    const cicloActual = this.ciclos.find((c: any) => c.id === ciclo_id);
+
+    this.historial = medicionesTanque.map((medicion: any) => {
+      // Buscar alimento y bajas solo en el ciclo actual
+      const alimento = cicloActual?.alimentos?.find(
+        (a: any) => a.fecha === medicion.fecha && Number(a.tanque_id) === Number(tanque_id)
+      ) || null;
+
+      const bajas = cicloActual?.bajas?.find(
+        (b: any) => b.fecha === medicion.fecha && Number(b.tanque_id) === Number(tanque_id)
+      ) || null;
+
+      return {
+        tanque_id: medicion.tanque_id,
+        calidadAgua: {
+          temperatura: medicion.temperatura,
+          oxigeno_disuelto: medicion.oxigeno_disuelto,
+          ph: medicion.ph
+        },
+        alimento: alimento,
+        bajas: bajas
+      };
+    });
+    console.log("thishistorial", this.historial);
+  }
+
+  mostrarHistorialF() {
+    this.mostrarhistorial = !this.mostrarhistorial
   }
 }

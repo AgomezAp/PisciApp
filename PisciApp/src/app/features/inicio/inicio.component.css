@@ -1,3 +1,17 @@
+/* Reset y base responsive */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: #f8fbfc;
+}
+
 /* Información destacada */
 .informacion {
   background: #e0f7fa;
@@ -8,6 +22,7 @@
   max-width: 480px;
   box-shadow: 0 1px 4px rgba(0,151,167,0.06);
   text-align: center;
+  width: 100%;
 }
 
 .informacion h3 {
@@ -36,6 +51,7 @@
   box-shadow: 0 2px 12px rgba(0,151,167,0.07);
   padding: 18px 10px;
   max-width: 1100px;
+  width: 100%;
   position: relative;
 }
 
@@ -45,6 +61,7 @@
   gap: 18px;
   justify-content: center;
   position: relative;
+  width: 100%;
 }
 
 /* Tarjeta individual */
@@ -61,6 +78,7 @@
   align-items: flex-start;
   border: 2px solid #00bcd4;
   transition: box-shadow 0.2s, border-color 0.2s;
+  width: 100%;
 }
 
 .tarjeta:hover {
@@ -175,6 +193,7 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
+  width: 100%;
 }
 
 .modal h3 {
@@ -311,6 +330,7 @@
   justify-content: center;
   max-width: 1100px;
   flex-wrap: wrap;
+  width: 100%;
 }
 
 .dashboard-tarjeta {
@@ -329,6 +349,7 @@
   border-right: 1px solid #e0f7fa;
   border-bottom: 1px solid #e0f7fa;
   transition: box-shadow 0.2s, border-color 0.2s;
+  width: 100%;
 }
 
 .dashboard-tarjeta:hover {
@@ -355,7 +376,17 @@
   font-size: 0.98rem;
 }
 
-/* Responsive */
+/* Media Queries - Responsive */
+/* PC grande */
+@media (max-width: 1100px) {
+  .tarjetas-container,
+  .dashboard-tarjetas {
+    max-width: 98vw;
+    padding: 10px 2vw;
+  }
+}
+
+/* Tablet */
 @media (max-width: 900px) {
   .tarjetas-container {
     gap: 10px;
@@ -385,6 +416,7 @@
   }
 }
 
+/* Móvil */
 @media (max-width: 600px) {
   .tarjetas-container {
     flex-direction: column;
@@ -408,16 +440,29 @@
   }
   .dashboard-tarjetas {
     flex-direction: column;
-    align-items: center;
+    align-items: stretch;
     gap: 6px;
     padding: 0 1vw;
     max-width: 99vw;
   }
   .dashboard-tarjeta {
-    min-width: 90vw;
+    min-width: unset;
     max-width: 98vw;
-    font-size: 0.92rem;
-    padding: 10px 6px;
+    width: auto;
+    font-size: 0.88rem;
+    padding: 6px 4px;
+    flex: none;
+  }
+  .dashboard-titulo {
+    font-size: 1rem;
+    margin-bottom: 2px;
+  }
+  .dashboard-valor {
+    font-size: 1.1rem;
+    margin-bottom: 1px;
+  }
+  .dashboard-sub {
+    font-size: 0.9rem;
   }
 }
 

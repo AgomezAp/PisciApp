@@ -1,0 +1,90 @@
+<app-navbar></app-navbar>
+<h2>Inventario</h2>
+
+<button class="btn-agregar-inventario" (click)="mostrarAgregar()">
+  + Agregar al inventario
+</button>
+
+<table class="tabla-inventario">
+  <thead>
+    <tr>
+      <th>Nombre</th>
+      <th>Tipo</th>
+      <th>Proveedor</th>
+      <th>Cantidad</th>
+      <th>Costo Insumo</th>
+      <th>Costo Transporte</th>
+      <th>Fecha Caducidad</th>
+      <th>Peso Unidad</th>
+      <th>Granularidad</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let item of inventario">
+      <td>{{ item.nombre }}</td>
+      <td>{{ item.tipo_material }}</td>
+      <td>{{ item.provedor }}</td>
+      <td>{{ item.cantidad }}</td>
+      <td>{{ item.costo_insumo }}</td>
+      <td>{{ item.costo_transporte }}</td>
+      <td>{{ item.fecha_caducidad || '-' }}</td>
+      <td>{{ item.peso_unidad || '-' }}</td>
+      <td>{{ item.granularidad || '-' }}</td>
+    </tr>
+  </tbody>
+</table>
+
+
+<div class="modal-backdrop" *ngIf="mostrarModalAgregar">
+    <div class="modal">
+        <h3>Agregar al Inventario</h3>
+        <form (ngSubmit)="agregarInventario()">
+            <label>
+                Nombre:
+                <input type="text" [(ngModel)]="nuevoItem.nombre" name="nombre" required />
+            </label>
+            <label>
+                Tipo:
+                <select [(ngModel)]="nuevoItem.tipo_material" name="tipo_material" required>
+                    <option value="" disabled selected>Seleccione tipo</option>
+                    <option value="Alimento">Alimento</option>
+                    <option value="Quimico">Quimico</option>
+                    <option value="Maquina">Maquina</option>
+                    <option value="Herramienta">Herramienta</option>
+                </select>
+            </label>
+            <label>
+                Proveedor:
+                <input type="text" [(ngModel)]="nuevoItem.provedor" name="provedor" required />
+            </label>
+            <label>
+                Cantidad:
+                <input type="number" [(ngModel)]="nuevoItem.cantidad" name="cantidad" required />
+            </label>
+            <label>
+                Costo Insumo:
+                <input type="number" [(ngModel)]="nuevoItem.costo_insumo" name="costo_insumo" required />
+            </label>
+            <label>
+                Costo Transporte:
+                <input type="number" [(ngModel)]="nuevoItem.costo_transporte" name="costo_transporte" required />
+            </label>
+            <label>
+                Fecha Caducidad:
+                <input type="date" [(ngModel)]="nuevoItem.fecha_caducidad" name="fecha_caducidad" />
+            </label>
+            <label>
+                Peso Unidad:
+                <input type="number" [(ngModel)]="nuevoItem.peso_unidad" name="peso_unidad" />
+            </label>
+            <label>
+                Granularidad:
+                <input type="text" [(ngModel)]="nuevoItem.granularidad" name="granularidad" />
+            </label>
+            <div class="modal-actions">
+                <button type="submit">Agregar</button>
+                <button type="button" (click)="mostrarAgregar()">Cancelar</button>
+            </div>
+        </form>
+    </div>
+</div>

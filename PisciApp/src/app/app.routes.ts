@@ -37,6 +37,13 @@ export const routes: Routes = [
     ],
   },
   {
+    path: 'inventario',
+    loadComponent: () =>
+      import(
+        './features/inventario/inventario.component'
+      ).then((m) => m.InventarioComponent),
+  },
+  {
     path: 'configuracion',
     loadComponent: () =>
       import(

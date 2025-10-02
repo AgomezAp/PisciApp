@@ -10,16 +10,14 @@
       (click)="seleccionarTanque(tanque)">
       <div><b>{{ tanque.nombre }}</b></div>
       <div>Volumen: {{ tanque.volumen }} m³</div>
-      <div>Disponible: <span [ngClass]="tanque.disponible ? 'disponible' : 'no-disponible'">
-        {{ tanque.disponible ? 'Sí' : 'No' }}
-      </span></div>
+      
     </div>
   </div>
 </div>
 
 <div *ngIf="tanqueSeleccionado">
     <h3>Mediciones de {{tanqueSeleccionado.nombre}}</h3>
-    <div style="max-width: 800px; margin: 0 auto;">
+    <div class="grafico-responsive">
         <canvas baseChart [data]="graficoMediciones" [type]="graficoTipo" [options]="graficoMedicioneOptions">
         </canvas>
     </div>

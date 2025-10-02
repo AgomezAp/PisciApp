@@ -64,9 +64,9 @@ class Server {
     this.app.use("/tanque", RTanque);
     this.app.use("/productos", RProducto);
     this.app.use("/ciclos", RCiclo);
+    this.app.use("/inventario", RInventario);
     /*     this.app.use("/usuarios", RUsuario);
     this.app.use("/tareas", RTarea);
-    this.app.use("/inventario", RInventario);
     this.app.use("/compras", RCompra); */
   }
 

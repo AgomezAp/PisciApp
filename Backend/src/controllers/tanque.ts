@@ -135,11 +135,8 @@ export const obtenerMedTanqueId = async (req: Request, res: Response): Promise<a
         if (!tanque_id) {
             return res.status(400).json({ error: "tanque_id son requeridos." });
         }
-        const mediciones = await MedicionesCalidad.findOne({ where: { tanque_id } });
-        if (!mediciones) {
-            return res.status(404).json({ error: "Tanque no encontrado." });
-        }
-        return res.status(200).json(mediciones);
+        const mediciones = await MedicionesCalidad.findAll({ where: { tanque_id }, order: [['createdAt', 'ASC']]});
+        return res.status(200).json(mediciones || []);
     } catch (error) {
         console.error(error);
         return res.status(500).json({ error: "Error interno del servidor" });

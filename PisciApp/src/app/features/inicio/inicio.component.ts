@@ -13,7 +13,7 @@ import { Router } from '@angular/router';
   templateUrl: './inicio.component.html',
   styleUrl: './inicio.component.css'
 })
-export class InicioComponent implements OnInit{
+export class InicioComponent implements OnInit {
   tanques: any[] = [];
   tanquesDisponibles: any[] = [];
   ciclos: any = null;
@@ -22,6 +22,7 @@ export class InicioComponent implements OnInit{
   mostrarModalTanque = false;
   mostrarModalCiclo = false;
   supervivencia = 0;
+  especies: any[] = []
 
   nuevoTanque = {
     nombre: '',
@@ -40,7 +41,7 @@ export class InicioComponent implements OnInit{
     private tanqueService: TanqueService,
     private cicloService: CicloService,
     private router: Router,
-    private authService: AuthService) {}
+    private authService: AuthService) { }
 
   ngOnInit(): void {
     const user = this.authService.getCurrentUser();
@@ -70,11 +71,12 @@ export class InicioComponent implements OnInit{
         } else {
           this.ciclos = [];
         }
+        this.especies = Array.from(new Set(this.ciclos.map((ciclo: any) => ciclo.especie).filter((e: any) => !!e)))
         if (this.ciclos.length > 0) {
           const cicloActual = this.ciclos[this.ciclos.length - 1];
-          this.supervivencia = ((cicloActual.numero_peces - (cicloActual.total_bajas ?? 0))/ cicloActual.numero_peces) * 100;
+          this.supervivencia = ((cicloActual.numero_peces - (cicloActual.total_bajas ?? 0)) / cicloActual.numero_peces) * 100;
         } else {
-            this.supervivencia = -1;
+          this.supervivencia = -1;
         }
         console.log('el ciclo', data)
       },
@@ -86,17 +88,17 @@ export class InicioComponent implements OnInit{
 
   abrirModalTanque() {
     this.mostrarModalTanque = true;
-    this.nuevoTanque = { nombre: '', volumen: 0, tipoTanque: ''};
+    this.nuevoTanque = { nombre: '', volumen: 0, tipoTanque: '' };
   }
   cerrarModalTanque() {
-    this.mostrarModalTanque =false;
+    this.mostrarModalTanque = false;
   }
   abrirModalCiclo() {
     this.mostrarModalCiclo = true;
-    this.nuevoTanque = { nombre: '', volumen: 0, tipoTanque: ''};
+    this.nuevoTanque = { nombre: '', volumen: 0, tipoTanque: '' };
   }
   cerrarModalCiclo() {
-    this.mostrarModalCiclo =false;
+    this.mostrarModalCiclo = false;
   }
 
   agregarTanque() {
@@ -107,6 +109,8 @@ export class InicioComponent implements OnInit{
     this.tanqueService.crearTanque(datos).subscribe({
       next: (tanque) => {
         this.tanques.push(tanque);
+        this.tanquesDisponibles = this.tanques.filter(tanque => tanque.disponible === true);
+        this.tanquesDisponiblesCantidad = this.tanquesDisponibles.length;
         this.cerrarModalTanque();
       },
       error: (err) => {

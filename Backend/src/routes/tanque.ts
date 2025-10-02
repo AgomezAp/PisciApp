@@ -9,7 +9,7 @@ router.get("/ver/:id", obtenerTanqueId);
 router.get("/obtener/:usuario_id", obtenerTanque)
 router.delete("/eliminar", /* verifyToken, */ eliminarTanque);
 router.put("/editar/:id", /* verifyToken, */ editarTanque);
-router.put("/mediciones/:tanque_id", /* verifyToken, */ nuevaMedicion);
+router.post("/mediciones/:tanque_id", /* verifyToken, */ nuevaMedicion);
 router.get("/obtenermed/:tanque_id", /* verifyToken, */ obtenerMedTanqueId);
 
 

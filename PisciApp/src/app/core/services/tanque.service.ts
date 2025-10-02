@@ -25,7 +25,7 @@ export class TanqueService {
     .pipe(catchError(error => this.errorService.handleError(error)));
   }
   crearMediciones(tanque_id: number, data: any): Observable<any> {
-    return this.http.put(`${this.apiUrl}tanque/mediciones/${tanque_id}`, data)
+    return this.http.post(`${this.apiUrl}tanque/mediciones/${tanque_id}`, data)
     .pipe(catchError(error => this.errorService.handleError(error)));
   }
   

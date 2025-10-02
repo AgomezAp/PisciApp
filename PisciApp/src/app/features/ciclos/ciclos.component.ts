@@ -287,6 +287,35 @@ export class CiclosComponent implements OnInit {
         } else {
           this.cicloSeleccionado = null
         }
+
+        // --- Datos de prueba SOLO si no hay ciclos --- ELIMINAR
+        if (this.ciclos.length === 0) {
+          this.ciclos = [{
+            id: 1,
+            alimentos: [
+              { createdAt: '2025-09-01', cantidad: 20, costo: 1000, nombre: 'Alimento A' },
+              { createdAt: '2025-09-02', cantidad: 25, costo: 800, nombre: 'Alimento B' }
+            ],
+            quimicos: [
+              { createdAt: '2025-09-01', cantidad: 5, costo: 300, nombre: 'Químico X' },
+              { createdAt: '2025-09-02', cantidad: 6, costo: 260, nombre: 'Químico Y' }
+            ],
+            bajas_ciclo: [
+              { createdAt: '2025-09-01', cantidad: 2, tanque_id: 1 },
+              { createdAt: '2025-09-02', cantidad: 1, tanque_id: 2 }
+            ],
+            ciclotanques_ciclo: [
+              { tanque_id: 1, numero_peces: 100 },
+              { tanque_id: 2, numero_peces: 130 }
+            ],
+            movimientos_tanque: [
+              { origen: 1, destino: 2, cantidad: 10, createdAt: '2025-09-01' },
+              { origen: 2, destino: 1, cantidad: 5, createdAt: '2025-09-02' }
+            ]
+          }];
+          this.seleccionarCiclo(this.ciclos[0]);
+        }
+        // --- Fin datos de prueba --- ELIMINAR
       },
       error: (err) => {
         console.error(err);

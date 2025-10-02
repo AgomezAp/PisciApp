@@ -184,6 +184,13 @@
     text-align: center;
   }
   
+  .nav-links.active a {
+    padding: 8px 10px;
+    font-size: 14px;
+    border-radius: 6px;
+    margin-bottom: 2px;
+  }
+  
   .menu-toggle {
     display: block;
     order: 2;

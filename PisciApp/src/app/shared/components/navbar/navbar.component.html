@@ -3,21 +3,22 @@
     <img src="/assets/logob.png" alt="PisciApp" class="logo" />
   </div>
 
-  <ul class="nav-links">
+  <button class="menu-toggle" (click)="toggleMenu()">
+    &#9776;
+  </button>
+
+  <ul class="nav-links" [class.active]="menuAbierto">
     <li><a routerLink="/inicio" routerLinkActive="active">Inicio</a></li>
-    <li><a routerLink="/tareas" routerLinkActive="active">Tareas</a></li>
     <li>
-      <a routerLink="/diario" routerLinkActive="active"
-        >Reporte diario</a
-      >
+      <a routerLink="/diario" routerLinkActive="active">Reporte diario</a>
     </li>
     <li><a routerLink="/estanques" routerLinkActive="active">Estanques</a></li>
-    <li><a routerLink="/empresa" routerLinkActive="active">Empresa</a></li>
+    <li><a routerLink="/ciclos" routerLinkActive="active">Ciclos</a></li>
     <li>
       <a href="/configuracion" routerLinkActive="active">Configuración</a>
     </li>
     <li>
-      <a href="/inventory" routerLinkActive="active">Inventario</a>
+      <a href="/inventario" routerLinkActive="active">Inventario</a>
     </li>
   </ul>
 
