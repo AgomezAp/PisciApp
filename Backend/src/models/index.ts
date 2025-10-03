@@ -7,6 +7,7 @@ import { Inventario } from "./inventario";
 import { Producto } from "./producto";
 import { Compra } from "./compra";
 import { CompraProducto } from "./compraProducto";
+import { Sesion } from "./session";
 
 // =========================
 // DEFINICIÓN DE RELACIONES
@@ -29,9 +30,6 @@ Compra.belongsTo(Usuario, { foreignKey: "usuario_id", as: "comprador" });
 Usuario.hasOne(Inventario, { foreignKey: "usuario_id", as: "inventario" });
 Inventario.belongsTo(Usuario, { foreignKey: "usuario_id", as: "usuario" });
 
-// Tanque - Ciclo
-Tanque.hasMany(Ciclo, { foreignKey: "tanque_id", as: "ciclos" });
-Ciclo.belongsTo(Tanque, { foreignKey: "tanque_id", as: "tanques" });
 
 // Ciclo - Tareas
 Ciclo.hasMany(Tarea, { foreignKey: "ciclo_id", as: "tareas" });
@@ -58,16 +56,17 @@ CompraProducto.belongsTo(Producto, { foreignKey: "productoId", as: "producto" })
   
 
 Ciclo.belongsTo(Usuario, { foreignKey: 'usuario_id'});
-Ciclo.hasMany(Alimento, { foreignKey: 'ciclo_id'});
-Ciclo.hasMany(Quimico, { foreignKey: 'ciclo_id'});
-Ciclo.hasMany(MovimientoTanque, { foreignKey: 'ciclo_id'});
-Ciclo.hasMany(Bajas, { foreignKey: 'ciclo_id'});
-Ciclo.belongsToMany(Tanque, { through: CicloTanque, foreignKey: "ciclo_id" });
+Ciclo.hasMany(Alimento, { foreignKey: 'ciclo_id', as: "alimentos" });
+Ciclo.hasMany(Quimico, { foreignKey: 'ciclo_id', as: "quimicos" });
+Ciclo.hasMany(MovimientoTanque, { foreignKey: 'ciclo_id', as: "movimientos_tanque" });
+Ciclo.hasMany(Bajas, { foreignKey: 'ciclo_id', as: "bajas_ciclo" });
+Ciclo.hasMany(CicloTanque, { foreignKey: "ciclo_id", as: "ciclotanques_ciclo" });
 
 // Relaciones de Tanque
-Tanque.hasMany(MedicionesCalidad, {foreignKey: "tanque_id"});
-MedicionesCalidad.belongsTo(Tanque, {foreignKey: "tanque_id"});
-Tanque.belongsToMany(Ciclo, { through: CicloTanque, foreignKey: "tanque_id" });
+Tanque.hasMany(MedicionesCalidad, {foreignKey: "tanque_id", as: "mediciones" });
+Tanque.hasMany(Bajas, {foreignKey: "tanque_id", as: "bajas_tanque" });
+Tanque.hasMany(CicloTanque, { foreignKey: "tanque_id", as: "ciclotanques_tanque" });
+MedicionesCalidad.belongsTo(Tanque, {foreignKey: "tanque_id", as: "tanque_medicion"});
 Tanque.belongsTo(Usuario, { foreignKey: "usuario_id"});
 Usuario.hasMany(Tanque, {foreignKey: "usuario_id"});
 
@@ -76,7 +75,14 @@ Alimento.belongsTo(Ciclo, {foreignKey: 'ciclo_id'});
 Quimico.belongsTo(Ciclo, {foreignKey: 'ciclo_id'});
 MovimientoTanque.belongsTo(Ciclo, {foreignKey: 'ciclo_id'});
 Bajas.belongsTo(Ciclo, {foreignKey: 'ciclo_id'});
+Bajas.belongsTo(Tanque, {foreignKey: 'tanque_id'});
 
+CicloTanque.belongsTo(Ciclo, { foreignKey: "ciclo_id" });
+CicloTanque.belongsTo(Tanque, { foreignKey: "tanque_id" });
+Ciclo.belongsToMany(Tanque, { through: CicloTanque, foreignKey: "ciclo_id", as: "tanques_ciclo" });
+Tanque.belongsToMany(Ciclo, { through: CicloTanque, foreignKey: "tanque_id", as: "ciclos_tanque" });
+Usuario.hasMany(Sesion, { foreignKey: "user_id", as: "sesiones" });
+Sesion.belongsTo(Usuario, { foreignKey: "user_id", as: "usuario" });
 // ==========================
 // EXPORTAR TODOS LOS MODELOS
 // ==========================

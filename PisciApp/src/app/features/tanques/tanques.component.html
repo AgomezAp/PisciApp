@@ -1,0 +1,24 @@
+<app-navbar></app-navbar>
+
+<div class="tanques-carrusel">
+  <h2>Lista de tanques</h2>
+  <div class="carrusel-lista">
+    <div class="carrusel-item"
+      *ngFor="let tanque of tanques"
+      [class.seleccionado]="tanque.id === tanqueSeleccionado?.id"
+      [ngClass]="tanque.disponible ? 'carrusel-azul' : 'carrusel-rojo'"
+      (click)="seleccionarTanque(tanque)">
+      <div><b>{{ tanque.nombre }}</b></div>
+      <div>Volumen: {{ tanque.volumen }} m³</div>
+      
+    </div>
+  </div>
+</div>
+
+<div *ngIf="tanqueSeleccionado">
+    <h3>Mediciones de {{tanqueSeleccionado.nombre}}</h3>
+    <div class="grafico-responsive">
+        <canvas baseChart [data]="graficoMediciones" [type]="graficoTipo" [options]="graficoMedicioneOptions">
+        </canvas>
+    </div>
+</div>

@@ -2,36 +2,25 @@ import { DataTypes, Model } from "sequelize";
 import sequelize from "../database/connection";
 import { Usuario } from "./usuario";
 import { Producto } from "./producto";
-export class Inventario extends Model {
-  public id!: number;
-  public nombre!: string;
-  public descripcion?: string;
-  public cantidad!: number;
-  public unidad!: string; // ej: "kg", "litros", "unidades"
-  public createdAt!: Date;
-  public updatedAt!: Date;
-}
 
-Inventario.init(
+export const Inventario = sequelize.define(
+  "inventario",
   {
     id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
-    usuario_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: { model: "usuarios", key: "id" },
+    usuario_id: { 
+      type: DataTypes.INTEGER, allowNull: false, references: { model: "usuarios", key: "id" },
     },
+    tipo_material: { type: DataTypes.ENUM('Alimento', 'Quimico', 'Maquina', 'Herramienta')},
     nombre: { type: DataTypes.STRING, allowNull: false },
-    descripcion: { type: DataTypes.STRING },
+    provedor: { type: DataTypes.STRING, allowNull: false },
     cantidad: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 },
-    unidad: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      defaultValue: "unidad",
-    },
+    costo_insumo: { type: DataTypes.FLOAT, allowNull: false, defaultValue: 0 },
+    costo_transporte: { type: DataTypes.FLOAT, allowNull: false, defaultValue: 0 },
+    fecha_caducidad: { type: DataTypes.DATE, allowNull: false},
+    peso_unidad: { type: DataTypes.FLOAT, allowNull: false, defaultValue: 0 },
+    granularidad: { type: DataTypes.FLOAT, allowNull: false, defaultValue: 0 },
   },
   {
-    sequelize,
-    tableName: "inventario",
-    timestamps: true,
+    timestamps: false,
   }
 );

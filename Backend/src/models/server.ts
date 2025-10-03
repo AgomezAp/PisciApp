@@ -14,11 +14,11 @@ import rateLimit from "express-rate-limit";
 import RInventario from "../routes/inventario";
 import RProducto from "../routes/producto";
 import RTanque from "../routes/tanque";
+import RCiclo from "../routes/ciclo";
 import compraRoutes from "../routes/compra";
 import productoRoutes from "../routes/producto";
 /* 
 /* 
-import RCiclo from "../routes/ciclo";
 import RTarea from "../routes/tarea";
 import RCompra from "../routes/compra"; */
 
@@ -31,15 +31,16 @@ class Server {
 
   constructor() {
     this.app = express();
-    this.app.use(helmet());
-    this.app.use((req, res, next) => {
-      // 👇 Cambiá tudominio.com por el dominio real de tu frontend Angular
-      res.setHeader(
-        "Content-Security-Policy",
-        "default-src 'self' http://localhost:4200 https://tudominio.com" // CAMBIAR ESTO POR LA URL DE PRODUCCIÓN
-      );
-      next();
-    });
+    this.app.use(
+      helmet.contentSecurityPolicy({
+        directives: {
+          defaultSrc: ["'self'"],
+          imgSrc: ["'self'", "http://localhost:3010", "data:", "blob:"], // imágenes locales y base64
+          scriptSrc: ["'self'", "http://localhost:4200"],
+          styleSrc: ["'self'", "http://localhost:4200", "'unsafe-inline'"],
+        },
+      })
+    );
     this.port = process.env.PORT!;
     this.middlewares();
     this.router();
@@ -65,6 +66,9 @@ class Server {
     this.app.use("/inventario", RInventario);
     this.app.use("/tanque", RTanque);
     this.app.use("/productos", RProducto);
+    this.app.use("/ciclos", RCiclo);
+    this.app.use("/inventario", RInventario);
+    /*     this.app.use("/usuarios", RUsuario);
     this.app.use("/api/compras", compraRoutes);
     this.app.use("/api/productos", productoRoutes);
     /*this.app.use("/usuarios", RUsuario);
@@ -72,7 +76,7 @@ class Server {
     this.app.use("/compras", RCompra); 
     this.app.use("/tareas", RTarea);
     this.app.use("/inventario", RInventario);
-    */
+    this.app.use("/compras", RCompra); */
   }
 
   middlewares() {

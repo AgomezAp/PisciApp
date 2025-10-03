@@ -16,6 +16,8 @@ export class NavbarComponent implements OnInit, OnDestroy {
   userInitials: string = 'U';
   private sub!: Subscription;
 
+  menuAbierto = false; // <-- NUEVO
+
   constructor(private authService: AuthService, private router: Router) {}
 
   ngOnInit(): void {
@@ -37,8 +39,12 @@ export class NavbarComponent implements OnInit, OnDestroy {
       parts[0].charAt(0) + parts[parts.length - 1].charAt(0)
     ).toUpperCase();
   }
-    logout() {
+  logout() {
     this.authService.logout();
     this.router.navigate(['/login']);
+  }
+
+  toggleMenu() {
+    this.menuAbierto = !this.menuAbierto;
   }
 }

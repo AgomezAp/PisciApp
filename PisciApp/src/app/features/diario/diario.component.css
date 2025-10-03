@@ -1,0 +1,271 @@
+/* Contenedor principal */
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 18px 12px;
+}
+
+/* Encabezado */
+.head h1 {
+  color: #00796b;
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.head .muted {
+  color: #607d8b;
+  font-size: 1.08rem;
+  margin-bottom: 18px;
+}
+
+/* Tarjeta */
+.card {
+  background: #f5fafd;
+  border-radius: 14px;
+  box-shadow: 0 2px 8px rgba(0,151,167,0.08);
+  padding: 18px 16px;
+  margin-bottom: 22px;
+  border: 1.5px solid #e0f7fa;
+}
+
+/* Grupos de formulario */
+.group {
+  margin-bottom: 18px;
+}
+
+.group h2 {
+  color: #0097a7;
+  font-size: 1.18rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+/* Grid de inputs */
+.form-grid .grid2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+  margin-bottom: 10px;
+}
+
+.form-grid .grid4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 10px;
+}
+
+/* Inputs y selects */
+input[type="number"],
+input[type="text"],
+select {
+  width: 100%;
+  padding: 7px 10px;
+  border-radius: 8px;
+  border: 1.5px solid #b2ebf2;
+  font-size: 1rem;
+  margin-top: 4px;
+  margin-bottom: 8px;
+  background: #fff;
+  color: #263238;
+  transition: border-color 0.2s;
+}
+
+input:focus,
+select:focus {
+  border-color: #00bcd4;
+  outline: none;
+}
+
+/* Etiquetas */
+label {
+  font-weight: 500;
+  color: #00796b;
+  font-size: 0.98rem;
+}
+
+/* Semáforo y chips */
+.semaforo {
+  margin: 8px 0;
+  min-height: 24px;
+}
+
+.global-chip {
+  display: inline-block;
+  background: #e0f7fa;
+  color: #00796b;
+  border-radius: 16px;
+  padding: 4px 14px;
+  font-weight: 600;
+  font-size: 1rem;
+  margin-bottom: 8px;
+}
+
+.tips {
+  background: #fffde7;
+  color: #fbc02d;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 0.98rem;
+  margin-bottom: 8px;
+}
+
+/* Info card */
+.info-card {
+  background: #e0f7fa;
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+
+.info-title {
+  color: #0097a7;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.info-list {
+  color: #263238;
+  font-size: 0.97rem;
+  margin: 0;
+  padding-left: 18px;
+}
+
+/* Acciones del formulario */
+.form-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 18px;
+}
+
+.btn, .btn-outline, .btn-sm, .outline {
+  padding: 8px 18px;
+  border-radius: 8px;
+  border: none;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.btn {
+  background: #00bcd4;
+  color: #fff;
+}
+
+.btn:hover {
+  background: #0097a7;
+}
+
+.btn-outline, .outline {
+  background: #e0f7fa;
+  color: #0097a7;
+  border: 1.5px solid #00bcd4;
+}
+
+.btn-outline:hover, .outline:hover {
+  background: #b2ebf2;
+  color: #00796b;
+}
+
+.btn-sm {
+  padding: 6px 12px;
+  font-size: 0.95rem;
+  background: #00bcd4;
+  color: #fff;
+}
+
+.btn-sm.outline {
+  background: #e0f7fa;
+  color: #0097a7;
+  border: 1.5px solid #00bcd4;
+}
+
+/* Historial */
+.card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.98rem;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 1px 4px rgba(0,151,167,0.07);
+}
+
+th, td {
+  padding: 7px 10px;
+  text-align: left;
+  border-bottom: 1px solid #e0f7fa;
+  word-break: break-word;
+}
+
+th {
+  background: #e0f7fa;
+  color: #0097a7;
+  font-weight: 600;
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+/* Toast */
+.toast-container {
+  position: fixed;
+  top: 18px;
+  right: 18px;
+  z-index: 9999;
+}
+
+/* Responsive */
+@media (max-width: 700px) {
+  .container {
+    padding: 8px 2vw;
+    max-width: 99vw;
+  }
+  .card {
+    padding: 10px 4vw;
+  }
+  .form-grid .grid2 {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .form-grid .grid4 {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  table {
+    font-size: 0.93rem;
+  }
+  th, td {
+    padding: 6px 6px;
+  }
+}
+
+@media (max-width: 900px) {
+  .form-grid .grid4 {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+}
+
+span.rojo { color: #d32f2f; font-weight: bold; }
+span.amarillo { color: #fbc02d; font-weight: bold; }
+span.verde { color: #388e3c; font-weight: bold; }
+
+.global-chip.critico { background: #ffebee; color: #d32f2f; }
+.global-chip.vigilancia { background: #fffde7; color: #fbc02d; }
+.global-chip.optimo { background: #e0f7fa; color: #388e3c; }

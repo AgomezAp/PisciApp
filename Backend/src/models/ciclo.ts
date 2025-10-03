@@ -1,17 +1,8 @@
 import { DataTypes, Model } from "sequelize";
 import sequelize from "../database/connection";
 
-export class Ciclo extends Model {
-  public id!: number;
-  public usuario_id!: number;
-  public numero_peces!: number;
-  public costos!: number;
-  public bajas!: number;
-  public fecha_inicio!: Date;
-  public fecha_fin!: Date;
-}
-
-Ciclo.init(
+export const Ciclo = sequelize.define(
+  "ciclos",
   {
     id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
     usuario_id: {
@@ -20,48 +11,34 @@ Ciclo.init(
       allowNull: false,
     },
     numero_peces: { type: DataTypes.INTEGER, allowNull: false },
+    numero_actual: {type: DataTypes.INTEGER, allowNull: false},
+    especie: {type: DataTypes.STRING, allowNull: false},
     costos: { type: DataTypes.FLOAT, allowNull: false },
-    bajas: { type: DataTypes.INTEGER, allowNull: true },
+    total_bajas: { type: DataTypes.INTEGER, defaultValue: 0 },
     fecha_inicio: { type: DataTypes.DATE, allowNull: false },
     fecha_fin: { type: DataTypes.DATE, allowNull: true },
+    ciclo_id_usuario: { type: DataTypes.INTEGER, allowNull: false},
   },
   {
-    sequelize,
-    tableName: "ciclos",
     timestamps: false,
   }
 );
 
-export class CicloTanque extends Model {
-  public ciclo_id!: number;
-  public tanque_id!: number;
-  public numero_peces!: number;
-}
 
-CicloTanque.init(
+export const CicloTanque = sequelize.define(
+  "ciclo_tanques",
   {
     ciclo_id: {type: DataTypes.INTEGER, references: {model: "ciclos", key: "id"}, allowNull: false, primaryKey: true},
     tanque_id: {type: DataTypes.INTEGER, references: {model: "tanques", key: "id"}, allowNull: false, primaryKey: true},
     numero_peces: {type: DataTypes.INTEGER, allowNull: false},
   },
   {
-    sequelize,
-    tableName: "ciclo_tanques",
     timestamps: false,
   }
 );
 
-
-export class Alimento extends Model {
-  public id!: number;
-  public ciclo_id!: number;
-  public cantidad!: number;
-  public costo!: number;
-  public nombre!: string;
-  public descripcion!: string;
-}
-
-Alimento.init(
+export const Alimento = sequelize.define(
+  "alimentos",
   {
     id: {type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true},
     ciclo_id: {
@@ -75,22 +52,15 @@ Alimento.init(
     descripcion: { type: DataTypes.TEXT, allowNull: false },
   },
   {
-    sequelize,
-    tableName: "alimentos",
     timestamps: true,
+    updatedAt: false
   }
 );
 
-export class Quimico extends Model {
-  public id!: number;
-  public ciclo_id!: number;
-  public cantidad!: number;
-  public costo!: number;
-  public nombre!: string;
-  public descripcion!: string;
-}
 
-Quimico.init(
+
+export const Quimico = sequelize.define(
+  "quimicos",
   {
     id: {type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true},
     ciclo_id: {
@@ -104,48 +74,36 @@ Quimico.init(
     descripcion: { type: DataTypes.TEXT, allowNull: false },
   },
   {
-    sequelize,
-    tableName: "quimicos",
-    timestamps: false,
+    timestamps: true,
+    updatedAt: false
   }
 );
 
-export class MovimientoTanque extends Model {
-  public ciclo_id!: number; 
-  public origen!: number;
-  public destino!: number;
-  public cantidad!: number;
-}
 
-MovimientoTanque.init(
+
+export const MovimientoTanque = sequelize.define(
+  "movimiento",
   {
-    ciclo_id: { type: DataTypes.INTEGER,  allowNull: false },
-    origen: { type: DataTypes.INTEGER,  allowNull: false },
+    ciclo_id: { type: DataTypes.INTEGER, references: { model: "ciclos", key: "id"},  allowNull: false },
+    origen: { type: DataTypes.INTEGER,   allowNull: false },
     destino: { type: DataTypes.INTEGER,  allowNull: false },
     cantidad: { type: DataTypes.INTEGER,  allowNull: false },
   },
   {
-    sequelize,
-    tableName: "movimiento",
-    timestamps: false
+    timestamps: true,
+    updatedAt: false
   }
 )
 
-export class Bajas extends Model {
-  public ciclo_id!: number; 
-  public tanque_id!: number;
-  public cantidad!: number
-}
-
-Bajas.init(
+export const Bajas = sequelize.define(
+  "bajas",
   {
-    ciclo_id: { type: DataTypes.INTEGER,  allowNull: false },
-    tanque_id: { type: DataTypes.INTEGER,  allowNull: false },
+    ciclo_id: { type: DataTypes.INTEGER, references: {model: "ciclos", key: "id"},  allowNull: false },
+    tanque_id: { type: DataTypes.INTEGER, references: {model: "tanques", key: "id"},  allowNull: false },
     cantidad: { type: DataTypes.INTEGER,  allowNull: false },
   },
   {
-    sequelize,
-    tableName: "bajas",
-    timestamps: false
+    timestamps: true,
+    updatedAt: false
   }
 )

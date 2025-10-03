@@ -56,14 +56,15 @@ export const registrarUsuario = async (req: Request, res: Response) => {
         usuario.verification_code = crypto.randomInt(100000, 999999).toString();
         usuario.verification_expires_at = new Date(Date.now() + 15 * 60 * 1000);
         await usuario.save();
-
+        const verifyLink = `${process.env.FRONTEND_URL}/verify-email`;
         // ✉️ Mandamos correo con nuevo código
         await enviarCorreo({
           to: correo,
           subject: "Código de verificación (Cuenta reactivada)",
           html: getVerificationEmailTemplate(
             nombre,
-            usuario.verification_code!
+            usuario.verification_code!,
+            verifyLink
           ),
         });
 
@@ -80,7 +81,7 @@ export const registrarUsuario = async (req: Request, res: Response) => {
 
     // 🟢 Si no existe usuario, ahora sí creamos uno nuevo
     const hashedPassword = await bcrypt.hash(contrasena, 10);
-
+    const verifyLink = `${process.env.FRONTEND_URL}/verify-email`;
     const verificationCode = crypto.randomInt(100000, 999999).toString();
     const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
     const fechaCobro = new Date();
@@ -107,7 +108,7 @@ export const registrarUsuario = async (req: Request, res: Response) => {
     await enviarCorreo({
       to: correo,
       subject: "Código de verificación",
-      html: getVerificationEmailTemplate(nombre, verificationCode),
+      html: getVerificationEmailTemplate(nombre, verificationCode, verifyLink),
     });
 
     res.status(201).json({
@@ -162,7 +163,12 @@ const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 export const loginConGoogle = async (req: Request, res: Response) => {
   try {
     const { idToken } = req.body;
-    
+
+    if (!idToken) {
+      return res.status(400).json({ message: "Token de Google requerido" });
+    }
+
+    // 🔎 Validar token con Google
     const ticket = await client.verifyIdToken({
       idToken,
       audience: process.env.GOOGLE_CLIENT_ID!,
@@ -170,15 +176,18 @@ export const loginConGoogle = async (req: Request, res: Response) => {
     const payload = ticket.getPayload();
 
     if (!payload?.email) {
-      return res.status(400).json({ message: "Token inválido, sin correo" });
+      return res
+        .status(400)
+        .json({ message: "Token de Google inválido (sin correo)" });
     }
 
+    // Buscar/crear usuario
     let usuario = await Usuario.findOne({ where: { correo: payload.email } });
 
     if (!usuario) {
-      // Nuevo usuario vía Google
+      // 🔥 Crear usuario si nunca existió
       usuario = await Usuario.create({
-        nombre: payload.name || "Usuario",
+        nombre: payload.name || "Usuario Google",
         correo: payload.email,
         google_id: payload.sub,
         foto_perfil: payload.picture || null,
@@ -187,34 +196,46 @@ export const loginConGoogle = async (req: Request, res: Response) => {
         periodo_gracia: false,
         rol: "Cliente",
         fecha_cobro: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
-        // 👇 Opcionales en Google (pueden quedarse null)
         telefono: null,
         departamento: null,
         ciudad: null,
       });
+      console.log("🆕 Usuario registrado con Google:", usuario.correo);
+    } else {
+      console.log("✅ Usuario existente login Google:", usuario.correo);
     }
 
-    const accessToken = jwt.sign(
-      { id: usuario.id, correo: usuario.correo, rol: usuario.rol },
-      process.env.JWT_SECRET || "secret",
-      { expiresIn: "15m" }
+    // Revocar sesiones previas activas de este usuario
+    await Sesion.update(
+      { is_revoked: true },
+      { where: { user_id: usuario.id, is_revoked: false } }
     );
 
-    const refreshToken = jwt.sign(
-      { id: usuario.id },
-      process.env.JWT_REFRESH_SECRET || "refresh",
-      { expiresIn: "7d" }
-    );
+    // Generar nuevos tokens + sesión
+    const { accessToken, refreshToken } = await generateTokens(usuario);
 
-    res.json({
+    // Guardar refresh en cookie
+    res.cookie("refresh_token", refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      maxAge: 1000 * 60 * 60 * 24 * 7,
+    });
+
+    return res.json({
       message: "Login con Google exitoso",
-      usuario,
+      usuario: {
+        id: usuario.id,
+        nombre: usuario.nombre,
+        correo: usuario.correo,
+        rol: usuario.rol,
+        foto_perfil: usuario.foto_perfil,
+      },
       accessToken,
-      refreshToken,
     });
   } catch (error) {
-    console.error("Google Login Error:", error);
-    res.status(500).json({ message: "Error autenticando con Google" });
+    console.error("❌ Error en loginConGoogle:", error);
+    return res.status(500).json({ message: "Error autenticando con Google" });
   }
 };
 
@@ -235,7 +256,6 @@ export const loginHandler = async (req: Request, res: Response) => {
     return res.status(401).json({ error: "Credenciales inválidas" });
   }
 
-  // ✅ SI TIENE 2FA activo, pedir el código primero
   if (usuario.twofa_enabled) {
     return res.json({
       requires2FA: true,
@@ -243,29 +263,22 @@ export const loginHandler = async (req: Request, res: Response) => {
       message: "Se requiere validación de 2FA",
     });
   }
+  await Sesion.update(
+    { is_revoked: true },
+    { where: { user_id: usuario.id, is_revoked: false } }
+  );
 
-  // ✅ Si no tiene 2FA, login normal con tokens
+  // ✅ Generar access + refresh (YA maneja la sesión en DB)
   const { accessToken, refreshToken } = await generateTokens(usuario);
 
-  // Guardar refresh token en DB hasheado
-  const hash = await argon2.hash(refreshToken);
-  await Sesion.create({
-    user_id: usuario.id,
-    refresh_token_hash: hash,
-    is_revoked: false,
-    created_at: new Date(),
-    expires_at: addDays(new Date(), 7),
-  });
-
-  // Guardar refresh en cookie
+  // ✅ Guardar refresh en cookie
   res.cookie("refresh_token", refreshToken, {
     httpOnly: true,
-    secure: false, // true en producción
-    sameSite: "lax",
-    maxAge: 1000 * 60 * 60 * 24 * 7,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    maxAge: 1000 * 60 * 60 * 24 * 7, // 7 días
   });
 
-  // 🚨 Aquí antes SOLO devolvías accessToken
   return res.json({
     message: "Inicio de sesión exitoso",
     usuario: {
@@ -279,101 +292,131 @@ export const loginHandler = async (req: Request, res: Response) => {
 };
 
 export const refreshTokenHandler = async (req: Request, res: Response) => {
-  console.log("📩 Se llamó a /auth/refresh");
+  console.log("🚀 === INICIO refreshTokenHandler ===");
 
-  // 1. Extraer refresh token desde cookie o body
-  const refreshToken = req.cookies.refresh_token || req.body.refreshToken;
+  // Debug de cookies recibidas
+  console.log("🍪 Todas las cookies recibidas:", req.cookies);
+  console.log("🍪 Headers de la request:", req.headers.cookie);
+
+  const refreshToken = req.cookies.refresh_token;
   console.log(
-    "🔑 Refresh token recibido:",
-    refreshToken ? refreshToken.substring(0, 20) + "..." : "NULO"
+    "🔑 Refresh token extraído:",
+    refreshToken ? "SÍ EXISTE" : "❌ NO EXISTE"
   );
+  console.log("🔑 Longitud del token:", refreshToken?.length || 0);
+  console.log("🔑 Primeros 20 chars:", refreshToken?.substring(0, 20) + "...");
 
   if (!refreshToken) {
-    console.warn("⚠️ No se envió refresh token");
-    return res.status(400).json({ error: "Refresh token requerido" });
+    console.log("❌ SALIENDO: No hay refresh token");
+    return res.status(400).json({ error: "Falta refresh" });
   }
 
-  // 2. Buscar sesión activa en DB
+  // Debug de sesiones en BD
   const sesiones = await Sesion.findAll({ where: { is_revoked: false } });
-  console.log(`🔎 Se encontraron ${sesiones.length} sesiones activas en DB`);
+  console.log("📊 Sesiones activas en BD:", sesiones.length);
+
+  sesiones.forEach((s, index) => {
+    console.log(`📋 Sesión ${index + 1}:`);
+    console.log(`   ID: ${s.id}`);
+    console.log(`   User ID: ${s.user_id}`);
+    console.log(`   Expires: ${s.expires_at}`);
+    console.log(
+      `   Hash (primeros 20 chars): ${s.refresh_token_hash.substring(0, 20)}...`
+    );
+  });
+
   let stored: Sesion | null = null;
 
-  for (const sesion of sesiones) {
-    if (!sesion.refresh_token_hash) continue;
+  // ✅ CORREGIDO: Debug del proceso de verificación
+  console.log("🔍 Iniciando verificación de hashes...");
+  for (let i = 0; i < sesiones.length; i++) {
+    const sesion = sesiones[i]; // ✅ TypeScript sabe que existe porque i < sesiones.length
+
+    if (!sesion) {
+      // ✅ Verificación adicional por seguridad
+      console.log(`⚠️ Sesión en índice ${i} es undefined, saltando...`);
+      continue;
+    }
+
+    console.log(`🔐 Verificando sesión ${i + 1} (ID: ${sesion.id})`);
 
     try {
       const match = await argon2.verify(
         sesion.refresh_token_hash,
         refreshToken
       );
-      console.log(`🧩 Comparando refreshToken vs hash -> match=${match}`);
+      console.log(`   Resultado: ${match ? "✅ MATCH" : "❌ NO MATCH"}`);
+
       if (match) {
         stored = sesion;
+        console.log(`🎯 ¡ENCONTRADA! Sesión válida: ID ${sesion.id}`);
         break;
       }
-    } catch (err) {
-      console.error(
-        `❌ Error verificando hash con argon2 en sesión id=${sesion.id}`,
-        err
-      );
+    } catch (error) {
+      console.log(`   ⚠️ Error verificando hash:`, error);
     }
   }
 
   if (!stored) {
-    console.warn("🚫 No se encontró sesión que coincida con el refresh token");
-    return res.status(403).json({ error: "Refresh token inválido" });
+    console.log("❌ RESULTADO FINAL: Ninguna sesión coincide con el token");
+    console.log("🔍 Posibles causas:");
+    console.log("   1. Token fue modificado en tránsito");
+    console.log("   2. Sesión fue eliminada/revocada");
+    console.log("   3. Problema en generación/almacenamiento inicial");
+    return res.status(403).json({ error: "Refresh inválido" });
   }
 
-  console.log(
-    `✅ Match encontrado en sesión id=${stored.id}, user_id=${stored.user_id}`
-  );
+  console.log("✅ Token verificado correctamente");
 
-  // 3. Validar expiración
+  // Verificar expiración
+  console.log("⏰ Verificando expiración...");
+  console.log("   Expira en:", stored.expires_at);
+  console.log("   Ahora es:", new Date());
+  console.log("   ¿Expirado?:", stored.expires_at < new Date());
+
   if (stored.expires_at < new Date()) {
-    console.warn(`⏰ Refresh expirado en sesión id=${stored.id}`);
+    console.log("❌ Token expirado, revocando sesión");
     stored.is_revoked = true;
     await stored.save();
-    return res.status(403).json({ error: "Refresh token expirado" });
+    return res.status(403).json({ error: "Refresh expirado" });
   }
 
-  // 4. Revocar la sesión usada (rotación de refresh)
+  // Revocar sesión anterior
+  console.log("🔄 Revocando sesión anterior y creando nueva...");
   stored.is_revoked = true;
   await stored.save();
-  console.log(`♻️ Sesión ${stored.id} revocada (refresh usado)`);
 
-  // 5. Emitir nuevos tokens
   const usuario = await Usuario.findByPk(stored.user_id);
   if (!usuario) {
-    console.error(`🚨 Usuario no encontrado para sesión id=${stored.id}`);
+    console.log("❌ Usuario no encontrado para user_id:", stored.user_id);
     return res.status(403).json({ error: "Usuario no válido" });
   }
 
+  console.log("👤 Usuario encontrado:", usuario.correo);
+
+  // Generar nueva sesión
+  console.log("🔄 Generando nuevos tokens...");
   const { accessToken, refreshToken: newRefresh } = await generateTokens(
     usuario
   );
-  console.log(`🎟️ Nuevos tokens generados para user_id=${usuario.id}`);
 
-  // 6. Guardar el nuevo refresh en DB
-  const newHash = await argon2.hash(newRefresh);
-  await Sesion.create({
-    user_id: usuario.id,
-    refresh_token_hash: newHash,
-    is_revoked: false,
-    created_at: new Date(),
-    expires_at: addDays(new Date(), 7), // refresh válido otra semana
-  });
-  console.log("💾 Nueva sesión guardada con refresh token rotado");
+  console.log("✅ Nuevos tokens generados");
+  console.log(
+    "🔑 Nuevo refresh token (primeros 20):",
+    newRefresh.substring(0, 20) + "..."
+  );
 
-  // 7. Enviar el nuevo refresh token en cookie
+  // ✅ CORREGIDO: usar newRefresh en lugar de refreshToken
   res.cookie("refresh_token", newRefresh, {
     httpOnly: true,
-    secure: false, // ⚠️ en producción -> true
-    sameSite: "none",
-    maxAge: 1000 * 60 * 60 * 24 * 7,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    maxAge: 1000 * 60 * 60 * 24 * 7, // 7 días
   });
-  console.log("🍪 Refresh token actualizado en cookie");
 
-  // 8. Devolver el access token
+  console.log("🍪 Nueva cookie enviada al cliente");
+  console.log("✅ === FIN refreshTokenHandler exitoso ===");
+
   return res.json({ accessToken });
 };
 
@@ -489,21 +532,10 @@ export const verificar2FALogin = async (req: Request, res: Response) => {
   }
 
   const { accessToken, refreshToken } = await generateTokens(usuario);
-
-  // Guardar refresh token en DB hasheado
-  const hash = await argon2.hash(refreshToken);
-  await Sesion.create({
-    user_id: usuario.id,
-    refresh_token_hash: hash,
-    is_revoked: false,
-    created_at: new Date(),
-    expires_at: addDays(new Date(), 7),
-  });
-
   res.cookie("refresh_token", refreshToken, {
     httpOnly: true,
     secure: false,
-    sameSite: "lax",
+    sameSite: "none",
     maxAge: 1000 * 60 * 60 * 24 * 7,
   });
 
@@ -619,7 +651,9 @@ export const actualizarPreferencias = async (req: Request, res: Response) => {
   try {
     const usuario = await Usuario.findByPk(userId);
     if (!usuario) {
-      return res.status(404).json({ success: false, message: "Usuario no encontrado" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Usuario no encontrado" });
     }
 
     usuario.noti_email = noti_email;
@@ -638,10 +672,11 @@ export const actualizarPreferencias = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error("Error guardando preferencias:", error);
-    return res.status(500).json({ success: false, message: "Error en servidor" });
+    return res
+      .status(500)
+      .json({ success: false, message: "Error en servidor" });
   }
 };
-// controllers/usuario.ts
 export const getProfile = async (req: Request, res: Response) => {
   const userId = (req as any).usuario.id;
 
@@ -653,6 +688,9 @@ export const getProfile = async (req: Request, res: Response) => {
         "correo",
         "rol",
         "telefono",
+        "ciudad",
+        "departamento",
+        "foto_perfil",
         "twofa_enabled",
         "noti_email",
         "noti_alertas",
@@ -662,15 +700,101 @@ export const getProfile = async (req: Request, res: Response) => {
     });
 
     if (!usuario) {
-      return res.status(404).json({ success: false, message: "Usuario no encontrado" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Usuario no encontrado" });
+    }
+
+    // 👇 Base URL dinámica según ambiente
+    const baseUrl = `${req.protocol}://${req.get("host")}`;
+
+    // 👇 Si la foto existe y no es absoluta, la convierto en absoluta
+    if (usuario.foto_perfil && !usuario.foto_perfil.startsWith("http")) {
+      usuario.foto_perfil = `${baseUrl}${usuario.foto_perfil}`;
     }
 
     return res.json({
       success: true,
-      usuario, // 👈 siempre actualizado desde BD
+      usuario,
     });
   } catch (error) {
     console.error("Error al traer perfil:", error);
-    return res.status(500).json({ success: false, message: "Error en servidor" });
+    return res
+      .status(500)
+      .json({ success: false, message: "Error en servidor" });
+  }
+};
+export const actualizarPerfil = async (req: Request, res: Response) => {
+  const userId = (req as any).usuario.id; // sacado del verifyToken
+  const { nombre, telefono, departamento, ciudad, foto_perfil } = req.body;
+
+  try {
+    // Buscar usuario en BD
+    const usuario = await Usuario.findByPk(userId);
+    if (!usuario) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Usuario no encontrado" });
+    }
+
+    // Actualizar solo campos permitidos
+    if (nombre !== undefined) usuario.nombre = nombre;
+    if (telefono !== undefined) usuario.telefono = telefono;
+    if (departamento !== undefined) usuario.departamento = departamento;
+    if (ciudad !== undefined) usuario.ciudad = ciudad;
+    if (foto_perfil !== undefined) usuario.foto_perfil = foto_perfil;
+
+    await usuario.save();
+
+    return res.json({
+      success: true,
+      message: "Perfil actualizado correctamente",
+      usuario: {
+        id: usuario.id,
+        nombre: usuario.nombre,
+        correo: usuario.correo,
+        telefono: usuario.telefono,
+        departamento: usuario.departamento,
+        ciudad: usuario.ciudad,
+        foto_perfil: usuario.foto_perfil,
+        rol: usuario.rol,
+      },
+    });
+  } catch (error) {
+    console.error("❌ Error actualizando perfil:", error);
+    return res
+      .status(500)
+      .json({ success: false, message: "Error actualizando perfil" });
+  }
+};
+export const subirFotoPerfil = async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).usuario.id;
+    const usuario = await Usuario.findByPk(userId);
+
+    if (!usuario) {
+      return res.status(404).json({ message: "Usuario no encontrado" });
+    }
+
+    if (!req.file) {
+      return res
+        .status(400)
+        .json({ message: "No se ha subido ninguna imagen" });
+    }
+
+    const baseUrl = `${req.protocol}://${req.get("host")}`;
+    // ejemplo: http://localhost:3010
+
+    usuario.foto_perfil = `${baseUrl}/uploads/profile_pics/${req.file.filename}`;
+    await usuario.save();
+
+    return res.json({
+      success: true,
+      message: "Foto de perfil actualizada",
+      url: usuario.foto_perfil,
+    });
+  } catch (err) {
+    console.error("❌ Error subiendo foto:", err);
+    res.status(500).json({ message: "Error subiendo foto" });
   }
 };

@@ -8,8 +8,11 @@ import {
   confirmar2FA,
   actualizarPreferencias,
   getProfile,
+  actualizarPerfil,
+  subirFotoPerfil,
 } from "../controllers/usuario";
 import { verifyToken } from "../middlewares/verifyToken";
+import { upload } from "../middlewares/upload";
 
 const router = Router();
 
@@ -25,5 +28,7 @@ router.post("/auth/2fa/verificar", verificar2FALogin);
 // routes/usuario.ts
 router.put("/preferencias", verifyToken, actualizarPreferencias);
 router.get("/perfil", verifyToken, getProfile);
+router.put("/perfil-actualizar", verifyToken, actualizarPerfil);
+router.post("/foto-perfil", verifyToken, upload.single("foto"), subirFotoPerfil);
 
 export default router;

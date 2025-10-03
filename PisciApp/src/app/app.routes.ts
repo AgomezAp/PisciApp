@@ -39,6 +39,13 @@ export const routes: Routes = [
     ],
   },
   {
+    path: 'inventario',
+    loadComponent: () =>
+      import(
+        './features/inventario/inventario.component'
+      ).then((m) => m.InventarioComponent),
+  },
+  {
     path: 'configuracion',
     loadComponent: () =>
       import(
@@ -46,11 +53,41 @@ export const routes: Routes = [
       ).then((m) => m.ConfiguracionComponent),
   },
   {
+    path: 'inicio',
+    loadComponent: () =>
+      import(
+        './features/inicio/inicio.component'
+      ).then((m) => m.InicioComponent),
+  },
+  {
+    path: 'estanques',
+    loadComponent: () =>
+      import(
+        './features/tanques/tanques.component'
+      ).then((m) => m.TanquesComponent),
+  },
+  {
+    path: 'ciclos',
+    loadComponent: () =>
+      import(
+        './features/ciclos/ciclos.component'
+      ).then((m) => m.CiclosComponent),
+  },
+  {
+    path: 'diario',
+    loadComponent: () =>
+      import(
+        './features/diario/diario.component'
+      ).then((m) => m.DiarioComponent),
+  },
+  {
     path: 'producto',
     loadComponent: () =>
       import(
         './features/producto/producto.component'
       ).then((m) => m.ProductoComponent),
+  },
+  { path: '**', redirectTo: 'login' },
   },
   //{ path: '**', redirectTo: 'login' },
   { path: '', component: ProductoComponent },   // catálogo principal

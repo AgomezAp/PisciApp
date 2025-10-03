@@ -1,0 +1,132 @@
+<app-navbar></app-navbar>
+<!-- Dashboard de tarjetas informativas -->
+<div class="dashboard-tarjetas">
+  <div class="dashboard-tarjeta">
+    <div class="dashboard-titulo">Estanques activos</div>
+    <div class="dashboard-valor">{{tanques.length}}</div>
+    <div class="dashboard-sub">{{tanquesDisponiblesCantidad}} Estanques Disponibles </div>
+  </div>
+  <div class="dashboard-tarjeta">
+    <div class="dashboard-titulo">Biomasa total</div>
+    <div class="dashboard-valor">1.240 kg</div>
+    <div class="dashboard-sub">{{especies}}</div>
+  </div>
+  <div class="dashboard-tarjeta">
+    <div class="dashboard-titulo">FCR promedio</div>
+    <div class="dashboard-valor">1.52</div>
+    <div class="dashboard-sub">últimos 30 días</div>
+  </div>
+  <div class="dashboard-tarjeta">
+    <div class="dashboard-titulo">Supervivencia</div>
+    <div class="dashboard-valor">{{supervivencia > 0 ? supervivencia + '%' : 'N/A'}}</div>
+    <div class="dashboard-sub">promedio</div>
+  </div>
+</div>
+
+<div class="tarjetas-container">
+  <div class="informacion">
+    <h3>Tus Estanques </h3>
+    <p>Aqui encuentras una lista informativa de todos tus estanques</p>
+  </div>
+  <ng-container *ngIf="tanques.length > 0; else sinTanques">
+    <div class="tarjetas-lista">
+      <div class="tarjeta" *ngFor="let tanque of tanques">
+        <div class="tarjeta-titulo">{{ tanque.nombre }}</div>
+        <div class="tarjeta-ciclo">{{ tanque.volumen }} m³</div>
+        <div class="tarjeta-sub">Tipo: {{ tanque.tipoTanque }}</div>
+      </div>
+      <div class="botones-flotantes">
+        <button class="btn-agregar-flotante" (click)="abrirModalTanque()">+</button>
+        <button class="btn-info-flotante" (click)="infoTanque()"><span>i</span></button>
+      </div>
+    </div>
+  </ng-container>
+  <ng-template #sinTanques>
+    <div class="sin-tanques">
+      <span class="sin-tanques-icon">🛑</span>
+      <h4>No tienes estanques registrados</h4>
+      <p>Haz clic en <b>+</b> para agregar tu primer estanque.</p>
+      <button class="btn-agregar-flotante" (click)="abrirModalTanque()">+</button>
+    </div>
+  </ng-template>
+</div>
+
+<div class="tarjetas-container">
+  <div class="informacion">
+    <h3>Tus Ciclos </h3>
+    <p>Aqui encuentras una lista informativa de todos tus ciclos</p>
+  </div>
+  <ng-container *ngIf="ciclos &&  ciclos.length > 0; else sinCiclos">
+    <div class="tarjetas-lista">
+      <div class="tarjeta" *ngFor="let ciclo of ciclos">
+        <div class="tarjeta-titulo">Ciclo #{{ ciclo.ciclo_id_usuario }}</div>
+        <div class="tarjeta-ciclo"># Peces: {{ ciclo.numero_peces }}</div>
+        <div class="tarjeta-sub">Inicio: {{ ciclo.fecha_inicio | date:'yyyy MM dd' }}</div>
+        <!-- Puedes agregar más datos aquí -->
+      </div>
+      <div class="botones-flotantes">
+        <button class="btn-agregar-flotante" (click)="abrirModalCiclo()">+</button>
+        <button class="btn-info-flotante" (click)="infoCiclo()"><span>i</span></button>
+      </div>
+    </div>
+  </ng-container>
+  <ng-template #sinCiclos>
+    <div class="sin-tanques">
+      <span class="sin-tanques-icon">🛑</span>
+      <h4>No tienes ciclos registrados</h4>
+      <p>Haz clic en <b>+</b> para agregar tu primer ciclo.</p>
+      <button class="btn-agregar-flotante" (click)="abrirModalCiclo()">+</button>
+    </div>
+  </ng-template>
+</div>
+
+<div class="modal-backdrop" *ngIf="mostrarModalTanque">
+  <div class="modal">
+    <h3>Agregar Tanque</h3>
+    <form (ngSubmit)="agregarTanque()">
+      <label>Nombre:</label>
+      <input type="text" [(ngModel)]="nuevoTanque.nombre" name="nombre" required />
+
+      <label>Volumen (m³) *:</label>
+      <input type="number" [(ngModel)]="nuevoTanque.volumen" name="volumen" required />
+
+      <label>Tipo de Tanque *:</label>
+      <input type="text" [(ngModel)]="nuevoTanque.tipoTanque" name="tipoTanque" required />
+
+      <div class="modal-actions">
+        <button type="submit">Agregar</button>
+        <button type="button" (click)="cerrarModalTanque()">Cancelar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal-backdrop" *ngIf="mostrarModalCiclo">
+  <div class="modal">
+    <h3>Agregar Ciclo</h3>
+    <form (ngSubmit)="agregarCiclo()">
+      <label>Numero de peces *:</label>
+      <input type="number" [(ngModel)]="nuevoCiclo.numero_peces" name="numero_peces" required />
+
+      <label>Costos Iniciales *:</label>
+      <input type="number" [(ngModel)]="nuevoCiclo.costos" name="costos" required />
+
+      <label>Selecciona el tanque * (debes tener creado algun tanque): </label>
+      <select [(ngModel)]="nuevoCiclo.tanques" name="tanques" required>
+        <option value="" disabled selected>Selecciona un tanque</option>
+        <option *ngFor="let tanque of tanquesDisponibles" [value]="tanque.tanque_id_usuario">
+          {{ tanque.nombre }} ({{ tanque.volumen }} m³)
+        </option>
+      </select>
+      <label>Especie *:</label>
+      <input type="text" [(ngModel)]="nuevoCiclo.especie" name="especie" required />
+      <label>Fecha De Inicio *:</label>
+      <input type="date" [(ngModel)]="nuevoCiclo.fecha_inicio" name="fechva" required />
+
+      <div class="modal-actions">
+        <button type="submit">Agregar</button>
+        <button type="button" (click)="cerrarModalCiclo()">Cancelar</button>
+      </div>
+    </form>
+  </div>
+</div>
