@@ -24,6 +24,7 @@ export class CiclosComponent implements OnInit {
   tanques: any[] = [];
   tanquesdisponibles: any[] = [];
   cicloSeleccionado: any = null;
+  tanqueSeleccionado: any = null;
   usuario_id: number = 1;
   nombresAlimentos: string[] = [];
   nombresQuimicos: string[] = [];
@@ -85,6 +86,10 @@ export class CiclosComponent implements OnInit {
   datasets: []
   };
   movimientosChart: ChartData<'bar'> = {
+    labels: [],
+    datasets: []
+  };
+  medicionesChart: any = {
     labels: [],
     datasets: []
   };
@@ -264,6 +269,34 @@ export class CiclosComponent implements OnInit {
           display: true,
           text: 'Rutas de Movimiento'
         }
+      }
+    }
+  };
+
+  medicionesChartOptions: ChartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { position: 'top'},
+      title: {display: true, text: 'Mediciones del tanque'}
+    },
+    scales: {
+      x: {
+        type: 'category',
+        title: { display: true, text: 'Fecha'},
+        ticks: {
+          font: { size: 10},
+          maxRotation: 45,
+          minRotation: 30,
+          autoSkip: true,
+          maxTicksLimit: 6
+        }
+      },
+      y: {
+        type: 'linear',
+        beginAtZero: true,
+        title: {display: true, text: 'Valor'},
+        ticks: { font: {size: 10}}
       }
     }
   };
@@ -506,6 +539,8 @@ export class CiclosComponent implements OnInit {
     };
   }
 
+  
+
   cambiarTipoGrafico() {
     this.chartType = this.chartType === 'line' ? 'bar' : 'line';
   }
@@ -619,5 +654,16 @@ export class CiclosComponent implements OnInit {
       this.notificacionService.error('El mensaje de confirmacion no coincide ')
     }
   }
+  
+  getTanqueInfo(tanque_id: number): any {
+    return this.tanques?.find(t => t.id === tanque_id)
+  }
+
+  seleccionarTanque(tanque: any): void {
+    if(tanque) {
+      this.tanqueSeleccionado = tanque;
+    }
+  }
+
 
 }

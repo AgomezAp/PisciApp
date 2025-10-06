@@ -5,7 +5,7 @@ import sequelize from "../database/connection";
 export const crearCiclo = async (req: Request, res: Response): Promise<any> => {
     const tra = await sequelize.transaction();
     try {
-        const { usuario_id, tanques, numero_peces,especie, costos, fecha_inicio } = req.body;
+        const { usuario_id, tanques, numero_peces,especie, costos, fecha_inicio , costos_transporte} = req.body;
         if (!usuario_id  || !tanques  || !numero_peces  || !costos  || !fecha_inicio || !especie) {
             await tra.rollback()
             return res.status(400).json({ error: "Todos los campos son requeridos." });
@@ -26,7 +26,7 @@ export const crearCiclo = async (req: Request, res: Response): Promise<any> => {
             transaction: tra,
         });
         const siguienteId = (Number(ultimo_id_usuario) || 0) + 1;
-        const nuevoCiclo = await Ciclo.create({ usuario_id, numero_peces, numero_actual: numero_peces,especie, costos, fecha_inicio, ciclo_id_usuario: siguienteId }, {transaction: tra}) as any;
+        const nuevoCiclo = await Ciclo.create({ usuario_id, numero_peces, numero_actual: numero_peces,especie, costos, fecha_inicio, costos_transporte, ciclo_id_usuario: siguienteId }, {transaction: tra}) as any;
         const nuevoCT = await CicloTanque.create({ciclo_id: nuevoCiclo.id, tanque_id: tanques, numero_peces}, {transaction: tra});
         const update = await tanqueSeleccionado.update({disponible: false}, {transaction: tra});
         await tra.commit();

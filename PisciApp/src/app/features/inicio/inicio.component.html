@@ -78,19 +78,74 @@
       <button class="btn-agregar-flotante" (click)="abrirModalCiclo()">+</button>
     </div>
   </ng-template>
-</div>
+</div>v
 
 <div class="modal-backdrop" *ngIf="mostrarModalTanque">
   <div class="modal">
     <h3>Agregar Tanque</h3>
     <form (ngSubmit)="agregarTanque()">
-      <label>Nombre:</label>
-      <input type="text" [(ngModel)]="nuevoTanque.nombre" name="nombre" required />
+      <!-- Forma del tanque -->
+      <label>Forma del tanque *</label>
+      <select [(ngModel)]="nuevoTanque.forma" name="forma" required>
+        <option value="" disabled selected>Selecciona la forma</option>
+        <option value="rectangular">Rectangular</option>
+        <option value="redondo">Redondo</option>
+      </select>
 
-      <label>Volumen (m³) *:</label>
-      <input type="number" [(ngModel)]="nuevoTanque.volumen" name="volumen" required />
+      <!-- Profundidad -->
+      <label>Profundidad (m) *</label>
+      <input type="number" [(ngModel)]="nuevoTanque.profundidad" name="profundidad" required min="0" />
 
-      <label>Tipo de Tanque *:</label>
+      <!-- Campos solo si es rectangular -->
+      <div *ngIf="nuevoTanque.forma === 'rectangular'">
+        <label>Largo (m) *</label>
+        <input type="number" [(ngModel)]="nuevoTanque.largo" name="largo" required min="0" />
+        <label>Ancho (m) *</label>
+        <input type="number" [(ngModel)]="nuevoTanque.ancho" name="ancho" required min="0" />
+
+        <!-- Dibujo interactivo con valores -->
+        <div class="tanque-dibujo" *ngIf="nuevoTanque.forma === 'rectangular'">
+          <svg width="180" height="110" viewBox="0 0 180 110">
+            <rect x="40" y="35" width="100" height="40" fill="#e0f7fa" stroke="#00bcd4" stroke-width="3"/>
+            <!-- Largo -->
+            <text x="90" y="100" text-anchor="middle" fill="#0097a7" font-size="15">
+              Largo: {{nuevoTanque.largo || 0}} m
+            </text>
+            <!-- Ancho -->
+            <text x="45" y="55" text-anchor="end" fill="#0097a7" font-size="15" transform="rotate(-90 15,55)">
+              Ancho: {{nuevoTanque.ancho || 0}} m
+            </text>
+            <!-- Profundidad -->
+            <text x="90" y="25" text-anchor="middle" fill="#0097a7" font-size="15">
+              Prof: {{nuevoTanque.profundidad || 0}} m
+            </text>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Campo solo si es redondo -->
+      <div *ngIf="nuevoTanque.forma === 'redondo'">
+        <label>Diámetro (m) *</label>
+        <input type="number" [(ngModel)]="nuevoTanque.diametro" name="diametro" required min="0" />
+
+        <!-- Dibujo interactivo con valores -->
+        <div class="tanque-dibujo" *ngIf="nuevoTanque.forma === 'redondo'">
+          <svg width="140" height="140" viewBox="0 0 140 140">
+            <ellipse cx="70" cy="70" rx="50" ry="50" fill="#e0f7fa" stroke="#00bcd4" stroke-width="3"/>
+            <!-- Diámetro -->
+            <text x="70" y="140" text-anchor="middle" fill="#0097a7" font-size="15">
+              Diám: {{nuevoTanque.diametro || 0}} m
+            </text>
+            <!-- Profundidad -->
+            <text x="70" y="15" text-anchor="middle" fill="#0097a7" font-size="15">
+              Prof: {{nuevoTanque.profundidad || 0}} m
+            </text>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Tipo de tanque -->
+      <label>Tipo de tanque *</label>
       <input type="text" [(ngModel)]="nuevoTanque.tipoTanque" name="tipoTanque" required />
 
       <div class="modal-actions">
@@ -108,8 +163,11 @@
       <label>Numero de peces *:</label>
       <input type="number" [(ngModel)]="nuevoCiclo.numero_peces" name="numero_peces" required />
 
-      <label>Costos Iniciales *:</label>
-      <input type="number" [(ngModel)]="nuevoCiclo.costos" name="costos" required />
+      <label>Costos Unidad: </label>
+      <input type="number" name="costoUnidad" [(ngModel)]="costoUnidad" required />
+
+      <label>Costos Transporte *:</label>
+      <input type="number" [(ngModel)]="nuevoCiclo.costo_transporte" name="costos" required />
 
       <label>Selecciona el tanque * (debes tener creado algun tanque): </label>
       <select [(ngModel)]="nuevoCiclo.tanques" name="tanques" required>

@@ -15,6 +15,24 @@
   </div>
 </div>
 
+<div *ngIf="cicloSeleccionado" class="tanques-carrusel">
+  <h2>Tanques del Ciclo #{{cicloSeleccionado.ciclo_id_usuario}}</h2>
+  <div class="carrusel-lista">
+    <div class="carrusel-item"
+      *ngFor="let tanqueCiclo of cicloSeleccionado.ciclotanques_ciclo"
+      [class.seleccionado]="getTanqueInfo(tanqueCiclo.tanque_id)?.id === tanqueSeleccionado?.id"
+      [ngClass]="getTanqueInfo(tanqueCiclo.tanque_id)?.disponible ? 'carrusel-azul' : 'carrusel-rojo' "
+      (click)="seleccionarTanque(getTanqueInfo(tanqueCiclo.tanque_id))" >
+      <div><b>{{ getTanqueNombre(tanqueCiclo.tanque_id) }}</b></div>
+      <div>Volumen: {{ getTanqueInfo(tanqueCiclo.tanque_id)?.volumen}}</div>
+      <div>Peces: {{ tanqueCiclo.numero_peces}}</div>
+      <div>Forma: {{ getTanqueInfo(tanqueCiclo.tanque_id)?.forma}}</div>
+    </div>
+  </div>
+</div>
+
+
+
 <div *ngIf="cicloSeleccionado" class="ciclo-detalle">
 
   <div *ngIf="tanquesChart.datasets.length > 0" class="chart-container pie-small">

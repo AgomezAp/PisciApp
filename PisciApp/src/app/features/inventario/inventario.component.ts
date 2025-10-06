@@ -5,7 +5,7 @@ import { InventarioService } from '../../core/services/inventario.service';
 import { CommonModule } from '@angular/common';
 import { NavbarComponent } from '../../shared/components/navbar/navbar.component';
 import { FormsModule } from '@angular/forms';
-
+import { Pipe, PipeTransform } from '@angular/core';
 @Component({
   selector: 'app-inventario',
   imports: [CommonModule, NavbarComponent, FormsModule],
@@ -16,6 +16,10 @@ export class InventarioComponent implements OnInit {
   usuario_id: number = 0;
   inventario: any[] = [];
   mostrarModalAgregar: boolean = false;
+  mostrarModalEditar: boolean = false;
+  busquedaInventario: string = '';
+  filtroTipoInventario: string = '';
+  itemEditando: any = null
 
   nuevoItem = {
     tipo_material: '',
@@ -72,31 +76,113 @@ export class InventarioComponent implements OnInit {
   }
 
   agregarInventario(): void {
-    
-    // this.inventarioService.crearInventario(this.nuevoItem).subscribe({
-    //   next: (data) => {
-    //     this.inventario.push(data);
-    //     this.notificacionService.success('Inventario agregado correctamente');
-    //     this.mostrarAgregar();
-    //     this.nuevoItem = {
-    //       tipo_material: '',
-    //       nombre: '',
-    //       provedor: '',
-    //       cantidad: 0,
-    //       costo_insumo: 0.0,
-    //       costo_transporte: 0.0,
-    //       fecha_caducidad: new Date(),
-    //       peso_unidad: 0.0,
-    //       granularidad: 0.0,
-    //     };
-    //   },
-    //   error: (err) => {
-    //     this.notificacionService.error('Error al agregar inventario')
-    //   }
-    // });
+
+    console.log(this.nuevoItem);
+    this.inventarioService.crearInventario(this.nuevoItem).subscribe({
+      next: (data) => {
+        this.inventario.push(data);
+        this.mostrarAgregar();
+        this.notificacionService.success('Inventario agregado correctamente');
+        this.nuevoItem = {
+          tipo_material: '',
+          nombre: '',
+          provedor: '',
+          cantidad: 0,
+          costo_insumo: 0.0,
+          costo_transporte: 0.0,
+          fecha_caducidad: new Date(),
+          peso_unidad: 0.0,
+          granularidad: 0.0,
+        };
+      },
+      error: (err) => {
+        this.notificacionService.error('Error al agregar inventario')
+      }
+    });
+  }
+
+  get inventarioFiltrado(): any[] {
+    let lista = this.inventario;
+    if (this.filtroTipoInventario) {
+      lista = lista.filter(item => item.tipo_material === this.filtroTipoInventario)
+    }
+    if (this.busquedaInventario) {
+      lista = lista.filter(item => 
+        item.nombre?.toLowerCase().includes(this.busquedaInventario.toLowerCase())
+      )
+    }
+    return lista
   }
 
   mostrarAgregar(): void {
     this.mostrarModalAgregar = !this.mostrarModalAgregar
+  }
+
+  mostrarEditar(item: any): void {
+    this.itemEditando = { ...item};
+    console.log(this.itemEditando);
+    this.nuevoItem = {...item};
+    this.mostrarModalEditar = true
+  }
+
+  cerrarModal(event: MouseEvent): void {
+    // Solo cierra si el clic fue en el backdrop, no en el contenido del modal
+    if (event.target === event.currentTarget) {
+      this.cerrarModalInventario();
+    }
+  }
+
+  cerrarModalInventario(): void {
+    this.mostrarModalAgregar = false;
+    this.mostrarModalEditar = false;
+
+    // Opcional: reinicia el formulario
+    this.nuevoItem = {
+      tipo_material: '',
+      nombre: '',
+      provedor: '',
+      cantidad: 0,
+      costo_insumo: 0.0,
+      costo_transporte: 0.0,
+      fecha_caducidad: new Date(),
+      peso_unidad: 0.0,
+      granularidad: 0.0,
+    };
+  }
+
+  actualizarItem(): void {
+    if (this.itemEditando) {
+      this.inventarioService.actualizarItem(this.nuevoItem, this.itemEditando.id).subscribe({
+        next: (data) => {
+          const index = this.inventario.findIndex(item => item.id === this.itemEditando.id);
+          if (index !== -1) {
+            this.inventario[index] = data;
+          }
+          this.cerrarModalInventario();
+          this.notificacionService.success("Elemento Actualizado");
+        },
+        error: (err) => {
+          this.notificacionService.error("Error al actualizar");
+        }
+      })
+    }
+  }
+
+  eliminarItem(id: number): void {
+    this.notificacionService.confirm(
+      `Seguro que quiere eliminar el elemento con el id: ${id}`,
+      () => {
+        this.inventarioService.eliminarItem(id).subscribe({
+          next: () => {
+            this.inventario = this.inventario.filter(item => item.id !== id);
+            this.notificacionService.success('Elemento eliminado')
+          },
+          error: (err) => {
+            this.notificacionService.error('Error')
+          }
+        });
+      },
+      '¿Eliminar elemento?'
+    );
   }
 }

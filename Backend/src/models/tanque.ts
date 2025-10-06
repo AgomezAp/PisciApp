@@ -7,7 +7,7 @@ export const Tanque = sequelize.define(
   {
     id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
     nombre: { type: DataTypes.STRING, allowNull: false},
-    forma: { type: DataTypes.ENUM('Rectangular', 'redondo'), allowNull: false},
+    forma: { type: DataTypes.ENUM('Rectangular', 'Redondo'), allowNull: false},
     profundidad: { type: DataTypes.FLOAT, allowNull: true},
     largo: { type: DataTypes.FLOAT, allowNull: true},
     ancho: { type: DataTypes.FLOAT, allowNull: true},

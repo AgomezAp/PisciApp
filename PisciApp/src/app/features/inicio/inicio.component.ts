@@ -22,17 +22,22 @@ export class InicioComponent implements OnInit {
   mostrarModalTanque = false;
   mostrarModalCiclo = false;
   supervivencia = 0;
-  especies: any[] = []
+  especies: any[] = [];
+  costoUnidad: number = 0;
 
   nuevoTanque = {
-    nombre: '',
-    volumen: 0,
-    tipoTanque: ''
+  forma: '',
+  profundidad: 0,
+  largo: 0,
+  ancho: 0,
+  diametro: 0,
+  tipoTanque: ''
   };
   nuevoCiclo = {
     tanques: 0,
     numero_peces: 0,
     costos: 0,
+    costo_transporte: 0,
     especie: "",
     fecha_inicio: ""
   };
@@ -88,14 +93,14 @@ export class InicioComponent implements OnInit {
 
   abrirModalTanque() {
     this.mostrarModalTanque = true;
-    this.nuevoTanque = { nombre: '', volumen: 0, tipoTanque: '' };
+    // this.nuevoTanque = {tipoTanque: '' };
   }
   cerrarModalTanque() {
     this.mostrarModalTanque = false;
   }
   abrirModalCiclo() {
     this.mostrarModalCiclo = true;
-    this.nuevoTanque = { nombre: '', volumen: 0, tipoTanque: '' };
+    // this.nuevoTanque = {tipoTanque: '' };
   }
   cerrarModalCiclo() {
     this.mostrarModalCiclo = false;
@@ -120,6 +125,7 @@ export class InicioComponent implements OnInit {
   }
 
   agregarCiclo() {
+    this.nuevoCiclo.costos = this.nuevoCiclo.numero_peces * this.costoUnidad;
     const datos = {
       ...this.nuevoCiclo,
       tanques: Number(this.nuevoCiclo.tanques),
@@ -137,7 +143,7 @@ export class InicioComponent implements OnInit {
     });
   }
   infoTanque() {
-    this.router.navigate(['/estanques']);
+    this.router.navigate(['/ciclos']);
   }
   infoCiclo() {
     this.router.navigate(['/ciclos']);

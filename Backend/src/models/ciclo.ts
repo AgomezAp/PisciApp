@@ -13,6 +13,7 @@ export const Ciclo = sequelize.define(
     numero_peces: { type: DataTypes.INTEGER, allowNull: false },
     numero_actual: {type: DataTypes.INTEGER, allowNull: false},
     especie: {type: DataTypes.STRING, allowNull: false},
+    costos_transporte: { type: DataTypes.FLOAT, allowNull: false },
     costos: { type: DataTypes.FLOAT, allowNull: false },
     total_bajas: { type: DataTypes.INTEGER, defaultValue: 0 },
     fecha_inicio: { type: DataTypes.DATE, allowNull: false },

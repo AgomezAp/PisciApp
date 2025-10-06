@@ -5,8 +5,8 @@ import sequelize from "../database/connection";
 export const crearTanque = async (req: Request, res: Response): Promise<any> => {
     const tra = await sequelize.transaction();
     try {
-        const { volumen, nombre, tipoTanque, usuario_id } = req.body;
-        if (!volumen || !tipoTanque || !usuario_id){
+        const {tipoTanque, usuario_id, forma, profundidad, largo, ancho, diametro } = req.body;
+        if (!tipoTanque || !usuario_id || !forma || !profundidad){
             await tra.rollback();
             res.status(400).json({ error: "Todos los campos son requeridos." });
         }
@@ -16,12 +16,20 @@ export const crearTanque = async (req: Request, res: Response): Promise<any> => 
             transaction: tra,
         });
         const siguienteId = (Number(ultimo_id_usuario) || 0) + 1;
-        let nombreFinal = nombre;
+        let nombreFinal = '';
         if (!nombreFinal) {
             nombreFinal = `tanque ${siguienteId}`;
         }
+
+        let volumenFinal;
+        if(forma === 'Rectangular') {
+            volumenFinal = largo * ancho * profundidad
+        }
+        if(forma === 'Redondo') {
+            volumenFinal = Math.PI * diametro * profundidad
+        }
         const nuevoTanque = await Tanque.create(
-            {nombre: nombreFinal, volumen, tipoTanque, disponible: true, usuario_id, tanque_id_usuario: siguienteId},
+            {nombre: nombreFinal, forma, profundidad, largo, ancho, diametro, volumen: volumenFinal, tipoTanque, disponible: true, usuario_id, tanque_id_usuario: siguienteId},
             { transaction: tra}
         );
 
@@ -100,7 +108,7 @@ export const eliminarTanque = async (req: Request, res: Response): Promise<any> 
 
 export const editarTanque = async (req: Request, res: Response): Promise<any> => {
     const tanque_id = req.params.id;
-    const { usuario_id, nombre, volumen, tipoTanque, disponible } = req.body;
+    const { tipoTanque, usuario_id, forma, profundidad, largo, ancho, diametro , disponible } = req.body;
     try {
         console.log("Editar tanque:", tanque_id, usuario_id);
         if (!tanque_id || !usuario_id) {
@@ -110,7 +118,17 @@ export const editarTanque = async (req: Request, res: Response): Promise<any> =>
         if (!tanque) {
             return res.status(404).json({ error: "Tanque no encontrado." });
         }
-        const camposActualizar = Object.entries({nombre, volumen, tipoTanque, disponible})
+        
+        let volumen;
+        if (forma && profundidad) {
+            if (forma === 'rectangular' && largo && ancho) {
+                volumen = largo * ancho * profundidad;
+            } else if (forma === 'redondo' && diametro) {
+                volumen = Math.PI * Math.pow(diametro/2, 2) * profundidad;
+            }
+        }
+        const camposActualizar = Object.entries({tipoTanque, forma, profundidad, 
+            largo, ancho, diametro, volumen, disponible})
             .reduce((acc, [key, value]) => {
                 if (value!== undefined) acc[key] = value;
                 return acc;

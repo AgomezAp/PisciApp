@@ -1,18 +1,33 @@
-/* Puedes poner esto en inventario.component.css */
+.inventario-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 24px;
+  margin-bottom: 10px;
+  gap: 18px;
+  padding: 0 24px;
+  background: #f8fbfc;
+  border-radius: 12px;
+}
+
+.tabla-margen {
+  padding: 0 24px;
+}
+
 .tabla-inventario {
   width: 100%;
   border-collapse: collapse;
   font-size: 16px;
-  background: #f8fbfc;
-  border-radius: 12px;
-  overflow: hidden;
-  margin: 24px auto;
+  background: #fff;
+  border-radius: 14px;
   box-shadow: 0 2px 12px rgba(0,151,167,0.07);
+  overflow: hidden;
+  margin: 24px 0;
 }
 
 .tabla-inventario th, .tabla-inventario td {
   border-bottom: 1px solid #e0f7fa;
-  padding: 12px 14px;
+  padding: 14px 18px;
   text-align: left;
   min-width: 110px;
 }
@@ -41,20 +56,40 @@
   transition: background 0.2s;
 }
 
+.buscador-inventario, .filtro-tipo-inventario {
+  padding: 8px 14px;
+  border: 1px solid #b2ebf2;
+  border-radius: 8px;
+  font-size: 1rem;
+  margin-right: 12px;
+  background: #f8fbfc;
+  color: #222;
+  outline: none;
+  transition: border 0.2s;
+  min-width: 140px;
+}
+
+.buscador-inventario:focus, .filtro-tipo-inventario:focus {
+  border-color: #00bcd4;
+  background: #e0f7fa;
+}
+
 .btn-agregar-inventario {
-  background: #00bcd4;
+  background: linear-gradient(90deg, #00bcd4 60%, #0097a7 100%);
   color: #fff;
   border: none;
-  padding: 10px 22px;
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: 600;
-  margin-bottom: 18px;
+  padding: 12px 28px;
+  border-radius: 10px;
+  font-size: 1.08rem;
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(0,151,167,0.09);
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background 0.2s, box-shadow 0.2s;
 }
+
 .btn-agregar-inventario:hover {
   background: #0097a7;
+  box-shadow: 0 4px 16px rgba(0,151,167,0.13);
 }
 
 /* Modal backdrop */
@@ -66,20 +101,24 @@
   align-items: center;
   justify-content: center;
   z-index: 1000;
+  padding: 20px 10px; 
+  overflow-y: auto; 
 }
 
-/* Modal ventana */
 .modal {
   background: #fff;
   padding: 28px 22px 18px 22px;
   border-radius: 16px;
   min-width: 320px;
   max-width: 98vw;
+  max-height: 90vh; 
+  overflow-y: auto; 
   box-shadow: 0 4px 24px rgba(0,151,167,0.18);
   display: flex;
   flex-direction: column;
   gap: 14px;
   width: 100%;
+  margin: auto; 
 }
 
 .modal h3 {
@@ -99,9 +138,7 @@
   font-size: 1rem;
 }
 
-.modal input[type="text"],
-.modal input[type="number"],
-.modal input[type="date"] {
+.modal input, .modal select {
   margin-top: 4px;
   padding: 8px 10px;
   border: 1px solid #b2ebf2;
@@ -113,7 +150,7 @@
   transition: border 0.2s;
 }
 
-.modal input:focus {
+.modal input:focus, .modal select:focus {
   border-color: #00bcd4;
 }
 
@@ -145,25 +182,187 @@
   background: #0097a7;
 }
 
-@media (max-width: 800px) {
+/* Botones de acción en la tabla */
+.acciones-celda {
+  text-align: center;
+  white-space: nowrap;
+}
+
+.btn-editar, .btn-eliminar {
+  padding: 6px 10px;
+  margin: 0 2px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.2s;
+}
+
+.btn-editar {
+  background: #e0f7fa;
+  color: #0097a7;
+}
+
+.btn-editar:hover {
+  background: #b2ebf2;
+}
+
+.btn-eliminar {
+  background: #ffebee;
+  color: #d32f2f;
+}
+
+.btn-eliminar:hover {
+  background: #ffcdd2;
+}
+
+@media (max-width: 768px) {
+  .inventario-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    padding: 16px 12px;
+    margin-top: 16px;
+    margin-bottom: 12px;
+  }
+  
+  .inventario-header h2 {
+    font-size: 1.4rem;
+    margin: 0;
+    text-align: center;
+  }
+  
+  .buscador-inventario, .filtro-tipo-inventario {
+    width: 100%;
+    min-width: auto;
+    margin: 0;
+    font-size: 16px;
+    padding: 10px 12px;
+  }
+  
+  .btn-agregar-inventario {
+    width: 100%;
+    text-align: center;
+    font-size: 1rem;
+    padding: 12px 16px;
+  }
+  
+  .tabla-margen {
+    padding: 0 8px;
+  }
+  
+  .tabla-inventario {
+    font-size: 14px;
+    margin: 16px 0;
+    border-radius: 8px;
+    overflow-x: auto;
+    display: block;
+    white-space: nowrap;
+  }
+  
+  .tabla-inventario thead,
+  .tabla-inventario tbody,
+  .tabla-inventario tr {
+    display: block;
+  }
+  
   .tabla-inventario th, .tabla-inventario td {
     padding: 8px 6px;
-    min-width: 90px;
-    font-size: 15px;
+    font-size: 13px;
+    min-width: 80px;
+    display: inline-block;
+    vertical-align: top;
+    border-right: 1px solid #e0f7fa;
   }
-  .tabla-inventario {
-    font-size: 15px;
-    border-radius: 8px;
+  
+  .tabla-inventario th:last-child,
+  .tabla-inventario td:last-child {
+    border-right: none;
+  }
+  
+  .tabla-inventario th {
+    font-size: 14px;
+  }
+  
+  .btn-editar, .btn-eliminar {
+    padding: 4px 6px;
+    font-size: 12px;
   }
 }
 
-@media (max-width: 600px) {
-  .modal {
-    min-width: 90vw;
-    padding: 16px 6vw;
-    font-size: 0.98rem;
+@media (max-width: 480px) {
+  .inventario-header {
+    padding: 12px 8px;
   }
+  
+  .inventario-header h2 {
+    font-size: 1.2rem;
+  }
+  
+  .tabla-margen {
+    padding: 0 4px;
+  }
+  
+  .tabla-inventario th, .tabla-inventario td {
+    padding: 6px 4px;
+    font-size: 12px;
+    min-width: 70px;
+  }
+  
+  .modal-backdrop {
+    padding: 5px;
+    padding-top: 20px;
+  }
+  
+  .modal {
+    min-width: 95vw;
+    max-height: 80vh; /* <-- Aún más compacto en pantallas pequeñas */
+    padding: 16px 12px;
+  }
+  
   .modal h3 {
-    font-size: 1.08rem;
+    font-size: 1.1rem;
+    margin-bottom: 8px; /* <-- Reduce espacio del título */
+  }
+  
+  .modal label {
+    margin-bottom: 6px; /* <-- Reduce espacio entre campos */
+  }
+  
+  .modal input, .modal select {
+    font-size: 16px;
+    padding: 10px 8px;
+  }
+  
+  .modal-actions {
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 8px; /* <-- Menos margen arriba */
+  }
+  
+  .modal-actions button {
+    width: 100%;
+    padding: 12px;
+    font-size: 1rem;
+  }
+}
+
+/* ===== ESTILOS PARA ESCRITORIO ===== */
+@media (min-width: 769px) {
+  .modal {
+    max-width: 500px; /* <-- Limita el ancho en escritorio */
+    min-width: 450px; /* <-- Ancho mínimo apropiado */
+    max-height: 80vh; /* <-- Altura máxima en escritorio */
+    width: auto; /* <-- No ocupa todo el ancho disponible */
+  }
+  
+  .modal-actions {
+    justify-content: flex-end; /* <-- Botones alineados a la derecha */
+    flex-direction: row; /* <-- Botones en línea horizontal */
+  }
+  
+  .modal-actions button {
+    width: auto; /* <-- Botones con ancho automático */
+    min-width: 100px; /* <-- Ancho mínimo para los botones */
   }
 }

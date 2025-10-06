@@ -13,7 +13,7 @@ export class InventarioService {
   constructor(private http: HttpClient, private errorService: ErrorService) { }
 
   crearInventario(data: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/inventario/agregar`, data)
+    return this.http.post(`${this.apiUrl}inventario/agregar`, data)
     .pipe(catchError(error => this.errorService.handleError(error)))
   }
 
@@ -22,5 +22,14 @@ export class InventarioService {
     .pipe(catchError(error => this.errorService.handleError(error)))
   }
 
+  actualizarItem(data: any, id: number): Observable<any> {
+    return this.http.put(`${this.apiUrl}inventario/actualizar/${id}`, data)
+    .pipe(catchError(error => this.errorService.handleError(error)))
+  }
+
+  eliminarItem(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}inventario/eliminar/${id}`)
+    .pipe(catchError(error => this.errorService.handleError(error)))
+  }
 
 }

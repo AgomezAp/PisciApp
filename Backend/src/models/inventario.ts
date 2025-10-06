@@ -1,7 +1,5 @@
 import { DataTypes, Model } from "sequelize";
 import sequelize from "../database/connection";
-import { Usuario } from "./usuario";
-import { Producto } from "./producto";
 
 export const Inventario = sequelize.define(
   "inventario",
@@ -16,9 +14,9 @@ export const Inventario = sequelize.define(
     cantidad: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 },
     costo_insumo: { type: DataTypes.FLOAT, allowNull: false, defaultValue: 0 },
     costo_transporte: { type: DataTypes.FLOAT, allowNull: false, defaultValue: 0 },
-    fecha_caducidad: { type: DataTypes.DATE, allowNull: false},
-    peso_unidad: { type: DataTypes.FLOAT, allowNull: false, defaultValue: 0 },
-    granularidad: { type: DataTypes.FLOAT, allowNull: false, defaultValue: 0 },
+    fecha_caducidad: { type: DataTypes.DATE, allowNull: true},
+    peso_unidad: { type: DataTypes.FLOAT, allowNull: true, defaultValue: 0 },
+    granularidad: { type: DataTypes.FLOAT, allowNull: true, defaultValue: 0 },
   },
   {
     timestamps: false,
