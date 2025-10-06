@@ -22,7 +22,8 @@ export class InicioComponent implements OnInit {
   mostrarModalTanque = false;
   mostrarModalCiclo = false;
   supervivencia = 0;
-  especies: any[] = [];
+  especiesDisponibles: string[] = ['Tilapia', 'Carpa', 'Salmón', 'Trucha', 'Bagre', 'Rodaballo', 'Bacalao', 'Atún'];
+  especies: string[] = []
   costoUnidad: number = 0;
 
   nuevoTanque = {
@@ -93,14 +94,24 @@ export class InicioComponent implements OnInit {
 
   abrirModalTanque() {
     this.mostrarModalTanque = true;
-    // this.nuevoTanque = {tipoTanque: '' };
+    this.nuevoTanque = {forma: '',
+      profundidad: 0,
+      largo: 0,
+      ancho: 0,
+      diametro: 0,
+      tipoTanque: ''};
   }
   cerrarModalTanque() {
     this.mostrarModalTanque = false;
   }
   abrirModalCiclo() {
     this.mostrarModalCiclo = true;
-    // this.nuevoTanque = {tipoTanque: '' };
+    this.nuevoCiclo = {tanques: 0,
+      numero_peces: 0,
+      costos: 0,
+      costo_transporte: 0,
+      especie: "",
+      fecha_inicio: "" };
   }
   cerrarModalCiclo() {
     this.mostrarModalCiclo = false;

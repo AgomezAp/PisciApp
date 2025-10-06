@@ -9,7 +9,7 @@
   <div class="dashboard-tarjeta">
     <div class="dashboard-titulo">Biomasa total</div>
     <div class="dashboard-valor">1.240 kg</div>
-    <div class="dashboard-sub">{{especies}}</div>
+    <div class="dashboard-sub">{{especies.length > 0 ? especies.join(', '): 'Sin especies'}}</div>
   </div>
   <div class="dashboard-tarjeta">
     <div class="dashboard-titulo">FCR promedio</div>
@@ -78,7 +78,7 @@
       <button class="btn-agregar-flotante" (click)="abrirModalCiclo()">+</button>
     </div>
   </ng-template>
-</div>v
+</div>         
 
 <div class="modal-backdrop" *ngIf="mostrarModalTanque">
   <div class="modal">
@@ -172,12 +172,17 @@
       <label>Selecciona el tanque * (debes tener creado algun tanque): </label>
       <select [(ngModel)]="nuevoCiclo.tanques" name="tanques" required>
         <option value="" disabled selected>Selecciona un tanque</option>
-        <option *ngFor="let tanque of tanquesDisponibles" [value]="tanque.tanque_id_usuario">
+        <option *ngFor="let tanque of tanquesDisponibles" [ngValue]="tanque">
           {{ tanque.nombre }} ({{ tanque.volumen }} m³)
         </option>
       </select>
       <label>Especie *:</label>
-      <input type="text" [(ngModel)]="nuevoCiclo.especie" name="especie" required />
+      <select [(ngModel)]="nuevoCiclo.especie" name="especie" required>
+        <option value="" disabled selected>Selecciona la especie</option>
+        <option *ngFor="let especie of especiesDisponibles" [value]="especie">
+          {{especie}}
+        </option>
+      </select>
       <label>Fecha De Inicio *:</label>
       <input type="date" [(ngModel)]="nuevoCiclo.fecha_inicio" name="fechva" required />
 
