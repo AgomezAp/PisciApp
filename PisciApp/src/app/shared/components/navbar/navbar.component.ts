@@ -3,11 +3,12 @@ import { Component, Input, OnDestroy, OnInit, SimpleChanges } from '@angular/cor
 import { Router, RouterModule } from '@angular/router';
 import { AuthService, User } from '../../../core/services/auth.service';
 import { Subscription } from 'rxjs';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, FormsModule],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.css',
 })
@@ -16,7 +17,8 @@ export class NavbarComponent implements OnInit, OnDestroy {
   userInitials: string = 'U';
   private sub!: Subscription;
 
-  menuAbierto = false; // <-- NUEVO
+  menuAbierto = false;
+  textoBusqueda: string = '';
 
   constructor(private authService: AuthService, private router: Router) {}
 
@@ -46,5 +48,21 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   toggleMenu() {
     this.menuAbierto = !this.menuAbierto;
+  }
+
+  onBuscar() {
+    if(this.textoBusqueda.trim()) {
+      console.log('Buscando:', this.textoBusqueda);
+    }
+  }
+
+  onEnterBusqueda(event: KeyboardEvent) {
+    if (event.key === 'Enter') {
+      this.onBuscar();
+    }
+  }
+
+  perfil() {
+    this.router.navigate(['/configuracion'])
   }
 }

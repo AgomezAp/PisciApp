@@ -9,6 +9,7 @@ import { AuthService } from '../../core/services/auth.service';
 import { FormsModule } from '@angular/forms';
 import { TanqueService } from '../../core/services/tanque.service';
 import { NotificationService } from '../../core/services/notification.service';
+import { Router } from '@angular/router';
 
 Chart.register(...registerables);
 
@@ -305,7 +306,8 @@ export class CiclosComponent implements OnInit {
     private cicloService: CicloService,
     private authService: AuthService,
     private tanqueService: TanqueService,
-    private notificacionService: NotificationService
+    private notificacionService: NotificationService,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -663,6 +665,15 @@ export class CiclosComponent implements OnInit {
     if(tanque) {
       this.tanqueSeleccionado = tanque;
     }
+  }
+
+  agregarCiclo(): any {
+    this.router.navigate(['/inicio'], { queryParams: { abrirModalCiclo: true}})
+  }
+
+  agregarTanque(): any {
+    this.router.navigate(['/inicio'], { queryParams: { abrirModalTanque: true}})
+
   }
 
 

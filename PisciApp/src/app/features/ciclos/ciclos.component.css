@@ -213,14 +213,16 @@
 
 /* Estilos para el carrusel de tanques */
 .tanques-carrusel {
-  margin: 24px 0;
+  max-width: 900px;
+  margin: 24px auto 0 auto;
+  padding: 0 10px;
 }
 
 .tanques-carrusel h2 {
   color: #0097a7;
   font-size: 1.5rem;
   margin-bottom: 16px;
-  text-align: left;
+  text-align: center; /* Centra el título */
 }
 
 .grafico-responsive {
@@ -232,9 +234,6 @@
 
 /* Reutiliza los estilos existentes del carrusel de ciclos */
 .tanques-carrusel .carrusel-lista {
-  max-width: 900px;
-  margin: 20px auto 0 auto;
-  padding: 0 10px;
   display: flex;
   gap: 18px;
   overflow-x: auto;
@@ -244,9 +243,6 @@
 }
 
 .tanques-carrusel .carrusel-item {
-  max-width: 900px;
-  margin: 20px auto 0 auto;
-  padding: 0 10px;
   min-width: 180px;
   max-width: 220px;
   background: #e0f7fa;
@@ -261,7 +257,6 @@
   flex-direction: column;
   align-items: flex-start;
   gap: 4px;
-  /* Mismos estilos que .ciclos-carrusel .carrusel-item */
 }
 
 /* Responsive */
@@ -462,3 +457,55 @@
   background: #ffebee !important;
   border-color: #d32f2f !important;
 }
+
+/* Estilos para el botón de nuevo ciclo */
+.nuevo-ciclo {
+  background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%) !important;
+  border: 2px dashed #4caf50 !important;
+  color: #2e7d32 !important;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.nuevo-ciclo:hover {
+  background: linear-gradient(135deg, #c8e6c9 0%, #a5d6a7 100%) !important;
+  border-color: #388e3c !important;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(76, 175, 80, 0.2) !important;
+}
+
+.icono-agregar {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #4caf50;
+  margin-bottom: 8px;
+  line-height: 1;
+}
+
+.nuevo-ciclo b {
+  color: #2e7d32 !important;
+  font-size: 1.1rem;
+  margin-bottom: 4px;
+}
+
+.nuevo-ciclo div:not(.icono-agregar):not(b) {
+  color: #388e3c;
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+/* Asegurar que el botón aparezca primero */
+.carrusel-lista {
+  display: flex;
+  gap: 18px;
+  overflow-x: auto;
+  padding-bottom: 12px;
+  scrollbar-width: thin;
+  scrollbar-color: #0097a7 #e0f7fa;
+}
+

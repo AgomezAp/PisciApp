@@ -29,14 +29,14 @@ export const Tanque = sequelize.define(
 export const MedicionesCalidad = sequelize.define(
   "mediciones",
   {
-    tanque_id: {type: DataTypes.INTEGER, references: {model: "tanques", key: "id"}, allowNull: false, primaryKey: true},
+    id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
+    tanque_id: {type: DataTypes.INTEGER, references: {model: "tanques", key: "id"}, allowNull: false},
     ph: { type: DataTypes.FLOAT, allowNull: false },
     oxigeno_disuelto: { type: DataTypes.FLOAT, allowNull: false },
     temperatura: { type: DataTypes.FLOAT, allowNull: false },
     nitritos: { type: DataTypes.FLOAT, allowNull: false },
     amoniaco: { type: DataTypes.FLOAT, allowNull: true },
     nitratos: { type: DataTypes.FLOAT, allowNull: true },
-    dureza: { type: DataTypes.FLOAT, allowNull: true },
     salinidad: { type: DataTypes.FLOAT, allowNull: true },
   },
   {

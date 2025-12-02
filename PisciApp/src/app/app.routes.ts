@@ -22,33 +22,68 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'registroempresa',
+    loadComponent: () =>
+      import('./features/auth/pages/registro-empresa/registro-empresa.component').then(
+        (m) => m.RegistroEmpresaComponent
+      ),
+  },
+  {
     path: '',
     component: MainLayoutComponent,
     canActivate: [AuthGuard],
     children: [
       {
-        path: 'inventory',
-        loadChildren: () =>
-          import('./features/inventory/inventory.routes').then(
-            (m) => m.INVENTORY_ROUTES
-          ),
+        path: 'inicioPerfil',
+        loadComponent: () =>
+          import(
+            './features/inicio-perfil/inicio-perfil.component'
+          ).then((m) => m.InicioPerfilComponent),
       },
-      { path: '', redirectTo: 'inventory', pathMatch: 'full' },
+      { path: '', redirectTo: 'inicioPerfil', pathMatch: 'full' },
+      {
+        path: 'inventario',
+        loadComponent: () =>
+          import(
+            './features/inventario/inventario.component'
+          ).then((m) => m.InventarioComponent),
+      },
+      {
+        path: 'configuracion',
+        loadComponent: () =>
+          import(
+            './features/configuracion/pages/configuracion/configuracion.component'
+          ).then((m) => m.ConfiguracionComponent),
+      },
+      {
+        path: 'estanques',
+        loadComponent: () =>
+          import(
+            './features/tanques/tanques.component'
+          ).then((m) => m.TanquesComponent),
+      },
+      {
+        path: 'ciclos',
+        loadComponent: () =>
+          import(
+            './features/ciclos/ciclos.component'
+          ).then((m) => m.CiclosComponent),
+      },
+      {
+        path: 'diario',
+        loadComponent: () =>
+          import(
+            './features/diario/diario.component'
+          ).then((m) => m.DiarioComponent),
+      },
+      {
+        path: 'empresa',
+        loadComponent: () =>
+          import(
+            './features/empresa/empresa.component'
+          ).then((m) => m.EmpresaComponent),
+      },
     ],
-  },
-  {
-    path: 'inventario',
-    loadComponent: () =>
-      import(
-        './features/inventario/inventario.component'
-      ).then((m) => m.InventarioComponent),
-  },
-  {
-    path: 'configuracion',
-    loadComponent: () =>
-      import(
-        './features/configuracion/pages/configuracion/configuracion.component'
-      ).then((m) => m.ConfiguracionComponent),
   },
   {
     path: 'inicio',
@@ -57,27 +92,7 @@ export const routes: Routes = [
         './features/inicio/inicio.component'
       ).then((m) => m.InicioComponent),
   },
-  {
-    path: 'estanques',
-    loadComponent: () =>
-      import(
-        './features/tanques/tanques.component'
-      ).then((m) => m.TanquesComponent),
-  },
-  {
-    path: 'ciclos',
-    loadComponent: () =>
-      import(
-        './features/ciclos/ciclos.component'
-      ).then((m) => m.CiclosComponent),
-  },
-  {
-    path: 'diario',
-    loadComponent: () =>
-      import(
-        './features/diario/diario.component'
-      ).then((m) => m.DiarioComponent),
-  },
+  
   {
     path: 'producto',
     loadComponent: () =>

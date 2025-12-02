@@ -1,0 +1,357 @@
+<app-navbar></app-navbar>
+
+<div class="empresa-container">
+  <!-- Navbar interno -->
+  <nav class="tabs-navbar">
+    <button 
+      class="tab-btn" 
+      [class.active]="vistaActual === 'ciclos'"
+      (click)="cambiarVista('ciclos')">
+      <span class="tab-icon">🔄</span>
+      <span class="tab-text">Ciclos</span>
+    </button>
+    <button 
+      class="tab-btn" 
+      [class.active]="vistaActual === 'tanques'"
+      (click)="cambiarVista('tanques')">
+      <span class="tab-icon">🏊</span>
+      <span class="tab-text">Tanques</span>
+    </button>
+    <button 
+      class="tab-btn" 
+      [class.active]="vistaActual === 'ventas'"
+      (click)="cambiarVista('ventas')">
+      <span class="tab-icon">💲</span>
+      <span class="tab-text">Ventas</span>
+    </button>
+  </nav>
+
+  <!-- Contenido dinámico -->
+  <div class="content-wrapper">
+    <!-- Vista de Ciclos -->
+    <div class="content-section" *ngIf="vistaActual === 'ciclos'">
+      <div class="section-header">
+        <h2>Gestión de Ciclos</h2>
+        <button class="btn-primary" (click)="abrirModalCiclo()">
+          + Nuevo Ciclo
+        </button>
+      </div>
+
+      <div class="cards-grid" *ngIf="ciclos.length > 0; else noCiclos">
+        <div class="card-item" *ngFor="let ciclo of ciclos">
+          <div class="card-header">
+            <h3>Ciclo #{{ ciclo.ciclo_id_usuario }}</h3>
+            <span class="badge" [class.badge-active]="!ciclo.fecha_fin" [class.badge-closed]="ciclo.fecha_fin">
+              {{ ciclo.fecha_fin ? 'Cerrado' : 'Activo' }}
+            </span>
+          </div>
+          <div class="card-body">
+            <p><strong>Especie:</strong> {{ ciclo.especie }}</p>
+            <p><strong>Peces:</strong> {{ ciclo.numero_actual }}</p>
+            <p><strong>Fecha inicio:</strong> {{ ciclo.fecha_inicio | date:'dd/MM/yyyy' }}</p>
+            <p *ngIf="ciclo.fecha_fin"><strong>Fecha fin:</strong> {{ ciclo.fecha_fin | date:'dd/MM/yyyy' }}</p>
+            <p><strong>Costos Totales:</strong> ${{ (ciclo.costos + ciclo.costos_transporte) | number:'1.2-2' }}</p>
+          </div>
+          <!-- <div class="card-actions">
+            <button class="btn-secondary" (click)="verDetalleCiclo(ciclo)">
+              Ver detalles
+            </button>
+             <button class="btn-danger" *ngIf="ciclo.fecha_fin" (click)="eliminarCiclo(ciclo.id)">
+              Eliminar
+            </button> 
+          </div> -->
+        </div>
+      </div>
+
+      <ng-template #noCiclos>
+        <div class="empty-state">
+          <span class="empty-icon">📋</span>
+          <h3>No hay ciclos registrados</h3>
+          <p>Comienza creando tu primer ciclo de producción</p>
+          <button class="btn-primary" (click)="abrirModalCiclo()">
+            Crear primer ciclo
+          </button>
+        </div>
+      </ng-template>
+    </div>
+
+    <!-- Vista de Tanques -->
+    <div class="content-section" *ngIf="vistaActual === 'tanques'">
+      <div class="section-header">
+        <h2>Gestión de Tanques</h2>
+        <button class="btn-primary" (click)="abrirModalTanque()">
+          + Nuevo Tanque
+        </button>
+      </div>
+
+      <div class="cards-grid" *ngIf="tanques.length > 0; else noTanques">
+        <div class="card-item" *ngFor="let tanque of tanques">
+          <div class="card-header">
+            <h3>{{ tanque.nombre }}</h3>
+            <span class="badge" [class.badge-disponible]="tanque.disponible" [class.badge-ocupado]="!tanque.disponible">
+              {{ tanque.disponible ? 'Disponible' : 'Ocupado' }}
+            </span>
+          </div>
+          <div class="card-body">
+            <p><strong>Volumen:</strong> {{ tanque.volumen }} m³</p>
+            <p><strong>Tipo:</strong> {{ tanque.tipoTanque }}</p>
+            <p *ngIf="tanque.descripcion"><strong>Descripción:</strong> {{ tanque.descripcion }}</p>
+          </div>
+          <div class="card-actions">
+            <button class="btn-secondary" (click)="editarTanque(tanque)" [disabled]="!tanque.disponible">
+              Editar
+            </button>
+            <button class="btn-danger" (click)="eliminarTanque(tanque.id)" [disabled]="!tanque.disponible">
+              Eliminar
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <ng-template #noTanques>
+        <div class="empty-state">
+          <span class="empty-icon">🏊</span>
+          <h3>No hay tanques registrados</h3>
+          <p>Agrega tanques para comenzar tu producción</p>
+          <button class="btn-primary" (click)="abrirModalTanque()">
+            Crear primer tanque
+          </button>
+        </div>
+      </ng-template>
+    </div>
+
+    <div class="content-section" *ngIf="vistaActual === 'ventas'">
+      <div class="section-header">
+        <h2>Mis Ventas</h2>
+        <button class="btn-primary">
+          + Nueva Venta
+        </button>
+      </div>
+
+      <div class="ventas-container">
+        <div class="ventas-filters">
+          <div class="filter-group">
+            <input type="text" class="filter-input" placeholder="Buscar por Cliente">
+            <select class="filter-select">
+              <option value="">Todas las ventas</option>
+              <option value="pendiente">Pendiente</option>
+              <option value="completada">Completada</option>
+              <option value="cancelada">Cancelada</option>
+            </select>
+            <input type="date" class="filter-input">
+          </div>
+        </div>
+        <div class="table-wrapper">
+          <table class="ventas-table">
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Cliente</th>
+                <th>Empresa</th>
+                <th>Cantidad</th>
+                <th>Especie</th>
+                <th>Precio total</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        
+      </div>
+      
+    </div>
+
+    
+  </div>
+</div>
+
+
+<div class="modal-backdrop" *ngIf="mostrarModalTanque">
+  <div class="modal">
+    <h3>{{ modoEdicion ? 'Editar Tanque' : 'Agregar Tanque' }}</h3>
+    <form (ngSubmit)="agregarTanque()">
+      <!-- Forma del tanque -->
+      <label>Forma del tanque *</label>
+      <select [(ngModel)]="nuevoTanque.forma" name="forma" required>
+        <option value="" disabled selected>Selecciona la forma</option>
+        <option value="Rectangular">Rectangular</option>
+        <option value="Redondo">Redondo</option>
+      </select>
+
+      <!-- Profundidad -->
+      <label>Profundidad (m) *</label>
+      <input type="number" [(ngModel)]="nuevoTanque.profundidad" name="profundidad" required min="0" />
+
+      <!-- Campos solo si es rectangular -->
+      <div *ngIf="nuevoTanque.forma === 'Rectangular'">
+        <label>Largo (m) *</label>
+        <input type="number" [(ngModel)]="nuevoTanque.largo" name="largo" required min="0" />
+        <label>Ancho (m) *</label>
+        <input type="number" [(ngModel)]="nuevoTanque.ancho" name="ancho" required min="0" />
+
+        <!-- Dibujo interactivo con valores -->
+        <div class="tanque-dibujo" *ngIf="nuevoTanque.forma === 'Rectangular'">
+          <svg width="180" height="110" viewBox="0 0 180 110">
+            <rect x="40" y="35" width="100" height="40" fill="#e0f7fa" stroke="#00bcd4" stroke-width="3"/>
+            <!-- Largo -->
+            <text x="90" y="100" text-anchor="middle" fill="#0097a7" font-size="15">
+              Largo: {{nuevoTanque.largo || 0}} m
+            </text>
+            <!-- Ancho -->
+            <text x="45" y="55" text-anchor="end" fill="#0097a7" font-size="15" transform="rotate(-90 15,55)">
+              Ancho: {{nuevoTanque.ancho || 0}} m
+            </text>
+            <!-- Profundidad -->
+            <text x="90" y="25" text-anchor="middle" fill="#0097a7" font-size="15">
+              Prof: {{nuevoTanque.profundidad || 0}} m
+            </text>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Campo solo si es redondo -->
+      <div *ngIf="nuevoTanque.forma === 'Redondo'">
+        <label>Diámetro (m) *</label>
+        <input type="number" [(ngModel)]="nuevoTanque.diametro" name="diametro" required min="0" />
+
+        <!-- Dibujo interactivo con valores -->
+        <div class="tanque-dibujo" *ngIf="nuevoTanque.forma === 'Redondo'">
+          <svg width="140" height="140" viewBox="0 0 140 140">
+            <ellipse cx="70" cy="70" rx="50" ry="50" fill="#e0f7fa" stroke="#00bcd4" stroke-width="3"/>
+            <!-- Diámetro -->
+            <text x="70" y="140" text-anchor="middle" fill="#0097a7" font-size="15">
+              Diám: {{nuevoTanque.diametro || 0}} m
+            </text>
+            <!-- Profundidad -->
+            <text x="70" y="15" text-anchor="middle" fill="#0097a7" font-size="15">
+              Prof: {{nuevoTanque.profundidad || 0}} m
+            </text>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Tipo de tanque -->
+      <label>Tipo de tanque *</label>
+      <select name="tipoTanque" required [(ngModel)]="nuevoTanque.tipoTanque">
+        <option value="" disabled selected>Selecciona tipo de Tanque</option>
+        <option *ngFor="let tipo of tipoTanques" [ngValue]="tipo">
+          {{tipo}}
+        </option>
+      </select>
+
+      <div class="modal-actions">
+        <button type="submit">{{ modoEdicion ? 'Actualizar' : 'Agregar' }}</button>
+        <button type="button" (click)="cerrarModalTanque()">Cancelar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal-backdrop" *ngIf="mostrarModalCiclo">
+  <div class="modal">
+    <h3>Agregar Ciclo</h3>
+    <form (ngSubmit)="agregarCiclo()">
+      <label>Numero de Peces *</label>
+      <input type="number" [(ngModel)]="nuevoCiclo.numero_peces" name="numero_peces" required />
+
+      <label>Costos Unidad: </label>
+      <input type="number" [(ngModel)]="costoUnidad" name="costoUnidad" required >
+
+      <label>Costos Transporte: </label>
+      <input type="number" [(ngModel)]="nuevoCiclo.costos_transporte" name="costos" required >
+
+      <label>Selecciona el tanque * (debes tener creado algun tanque): </label>
+      <select [(ngModel)]="nuevoCiclo.tanques" name="tanques" required>
+        <option value="" disabled selected>Selecciona un tanque</option>
+        <option *ngFor="let tanque of tanquesDisponibles" [ngValue]="tanque.id">
+          {{ tanque.nombre }} ({{ tanque.volumen }} m³)
+        </option>
+      </select>
+
+      <label>Especie *:</label>
+      <select [(ngModel)]="nuevoCiclo.especie" name="especie" required>
+        <option value="" disabled selected>Selecciona la especie</option>
+        <option *ngFor="let especie of especiesDisponibles" [value]="especie">
+          {{especie}}
+        </option>
+      </select>
+
+      <label>Fecha De Inicio *:</label>
+      <input type="date" [(ngModel)]="nuevoCiclo.fecha_inicio" name="fecha" required />
+
+      <div class="modal-actions">
+        <button type="submit">Agregar</button>
+        <button type="button" (click)="cerrarModalCiclo()"> Cancelar </button>
+      </div>
+
+    </form>
+  </div>
+</div>
+
+<div class="modal-backfrop" *ngIf="mostrarModalVenta">
+  <div class="modal">
+    <h3>Nueva Venta</h3>
+    <form (ngSubmit)="agregarVenta()">
+      <label>Selecciona el ciclo *</label>
+      <select [(ngModel)]="nuevaVenta.ciclo_id_usuario" name="ciclo" required (change)="onCicloSeleccionado($event)">
+        <option value="" disabled selected>Selecciona un ciclo</option>
+        <option *ngFor="let ciclo of ciclos" [ngValue]="ciclo.ciclo_id_usuario">
+          Ciclo #{{ciclo.ciclo_id_usuario}} - {{ciclo.especie}} 
+        </option>
+      </select>
+      <label > Toneladas</label>
+      <input type="number" [(ngModel)]="nuevaVenta.toneladas" name="toneladas" min="0" required/>
+
+      <label> Precio Total *</label>
+      <input type="number" [(ngModel)]="nuevaVenta.precio" name="precio" min="0" required/>
+
+      <label>¿Cliente existente?</label>
+      <select [(ngModel)]="clienteExistente" name="clienteExistente" (change)="onClienteExistenteChange()">
+        <option [ngValue]="false">Nuevo cliente</option>
+        <option [ngValue]="true">Cliente existente</option>
+      </select>
+      
+      <div *ngIf="clienteExistente">
+        <label> Selecciona el Cliente</label>
+        <select name="comprador" [(ngModel)]="nuevaVenta.comprador_id" required>
+          <option value="" disabled selected>Selecciona un cliente</option>
+          <option *ngFor="let comprador of compradores"  [ngValue]="comprador.id">
+            {{ comprador.nombre }} - {{ comprador.empreesa }}
+          </option>
+        </select>
+      </div>
+
+      <div *ngIf="!clienteExistente">
+        <label>Nombre del cliente</label>
+        <input type="text" name="nombreCliente" [(ngModel)]="nuevoComprador.nombre" [required]="!clienteExistente"/>
+
+        <label>Empresa</label>
+        <input type="text" name="empresaCliente" [(ngModel)]="nuevoComprador.empresa" [required]="!clienteExistente"/>
+        
+        <label>Direccion</label>
+        <input type="text" name="direccionCliente" [(ngModel)]="nuevoComprador.direccion" [required]="!clienteExistente"/>
+
+        <label>Correo</label>
+        <input type="email" name="correoCliente" [(ngModel)]="nuevoComprador.correo" [required]="!clienteExistente"/>
+
+        <label>Telefono</label>
+        <input type="tel" name="telefonoCliente" [(ngModel)]="nuevoComprador.telefono" [required]="!clienteExistente"/>
+
+      </div>
+
+      <div class="modal-actions">
+        <button type="submit">Registrar Venta</button>
+        <button type="button" (click)="cerrarModalVenta()"></button>
+      </div>
+    </form>
+  </div>
+</div>

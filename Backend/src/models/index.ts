@@ -7,11 +7,23 @@ import { Producto } from "./producto";
 import { Inventario } from "./inventario";
 import { Compra } from "./compra";
 import { Sesion } from "./session";
+import { Empresa } from "./empresa";
+import { Comprador, Venta } from "./venta";
 
 // =========================
 // DEFINICIÓN DE RELACIONES
 // =========================
 
+// Usuario - Venta
+Usuario.hasMany(Venta, { foreignKey: "usuario_id", as: "ventas"});
+Venta.belongsTo(Usuario, { foreignKey: "usuario_id", as: "usuario"});
+
+// Venta - Comprador
+Comprador.hasMany(Venta, { foreignKey: "usuario_id", as: "ventas"});
+Venta.belongsTo(Comprador, { foreignKey: "comprador_id", as: "comprador"});
+// Comprador - Usuario
+Usuario.hasMany(Comprador, { foreignKey: "usuario_id", as: "compradores" });
+Comprador.belongsTo(Usuario, { foreignKey: "usuario_id", as: "usuario" });
 // Usuario - Ciclo
 Usuario.hasMany(Ciclo, { foreignKey: "usuario_id", as: "ciclos" });
 Ciclo.belongsTo(Usuario, { foreignKey: "usuario_id", as: "usuario" });
@@ -28,6 +40,9 @@ Compra.belongsTo(Usuario, { foreignKey: "usuario_id", as: "comprador" });
 Usuario.hasOne(Inventario, { foreignKey: "usuario_id", as: "inventario" });
 Inventario.belongsTo(Usuario, { foreignKey: "usuario_id", as: "usuario" });
 
+//Usuario - Empresa
+Usuario.hasOne(Empresa, {foreignKey: "usuario_id", as: "empresa"});
+Empresa.belongsTo(Usuario, { foreignKey: "usuario_id", as: "usuario"});
 
 // Ciclo - Tareas
 Ciclo.hasMany(Tarea, { foreignKey: "ciclo_id", as: "tareas" });

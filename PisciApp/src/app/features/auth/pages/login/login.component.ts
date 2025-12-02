@@ -109,7 +109,7 @@ export class LoginComponent {
       next: (res) => {
         // 🚀 Guardar token de acceso
         localStorage.setItem('accessToken', res.accessToken);
-        this.router.navigate(['/inventory']);
+        this.router.navigate(['/inicioPerfil']);
       },
       error: (err) => {
         this.errorMessage = err.message || 'Error al validar 2FA';
@@ -162,7 +162,7 @@ export class LoginComponent {
 
     this.authService.loginWithGoogle(response.credential).subscribe({
       next: () => {
-        this.router.navigate(['/inventory']);
+        this.router.navigate(['/inicioPerfil']);
       },
       error: (err) => {
         console.error('❌ Error login con Google:', err);

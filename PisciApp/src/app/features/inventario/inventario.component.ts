@@ -6,6 +6,7 @@ import { CommonModule } from '@angular/common';
 import { NavbarComponent } from '../../shared/components/navbar/navbar.component';
 import { FormsModule } from '@angular/forms';
 import { Pipe, PipeTransform } from '@angular/core';
+
 @Component({
   selector: 'app-inventario',
   imports: [CommonModule, NavbarComponent, FormsModule],
@@ -20,21 +21,38 @@ export class InventarioComponent implements OnInit {
   busquedaInventario: string = '';
   filtroTipoInventario: string = '';
   itemEditando: any = null
+  datosGenerales: boolean = true;
+  datosFisicos: boolean = false;
+  datosEconomicos: boolean = false;
 
+  // ✅ ACTUALIZADO: Agregado unidad_medida
   nuevoItem = {
     tipo_material: '',
     nombre: '',
+    lote: null as number | null,
     provedor: '',
-    cantidad: 0,
-    costo_insumo: 0.0,
-    costo_transporte: 0.0,
+    cantidad: null as number | null,
+    costo_insumo: null as number | null,
+    costo_transporte: null as number | null,
     fecha_caducidad: new Date(),
-    peso_unidad: 0.0,
-    granularidad: 0.0,
+    peso_unidad: null as number | null,
+    unidad_medida: '', 
+    granularidad: null as number | null,
   }
 
-
-
+  // ✅ NUEVO: Opciones de unidades de medida
+  unidadesMedida: string[] = [
+    'kg',
+    'gramos',
+    'toneladas',
+    'litros',
+    'ml',
+    'unidades',
+    'm',
+    'cm',
+    'lb',
+    'oz'
+  ];
 
   constructor (
     private authService: AuthService,
@@ -45,7 +63,7 @@ export class InventarioComponent implements OnInit {
   ngOnInit(): void {
     const user = this.authService.getCurrentUser();
     this.usuario_id = user ? user.id : 0;
-    this.inventarioService.obtenerInventario(this.usuario_id).subscribe({
+    this.inventarioService.obtenerInventario().subscribe({
       next: (data) => {
         console.log('data',data);
         if (data && data.length > 0) {
@@ -59,6 +77,27 @@ export class InventarioComponent implements OnInit {
     });
     console.log(this.inventario)
   }
+
+  mostrarSeccion(seccion: 'generales' | 'fisicos' | 'economicos'): void {
+    if (seccion === 'generales') {
+      this.datosGenerales = true;
+      this.datosFisicos = false;
+      this.datosEconomicos = false;
+    } else if(seccion === 'fisicos') {
+      this.datosGenerales = false;
+      this.datosFisicos = true;
+      this.datosEconomicos = false;
+    } else if (seccion === 'economicos') {
+      this.datosGenerales = false;
+      this.datosFisicos = false;
+      this.datosEconomicos = true;
+    } else {
+      this.datosGenerales = false;
+      this.datosFisicos = false;
+      this.datosEconomicos = false;
+    }
+  }
+
   // Datos falsos para pruebas de frontend
   cargarInventarioFalso(): void {
     this.inventario = [
@@ -76,24 +115,13 @@ export class InventarioComponent implements OnInit {
   }
 
   agregarInventario(): void {
-
     console.log(this.nuevoItem);
     this.inventarioService.crearInventario(this.nuevoItem).subscribe({
       next: (data) => {
         this.inventario.push(data);
         this.mostrarAgregar();
         this.notificacionService.success('Inventario agregado correctamente');
-        this.nuevoItem = {
-          tipo_material: '',
-          nombre: '',
-          provedor: '',
-          cantidad: 0,
-          costo_insumo: 0.0,
-          costo_transporte: 0.0,
-          fecha_caducidad: new Date(),
-          peso_unidad: 0.0,
-          granularidad: 0.0,
-        };
+        this.resetFormulario();
       },
       error: (err) => {
         this.notificacionService.error('Error al agregar inventario')
@@ -126,7 +154,6 @@ export class InventarioComponent implements OnInit {
   }
 
   cerrarModal(event: MouseEvent): void {
-    // Solo cierra si el clic fue en el backdrop, no en el contenido del modal
     if (event.target === event.currentTarget) {
       this.cerrarModalInventario();
     }
@@ -135,18 +162,23 @@ export class InventarioComponent implements OnInit {
   cerrarModalInventario(): void {
     this.mostrarModalAgregar = false;
     this.mostrarModalEditar = false;
+    this.resetFormulario();
+  }
 
-    // Opcional: reinicia el formulario
+  // ✅ NUEVO: Método para resetear formulario
+  private resetFormulario(): void {
     this.nuevoItem = {
       tipo_material: '',
       nombre: '',
+      lote: null as number | null,
       provedor: '',
-      cantidad: 0,
-      costo_insumo: 0.0,
-      costo_transporte: 0.0,
+      cantidad: null as number | null,
+      costo_insumo: null as number | null,
+      costo_transporte: null as number | null,
       fecha_caducidad: new Date(),
-      peso_unidad: 0.0,
-      granularidad: 0.0,
+      peso_unidad: null as number | null,
+      unidad_medida: '', 
+      granularidad: null as number | null,
     };
   }
 

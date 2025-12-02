@@ -2,6 +2,9 @@ import { Request, Response } from "express";
 import { Ciclo, Alimento, Quimico, Bajas, CicloTanque, MovimientoTanque } from "../models/ciclo";
 import { Tanque } from "../models/tanque";
 import sequelize from "../database/connection";
+import { Inventario } from "../models";
+import { error } from "console";
+
 export const crearCiclo = async (req: Request, res: Response): Promise<any> => {
     const tra = await sequelize.transaction();
     try {
@@ -147,7 +150,7 @@ export const ingresarAlimento = async (req: Request, res: Response): Promise<any
     const tra = await sequelize.transaction();
     try {
         const ciclo_id = req.params.ciclo_id
-        const {cantidad, costo, nombre, descripcion} = req.body
+        const {cantidad, costo, nombre, observacion} = req.body
         if (!ciclo_id || !cantidad || !costo) {
             await tra.rollback();
             return res.status(400).json({error: "Todos los campos son requeridos."})
@@ -157,13 +160,22 @@ export const ingresarAlimento = async (req: Request, res: Response): Promise<any
             await tra.rollback();
             return res.status(404).json({error: "Ciclo no encontrado."})
         }
-        if (ciclo.fecha_fin !== null) {            
+        if (ciclo.fecha_fin !== null) {
             await tra.rollback();
             return res.status(404).json({ error: "El Ciclo ya se encuentra finalizado." });
         }
-        const nuevoAlimento = await Alimento.create({ciclo_id, cantidad, costo, nombre, descripcion}, {transaction: tra});
+        // Se debe implementar logica para disminuir en el inventario
+        const nuevoAlimento = await Alimento.create({ciclo_id, cantidad, costo, nombre, observacion}, {transaction: tra});
         await ciclo.increment('costos', {by: costo, transaction: tra});
         await tra.commit();
+
+        const inventario = await Inventario.findOne({ where: nombre, transaction: tra});
+        if (!inventario) {
+            await tra.rollback();
+            return res.status(404).json({error: "Producto no encontrado en el inventarioo"})
+        }
+
+        await inventario.decrement('peso_total', {by: cantidad})
         res.status(201).json(nuevoAlimento)
     } catch (error) {
         await tra.rollback();
@@ -176,7 +188,7 @@ export const ingresarQuimico = async (req: Request, res: Response): Promise<any>
     const tra = await sequelize.transaction();
     try {
         const ciclo_id = req.params.ciclo_id
-        const { cantidad, costo, nombre, descripcion} = req.body
+        const { cantidad, costo, nombre, observacion} = req.body
         if (!ciclo_id || !cantidad || !costo) {
             await tra.rollback();
             return res.status(400).json({error: "Todos los campos son requeridos."})
@@ -190,9 +202,19 @@ export const ingresarQuimico = async (req: Request, res: Response): Promise<any>
             await tra.rollback();
             return res.status(404).json({ error: "El Ciclo ya se encuentra finalizado." });
         } 
-        const nuevoQuimico = await Quimico.create({ciclo_id, cantidad, costo, nombre, descripcion}, {transaction: tra})
+        const nuevoQuimico = await Quimico.create({ciclo_id, cantidad, costo, nombre, observacion}, {transaction: tra})
         await ciclo.increment('costos', {by: costo, transaction: tra});
         await tra.commit();
+
+         const inventario = await Inventario.findOne({ where: nombre, transaction: tra});
+        if (!inventario) {
+            await tra.rollback();
+            return res.status(404).json({error: "Producto no encontrado en el inventarioo"})
+        }
+
+        await inventario.decrement('peso_total', {by: cantidad})
+        await tra.commit();
+
         res.status(201).json(nuevoQuimico)
     } catch (error) {
         await tra.rollback();
@@ -263,5 +285,24 @@ export const cambiarTanque = async (req: Request, res: Response): Promise<any> =
         await tra.rollback();
         console.error(error)
         return res.status(500).json({error: "Error interno del servidor"});
+    }
+}
+
+
+export const eliminarCiclo = async (req: Request, res: Response): Promise<any> => {
+    const tra = await sequelize.transaction();
+    try {
+        const ciclo_id = req.params.ciclo_id;
+        const usuario_id = req.body;
+
+        if (!ciclo_id || !usuario_id) {
+            await tra.rollback();
+            return res.status(400).json({error: "Completa los datos"});
+        }
+
+        const ciclo = await Ciclo.findOne({ where: { id: ciclo_id, usuario_id}, })
+
+    } catch (error) {
+        
     }
 }

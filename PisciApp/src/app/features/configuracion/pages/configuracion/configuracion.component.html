@@ -281,6 +281,111 @@
       </div>
     </mat-expansion-panel>
 
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title>Empresa</mat-panel-title>
+      </mat-expansion-panel-header>
+      <form class="empresa-form" #empresaForm="ngForm" (ngSubmit)="actualizarEmpresa()">
+        <div class="empresa-grid" *ngIf="empresa">
+          <mat-form-field appearance="outline">
+            <mat-label>Nombre de la empresa</mat-label>
+            <input matInput [(ngModel)]="empresa.nombre" name="nombre" required />
+            <mat-icon matSuffix>business</mat-icon>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Dirección</mat-label>
+            <input matInput [(ngModel)]="empresa.direccion" name="direccion" required />
+            <mat-icon matSuffix>location_on</mat-icon>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Pais</mat-label>
+            <mat-select [(ngModel)]="empresa.pais" name="pais" panelClass="select-ajustado" required>
+              <mat-option value="Argentina">🇦🇷 Argentina</mat-option>
+              <mat-option value="Bolivia">🇧🇴 Bolivia</mat-option>
+              <mat-option value="Brasil">🇧🇷 Brasil</mat-option>
+              <mat-option value="Chile">🇨🇱 Chile</mat-option>
+              <mat-option value="Colombia">🇨🇴 Colombia</mat-option>
+              <mat-option value="Costa Rica">🇨🇷 Costa Rica</mat-option>
+              <mat-option value="Cuba">🇨🇺 Cuba</mat-option>
+              <mat-option value="Ecuador">🇪🇨 Ecuador</mat-option>
+              <mat-option value="El Salvador">🇸🇻 El Salvador</mat-option>
+              <mat-option value="Guatemala">🇬🇹 Guatemala</mat-option>
+              <mat-option value="Honduras">🇭🇳 Honduras</mat-option>
+              <mat-option value="México">🇲🇽 México</mat-option>
+              <mat-option value="Nicaragua">🇳🇮 Nicaragua</mat-option>
+              <mat-option value="Panamá">🇵🇦 Panamá</mat-option>
+              <mat-option value="Paraguay">🇵🇾 Paraguay</mat-option>
+              <mat-option value="Perú">🇵🇪 Perú</mat-option>
+              <mat-option value="República Dominicana">🇩🇴 República Dominicana</mat-option>
+              <mat-option value="Uruguay">🇺🇾 Uruguay</mat-option>
+              <mat-option value="Venezuela">🇻🇪 Venezuela</mat-option>
+            </mat-select>
+            <mat-icon matSuffix>public</mat-icon>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Provincia</mat-label>
+            <input matInput [(ngModel)]="empresa.departamento" name="departamento" required />
+            <mat-icon matSuffix>map</mat-icon>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Ciudad</mat-label>
+            <input matInput [(ngModel)]="empresa.ciudad" name="ciudad" required />
+            <mat-icon matSuffix>location_city</mat-icon>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Codigo Postal</mat-label>
+            <input matInput [(ngModel)]="empresa.codigo_postal" name="codigo_postal" required />
+            <mat-icon matSuffix>markunread_mailbox</mat-icon>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width select-multiple">
+            <mat-label>Especies que cultiva</mat-label>
+            <mat-select [(ngModel)]="empresa.especies" name="especies" multiple panelClass="select-ajustado">
+              <mat-option value="Tilapia">🐟 Tilapia</mat-option>
+              <mat-option value="Carpa">🐟 Carpa</mat-option>
+              <mat-option value="Salmón">🐟 Salmón</mat-option>
+              <mat-option value="Trucha">🐟 Trucha</mat-option>
+              <mat-option value="Bagre">🐟 Bagre</mat-option>
+              <mat-option value="Rodaballo">🐟 Rodaballo</mat-option>
+              <mat-option value="Bacalao">🐟 Bacalao</mat-option>
+              <mat-option value="Atún">🐟 Atún</mat-option>
+              <mat-option value="Camarón">🦐 Camarón</mat-option>
+              <mat-option value="Langostino">🦐 Langostino</mat-option>
+            </mat-select>
+            <mat-icon matSuffix>pool</mat-icon>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width select-multiple">
+            <mat-label>Actividades principales</mat-label>
+            <mat-select [(ngModel)]="empresa.actividad" name="actividad" multiple panelClass="select-ajustado">
+              <mat-option value="Producción">🏭 Producción</mat-option>
+              <mat-option value="Comercialización">💼 Comercialización</mat-option>
+              <mat-option value="Exportación">🌍 Exportación</mat-option>
+              <mat-option value="Investigación">🔬 Investigación</mat-option>
+              <mat-option value="Reproducción">🥚 Reproducción</mat-option>
+              <mat-option value="Engorde">📈 Engorde</mat-option>
+              <mat-option value="Procesamiento">⚙️ Procesamiento</mat-option>
+              <mat-option value="Consultoría">💡 Consultoría</mat-option>
+            </mat-select>
+            <mat-icon matSuffix>work</mat-icon>
+          </mat-form-field>
+        </div>
+        <div class="empresa-actions">
+          <button mat-raised-button color="primary" type="submit" [disabled]="!empresaForm.valid || isUpdatingEmpresa">
+            <mat-spinner *ngIf="isUpdatingEmpresa" diameter="18" class="button-spinner"></mat-spinner>
+            <mat-icon *ngIf="!isUpdatingEmpresa">save</mat-icon>
+            {{ isUpdatingEmpresa ? 'Guardando...' : 'Guardar información' }}
+          </button>
+        </div>
+      </form>
+
+    </mat-expansion-panel>
+
     <!-- NOTIFICACIONES -->
     <mat-expansion-panel>
       <mat-expansion-panel-header>

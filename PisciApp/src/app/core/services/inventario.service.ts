@@ -17,8 +17,8 @@ export class InventarioService {
     .pipe(catchError(error => this.errorService.handleError(error)))
   }
 
-  obtenerInventario(usuario_id: number): Observable<any> {
-    return this.http.get(`${this.apiUrl}inventario/obtener`)
+  obtenerInventario(): Observable<any> {
+    return this.http.get(`${this.apiUrl}inventario/obtener`, )
     .pipe(catchError(error => this.errorService.handleError(error)))
   }
 

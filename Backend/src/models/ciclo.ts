@@ -50,7 +50,7 @@ export const Alimento = sequelize.define(
     cantidad: { type: DataTypes.INTEGER, allowNull: false },
     costo: { type: DataTypes.INTEGER, allowNull: false },
     nombre: { type: DataTypes.TEXT, allowNull: false },
-    descripcion: { type: DataTypes.TEXT, allowNull: false },
+    observacion: { type: DataTypes.TEXT, allowNull: false },
   },
   {
     timestamps: true,
@@ -72,7 +72,7 @@ export const Quimico = sequelize.define(
     cantidad: { type: DataTypes.INTEGER, allowNull: false },
     costo: { type: DataTypes.INTEGER, allowNull: false },
     nombre: { type: DataTypes.TEXT, allowNull: false },
-    descripcion: { type: DataTypes.TEXT, allowNull: false },
+    observacion: { type: DataTypes.TEXT, allowNull: false },
   },
   {
     timestamps: true,
@@ -102,6 +102,7 @@ export const Bajas = sequelize.define(
     ciclo_id: { type: DataTypes.INTEGER, references: {model: "ciclos", key: "id"},  allowNull: false },
     tanque_id: { type: DataTypes.INTEGER, references: {model: "tanques", key: "id"},  allowNull: false },
     cantidad: { type: DataTypes.INTEGER,  allowNull: false },
+    causa: { type: DataTypes.STRING, allowNull: false}
   },
   {
     timestamps: true,

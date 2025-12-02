@@ -8,25 +8,38 @@
   </button>
 
   <ul class="nav-links" [class.active]="menuAbierto">
-    <li><a routerLink="/inicio" routerLinkActive="active">Inicio</a></li>
+    <li><a routerLink="/inicioPerfil" routerLinkActive="active">Inicio</a></li>
     <li>
-      <a routerLink="/diario" routerLinkActive="active">Reporte diario</a>
+      <a routerLink="/diario" routerLinkActive="active">Reporte Diario</a>
     </li>
-    <li><a routerLink="/ciclos" routerLinkActive="active">Ciclos</a></li>
+    <li><a routerLink="/empresa" routerLinkActive="active">Mi Empresa</a></li>
     <li>
-      <a href="/configuracion" routerLinkActive="active">Configuración</a>
+      <a href="/ciclos" routerLinkActive="active">Producción</a>
     </li>
     <li>
       <a href="/inventario" routerLinkActive="active">Inventario</a>
     </li>
   </ul>
 
+  <div class="nav-search">
+    <div class="search-container">
+      <input type="text"
+      class="search-input"
+      placeholder="Buscar"
+      [(ngModel)]="textoBusqueda"
+      (keydown)="onEnterBusqueda($event)" />
+      <button class="search-btn" type="button" (click)="onBuscar()">🔍</button>
+    </div>
+  </div>
+
   <div class="nav-right" *ngIf="user">
     <div class="user-info">
-      <div class="user-icon">
-        {{ userInitials }}
-      </div>
-      <span class="username">{{ user.nombre }}</span>
+      <button class="user-icon" (click)="perfil()" title="Perfil">
+        
+          {{ userInitials }}
+
+      </button>
+      <!-- <span class="username">{{ user.nombre }}</span> -->
     </div>
     <button class="logout-btn" (click)="logout()">Cerrar sesión</button>
   </div>

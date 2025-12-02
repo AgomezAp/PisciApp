@@ -6,7 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../core/services/auth.service';
 import { CicloService } from '../../core/services/ciclo.service';
 import { DatePipe } from '@angular/common';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 @Component({
   selector: 'app-inicio',
   imports: [NavbarComponent, NgFor, NgIf, FormsModule, DatePipe],
@@ -23,6 +23,9 @@ export class InicioComponent implements OnInit {
   mostrarModalCiclo = false;
   supervivencia = 0;
   especiesDisponibles: string[] = ['Tilapia', 'Carpa', 'Salmón', 'Trucha', 'Bagre', 'Rodaballo', 'Bacalao', 'Atún'];
+  tipoTanques: string[] = ['Estanque de manantial', 'Estanque de arroyo o río' , 'Estanque de lluvia', 'Estanque de tierra',
+    'Estanque de concreto', 'Estanque con geomembrana', 'Estanque de fibra de vidrio', 'Estanque de reproducción', 'Estanque de alevinaje',
+    'Estanque de cría', 'Estanque de engorde', 'Estanque de almacenamiento', 'Estanque de cuarentena'];
   especies: string[] = []
   costoUnidad: number = 0;
 
@@ -38,7 +41,7 @@ export class InicioComponent implements OnInit {
     tanques: 0,
     numero_peces: 0,
     costos: 0,
-    costo_transporte: 0,
+    costos_transporte: 0,
     especie: "",
     fecha_inicio: ""
   };
@@ -47,7 +50,9 @@ export class InicioComponent implements OnInit {
     private tanqueService: TanqueService,
     private cicloService: CicloService,
     private router: Router,
-    private authService: AuthService) { }
+    private authService: AuthService,
+    private activatedRoute: ActivatedRoute
+  ) { }
 
   ngOnInit(): void {
     const user = this.authService.getCurrentUser();
@@ -80,7 +85,7 @@ export class InicioComponent implements OnInit {
         this.especies = Array.from(new Set(this.ciclos.map((ciclo: any) => ciclo.especie).filter((e: any) => !!e)))
         if (this.ciclos.length > 0) {
           const cicloActual = this.ciclos[this.ciclos.length - 1];
-          this.supervivencia = ((cicloActual.numero_peces - (cicloActual.total_bajas ?? 0)) / cicloActual.numero_peces) * 100;
+            this.supervivencia = ((cicloActual.total_bajas ?? 0) / cicloActual.numero_peces) * 100;
         } else {
           this.supervivencia = -1;
         }
@@ -90,6 +95,20 @@ export class InicioComponent implements OnInit {
         console.error(err)
       }
     });
+
+    this.activatedRoute.queryParams.subscribe(params => {
+      if (params['abrirModalCiclo'] === 'true') {
+        this.abrirModalCiclo();
+        this.router.navigate(['/inicio'], {replaceUrl: true})
+      }
+    });
+
+    this.activatedRoute.queryParams.subscribe(params => {
+      if (params['abrirModalTanque'] === 'true') {
+        this.abrirModalTanque();
+        this.router.navigate(['/inicio'], {replaceUrl: true})
+      }
+    })
   }
 
   abrirModalTanque() {
@@ -109,7 +128,7 @@ export class InicioComponent implements OnInit {
     this.nuevoCiclo = {tanques: 0,
       numero_peces: 0,
       costos: 0,
-      costo_transporte: 0,
+      costos_transporte: 0,
       especie: "",
       fecha_inicio: "" };
   }

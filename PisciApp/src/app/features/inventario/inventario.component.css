@@ -74,6 +74,32 @@
   background: #e0f7fa;
 }
 
+.btn-filtro {
+  background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%);
+  color: #0097a7;
+  border: 2px solid #b2ebf2;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 6px rgba(0,188,212,0.08);
+  margin-right: 8px;
+}
+
+.btn-filtro.activo {
+  background-color: #4CAF50;
+  color: white;
+  border: 2px solid #45a049;
+  box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+}
+
+.btn-filtro:hover {
+  background-color: #45a049;
+  cursor: pointer;
+}
+
 .btn-agregar-inventario {
   background: linear-gradient(90deg, #00bcd4 60%, #0097a7 100%);
   color: #fff;
@@ -252,7 +278,7 @@
   }
   
   .tabla-inventario {
-    font-size: 14px;
+    font-size: 13px;
     margin: 16px 0;
     border-radius: 8px;
     overflow-x: auto;
@@ -269,10 +295,17 @@
   .tabla-inventario th, .tabla-inventario td {
     padding: 8px 6px;
     font-size: 13px;
-    min-width: 80px;
+    width: 90px; /* Ancho fijo exacto */
+    min-width: 90px;
+    max-width: 90px;
     display: inline-block;
     vertical-align: top;
     border-right: 1px solid #e0f7fa;
+    text-align: center;
+    box-sizing: border-box; /* Incluye padding en el ancho */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
   
   .tabla-inventario th:last-child,
@@ -280,14 +313,34 @@
     border-right: none;
   }
   
-  .tabla-inventario th {
-    font-size: 14px;
-  }
-  
   .btn-editar, .btn-eliminar {
     padding: 4px 6px;
     font-size: 12px;
   }
+}
+
+/* NUEVO: Estilos para peso y unidad inline */
+.form-group-inline {
+  display: flex;
+  gap: 12px;
+  align-items: end;
+}
+
+.peso-input {
+  flex: 2;
+}
+
+.unidad-select {
+  flex: 1;
+}
+
+.form-group-inline label {
+  margin: 0;
+}
+
+.form-group-inline input,
+.form-group-inline select {
+  width: 100%;
 }
 
 @media (max-width: 480px) {
@@ -306,7 +359,13 @@
   .tabla-inventario th, .tabla-inventario td {
     padding: 6px 4px;
     font-size: 12px;
-    min-width: 70px;
+    width: 80px; /* Ancho fijo exacto */
+    min-width: 80px;
+    max-width: 80px;
+    box-sizing: border-box; /* Incluye padding en el ancho */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
   
   .modal-backdrop {
@@ -316,17 +375,17 @@
   
   .modal {
     min-width: 95vw;
-    max-height: 80vh; /* <-- Aún más compacto en pantallas pequeñas */
+    max-height: 80vh;
     padding: 16px 12px;
   }
   
   .modal h3 {
     font-size: 1.1rem;
-    margin-bottom: 8px; /* <-- Reduce espacio del título */
+    margin-bottom: 8px;
   }
   
   .modal label {
-    margin-bottom: 6px; /* <-- Reduce espacio entre campos */
+    margin-bottom: 6px;
   }
   
   .modal input, .modal select {
@@ -337,7 +396,7 @@
   .modal-actions {
     flex-direction: column;
     gap: 8px;
-    margin-top: 8px; /* <-- Menos margen arriba */
+    margin-top: 8px;
   }
   
   .modal-actions button {

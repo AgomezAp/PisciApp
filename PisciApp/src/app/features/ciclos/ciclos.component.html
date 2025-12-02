@@ -4,13 +4,18 @@
   <h2>Lista de ciclos</h2>
   <div class="carrusel-lista">
     <div class="carrusel-item" *ngFor="let ciclo of ciclos" [class.seleccionado]="ciclo.ciclo_id_usuario === cicloSeleccionado?.id"
-      [ngClass]="ciclo.fecha_fin ? 'carrusel-rojo' : 'carrusel-azul'" (click)="seleccionarCiclo(ciclo)">
-      <div><b>Ciclo #{{ ciclo.ciclo_id_usuario }}</b></div>
-      <div>Inicio: {{ ciclo.fecha_inicio | date:'dd/MM/yyyy' }}</div>
-      <div>Especie: {{ ciclo.especie }}</div>
-      <div>Peces: {{ ciclo.numero_actual }}</div>
-      <div>Bajas: {{ ciclo.total_bajas && ciclo.total_bajas > 0 ? ciclo.total_bajas : 'Sin bajas' }}</div>
-      <div>Costos: {{ ciclo.costos | currency:'$':'symbol':'1.0-0' }}</div>
+    [ngClass]="ciclo.fecha_fin ? 'carrusel-rojo' : 'carrusel-azul'" (click)="seleccionarCiclo(ciclo)">
+    <div><b>Ciclo #{{ ciclo.ciclo_id_usuario }}</b></div>
+    <div>Inicio: {{ ciclo.fecha_inicio | date:'dd/MM/yyyy' }}</div>
+    <div>Especie: {{ ciclo.especie }}</div>
+    <div>Peces: {{ ciclo.numero_actual }}</div>
+    <div>Bajas: {{ ciclo.total_bajas && ciclo.total_bajas > 0 ? ciclo.total_bajas : 'Sin bajas' }}</div>
+    <div>Costos: {{ ciclo.costos | currency:'$':'symbol':'1.0-0' }}</div>
+    </div>
+    <div class="carrusel-item nuevo-ciclo" (click)="agregarCiclo()">
+    |   <div class="icono-agregar">+</div>
+      <div><b>Nuevo Ciclo</b></div>
+      <div>Crear un ciclo nuevo</div>
     </div>
   </div>
 </div>
@@ -27,6 +32,11 @@
       <div>Volumen: {{ getTanqueInfo(tanqueCiclo.tanque_id)?.volumen}}</div>
       <div>Peces: {{ tanqueCiclo.numero_peces}}</div>
       <div>Forma: {{ getTanqueInfo(tanqueCiclo.tanque_id)?.forma}}</div>
+    </div>
+    <div class="carrusel-item nuevo-ciclo" (click)="agregarTanque()">
+      <div class="icono-agregar">+</div>
+      <div><b>Nuevo Tanque</b></div>
+      <div>Crear un tanque nuevo</div>
     </div>
   </div>
 </div>

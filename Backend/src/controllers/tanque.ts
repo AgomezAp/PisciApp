@@ -23,10 +23,10 @@ export const crearTanque = async (req: Request, res: Response): Promise<any> => 
 
         let volumenFinal;
         if(forma === 'Rectangular') {
-            volumenFinal = largo * ancho * profundidad
+            volumenFinal = Math.round(largo * ancho * profundidad * Math.pow(10, 2)) / Math.pow(10, 2);
         }
         if(forma === 'Redondo') {
-            volumenFinal = Math.PI * diametro * profundidad
+            volumenFinal = Math.round(Math.PI * diametro * profundidad * Math.pow(10, 2)) /  Math.pow(10, 2);
         }
         const nuevoTanque = await Tanque.create(
             {nombre: nombreFinal, forma, profundidad, largo, ancho, diametro, volumen: volumenFinal, tipoTanque, disponible: true, usuario_id, tanque_id_usuario: siguienteId},
@@ -85,7 +85,9 @@ export const obtenerTanque = async (req: Request, res: Response): Promise<any> =
 export const eliminarTanque = async (req: Request, res: Response): Promise<any> => {
     const tra = await sequelize.transaction(); 
     try {
-        const {tanque_id, usuario_id} = req.body;
+        const tanque_id = req.params.id
+
+        const usuario_id = (req as any).usuario?.id || req.body.usuario_id
         if (!tanque_id || !usuario_id) {
             await tra.rollback();
             return res.status(400).json({ error: "tanque_id y usuario_id son requeridos." });
