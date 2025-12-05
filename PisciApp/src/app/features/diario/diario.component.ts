@@ -100,7 +100,7 @@ export class DiarioComponent implements OnInit {
       peso_por_unidad: null as number | null,
       total_kg_disponible: null as number | null,
       costo_por_kg: null as number | null,
-      unidad_medida: null as string | null, // ✅ NUEVO
+      unidad_medida: null as string | null,
       nombre: '',
       descripcion: ''
     });
@@ -159,7 +159,6 @@ export class DiarioComponent implements OnInit {
   onAlimentoSeleccionado(event: any, index: number): void {
     const nombreSeleccionado = event.target.value;
     
-    // ✅ NUEVO: Permitir deseleccionar
     if (!nombreSeleccionado || nombreSeleccionado === '') {
       this.alimentos[index] = {
         cantidad: null,
@@ -169,7 +168,7 @@ export class DiarioComponent implements OnInit {
         peso_por_unidad: null,
         total_kg_disponible: null,
         costo_por_kg: null,
-        unidad_medida: null, // ✅ NUEVO CAMPO
+        unidad_medida: null,
         nombre: '',
         descripcion: ''
       };
@@ -181,25 +180,21 @@ export class DiarioComponent implements OnInit {
     if (alimento) {
       this.alimentos[index].nombre = nombreSeleccionado;
       
-      // ✅ CORREGIDO: Calcular costo por kg correctamente
       const costoTotal = alimento.costo_insumo  || 0;
       const cantidadUnidades = alimento.cantidad  || 1;
       const pesoPorUnidad = alimento.peso_unidad  || 1;
-      const unidadMedida = alimento.unidad_medida  || 'kg'; // ✅ NUEVO
+      const unidadMedida = alimento.unidad_medida  || 'kg';
     
-      // Calcular total disponible y costo por unidad
       const totalDisponible = cantidadUnidades * pesoPorUnidad;
       const costoPorUnidad = totalDisponible > 0 ? costoTotal / totalDisponible : 0;
       
-      // Guardar datos para referencia
       this.alimentos[index].costo_insumo_total = costoTotal;
       this.alimentos[index].cantidad_unidades = cantidadUnidades;
       this.alimentos[index].peso_por_unidad = pesoPorUnidad;
       this.alimentos[index].total_kg_disponible = totalDisponible;
       this.alimentos[index].costo_por_kg = costoPorUnidad;
-      this.alimentos[index].unidad_medida = unidadMedida; // ✅ NUEVO
+      this.alimentos[index].unidad_medida = unidadMedida;
     
-      // ✅ NUEVO: Calcular costo proporcional y redondearlo
       if (this.alimentos[index].cantidad && this.alimentos[index].cantidad > 0) {
         const costoCalculado = costoPorUnidad * this.alimentos[index].cantidad;
         this.alimentos[index].costo = Math.round(costoCalculado);
@@ -224,7 +219,6 @@ export class DiarioComponent implements OnInit {
   onQuimicoSeleccionado(event: any, index: number): void {
     const nombreSeleccionado = event.target.value;
     
-    // ✅ NUEVO: Permitir deseleccionar
     if (!nombreSeleccionado || nombreSeleccionado === '') {
       this.quimicos[index] = {
         cantidad: null,
@@ -234,7 +228,7 @@ export class DiarioComponent implements OnInit {
         peso_por_unidad: null,
         total_kg_disponible: null,
         costo_por_kg: null,
-        unidad_medida: null, // ✅ NUEVO CAMPO
+        unidad_medida: null,
         nombre: '',
         descripcion: ''
       };
@@ -248,25 +242,21 @@ export class DiarioComponent implements OnInit {
     if (quimico) {
       this.quimicos[index].nombre = nombreSeleccionado;
       
-      // ✅ CORREGIDO: Calcular costo correctamente (IGUAL QUE ALIMENTOS)
       const costoTotal = quimico.costo_insumo || quimico.producto?.costo_insumo || 0;
       const cantidadUnidades = quimico.cantidad || quimico.producto?.cantidad || 1;
       const pesoPorUnidad = quimico.peso_unidad || quimico.producto?.peso_unidad || 1;
-      const unidadMedida = quimico.unidad_medida || quimico.producto?.unidad_medida || 'kg'; // ✅ NUEVO
+      const unidadMedida = quimico.unidad_medida || quimico.producto?.unidad_medida || 'kg';
     
-      // Calcular total disponible y costo por unidad
       const totalDisponible = cantidadUnidades * pesoPorUnidad;
       const costoPorUnidad = totalDisponible > 0 ? costoTotal / totalDisponible : 0;
       
-      // Guardar datos para referencia
       this.quimicos[index].costo_insumo_total = costoTotal;
       this.quimicos[index].cantidad_unidades = cantidadUnidades;
       this.quimicos[index].peso_por_unidad = pesoPorUnidad;
       this.quimicos[index].total_kg_disponible = totalDisponible;
       this.quimicos[index].costo_por_kg = costoPorUnidad;
-      this.quimicos[index].unidad_medida = unidadMedida; // ✅ NUEVO
+      this.quimicos[index].unidad_medida = unidadMedida;
     
-      // ✅ NUEVO: Calcular costo proporcional y redondearlo
       if (this.quimicos[index].cantidad && this.quimicos[index].cantidad > 0) {
         const costoCalculado = costoPorUnidad * this.quimicos[index].cantidad;
         this.quimicos[index].costo = Math.round(costoCalculado);
@@ -288,12 +278,11 @@ export class DiarioComponent implements OnInit {
     }
   }
 
-  // ✅ CORREGIDO: Métodos para recalcular cuando cambia la cantidad CON REDONDEO
   onAlimentoCantidadChange(index: number): void {
     const alimento = this.alimentos[index];
     if (alimento.costo_por_kg && alimento.cantidad && alimento.cantidad > 0) {
       const costoCalculado = alimento.costo_por_kg * alimento.cantidad;
-      alimento.costo = Math.round(costoCalculado); // ✅ REDONDEADO A ENTERO
+      alimento.costo = Math.round(costoCalculado);
       
       console.log('Cantidad alimento cambiada:', {
         cantidad_solicitada: alimento.cantidad,
@@ -310,7 +299,7 @@ export class DiarioComponent implements OnInit {
     const quimico = this.quimicos[index];
     if (quimico.costo_por_kg && quimico.cantidad && quimico.cantidad > 0) {
       const costoCalculado = quimico.costo_por_kg * quimico.cantidad;
-      quimico.costo = Math.round(costoCalculado); // ✅ REDONDEADO A ENTERO
+      quimico.costo = Math.round(costoCalculado);
       
       console.log('Cantidad químico cambiada:', {
         cantidad_solicitada: quimico.cantidad,
@@ -517,127 +506,16 @@ export class DiarioComponent implements OnInit {
     return planes[param]?.[color] || '';
   }
 
-  // ✅ CORREGIDO: Nuevo método de guardado que maneja arrays correctamente
-  guardarDiario(): void {
-    if (!this.tanque_id) {
-      this.notificacionService.error('Debe seleccionar un tanque');
-      return;
-    }
-
-    if (!this.ciclo_id) {
-      this.notificacionService.error('El tanque no tiene un ciclo activo');
-      return;
-    }
-
-    this.cargando = true;
-    const observables: any = {};
-
-    // 1. Calidad del agua (OPCIONAL)
-    if (this.tieneDatosCalidadAgua()) {
-      observables.calidadAgua = this.tanqueService.crearMediciones(this.tanque_id, this.calidadAgua)
-    }
-
-    // 2. Alimentos (OPCIONAL)
-    const alimentosValidos = this.alimentos.filter(a => 
-      a.nombre && a.nombre.trim() !== '' && (a.cantidad ?? 0) > 0
-    );
-    
-    if (alimentosValidos.length > 0) {
-      alimentosValidos.forEach((alimento, index) => {
-        const alimentoLimpio = {
-          nombre: alimento.nombre,
-          cantidad: alimento.cantidad,
-          costo: alimento.costo,
-          descripcion: ''
-        };
-        observables[`alimento_${index}`] = this.cicloService.ingresarAlimento(alimentoLimpio, this.ciclo_id);
-      });
-    }
-
-    // 3. Químicos (OPCIONAL)
-    const quimicosValidos = this.quimicos.filter(q => 
-      q.nombre && q.nombre.trim() !== '' && (q.cantidad ?? 0) > 0
-    );
-    
-    if (quimicosValidos.length > 0) {
-      quimicosValidos.forEach((quimico, index) => {
-        const quimicoLimpio = {
-          nombre: quimico.nombre,
-          cantidad: quimico.cantidad,
-          costo: quimico.costo,
-          descripcion: ''
-        };
-        observables[`quimico_${index}`] = this.cicloService.ingresarQuimico(quimicoLimpio, this.ciclo_id);
-      });
-    }
-
-    // 4. Bajas/Mortalidad (OPCIONAL)
-    const bajasValidas = this.bajas.filter(b => 
-      (b.cantidad ?? 0) > 0 && b.causas && b.causas.trim() !== ''
-    );
-    
-    if (bajasValidas.length > 0) {
-      bajasValidas.forEach((baja, index) => {
-        const bajaLimpia = {
-          cantidad: baja.cantidad,
-          causas: baja.causas
-        };
-        observables[`baja_${index}`] = this.cicloService.actualizarBajas(bajaLimpia, this.ciclo_id);
-      });
-    }
-
-    // ✅ CAMBIO CLAVE: Si no hay nada en absoluto, rechazar
-    if (Object.keys(observables).length === 0) {
-      this.cargando = false;
-      this.notificacionService.error('Debe ingresar al menos un dato para guardar');
-      return;
-    }
-
-    // ✅ Guardar solo las secciones que tengan datos
-    forkJoin(observables).subscribe({
-      next: (resultados) => {
-        console.log('✅ Datos guardados:', resultados);
-        const operacionesGuardadas = Object.keys(observables).filter(k => !k.startsWith('alimento') && !k.startsWith('quimico') && !k.startsWith('baja')).length + 
-          Object.keys(observables).filter(k => k.startsWith('alimento')).length +
-          Object.keys(observables).filter(k => k.startsWith('quimico')).length +
-          Object.keys(observables).filter(k => k.startsWith('baja')).length;
-        
-        this.notificacionService.success(`Reporte guardado correctamente (${operacionesGuardadas} operaciones)`);
-        this.resetFormularios();
-        this.cargarMediciones(this.tanque_id);
-        this.cargando = false;
-      },
-      error: (err) => {
-        console.error('❌ Error al guardar:', err);
-        this.notificacionService.error('Error al guardar el reporte. Por favor, verifica los datos e intenta nuevamente.');
-        this.cargando = false;
-      }
-    });
+  private guardarCalidadAgua() {
+    return this.tieneDatosCalidadAgua()
+      ? this.tanqueService.crearMediciones(this.tanque_id, this.calidadAgua)
+      : null
   }
 
-  guardarDiario2(): void {
-    if (!this.tanque_id) {
-      this.notificacionService.error('Debe seleccionar un tanque');
-      return;
-    }
+  private guardarAlimentos() {
+    if (!this.ciclo_id || this.ciclo_id === 0) return null;
 
-    if(!this.ciclo_id) {
-      this.notificacionService.error('el tanque no tiene un ciclo activo');
-      return;
-    }
-
-    this.cargando = true
-
-    const tareas: any[] = [];
-
-    if(this.tieneDatosCalidadAgua() ) {
-      tareas.push(
-        this.tanqueService.crearMediciones(this.tanque_id, this.calidadAgua)
-      );
-      console.log("GD1 CALIDAD AGUA");
-    }
-
-    const alimentosValidos = this.alimentos.filter(a =>
+    const items = this.alimentos.filter(a =>
       a &&
       a.nombre &&
       a.nombre.trim() !== '' &&
@@ -646,122 +524,67 @@ export class DiarioComponent implements OnInit {
       a.costo != null &&
       a.costo > 0
     );
-
-    alimentosValidos.forEach(a => {
-      const alimentoLimpio = {
-        nombre: a.nombre,
-        cantidad: Number(a.cantidad),
-        costo: Number(a.costo),
-        obsevacion: a.obsevacion || ''
-      };
-
-      tareas.push(
-        this.cicloService.ingresarAlimento(alimentoLimpio, this.ciclo_id)
-      );
-      console.log("GD2 ALIMENTO");
-
-    });
-
-    const quimicosValidos = this.alimentos.filter(q =>
-      q.nombre && q.nombre.trim() !== '' && (q.cantidad ?? 0) > 0
-    );
-
-    quimicosValidos.forEach(q => {
-      tareas.push(
-        this.cicloService.ingresarQuimico({
-          nombre: q.nombre,
-          cantidad: q.cantidad,
-          costo: q.costo,
-          descripcion: ''
-        }, this.ciclo_id)
-      );
-    });
-
-    const bajasValidas = this.bajas.filter(b =>
-      (b.cantidad ?? 0) > 0 && b.causas && b.causas.trim() !== ''
-    );
-
-    bajasValidas.forEach(b => {
-      tareas.push(
-        this.cicloService.actualizarBajas({
-          cantidad: b.cantidad,
-          causas: b.causas
-        }, this.ciclo_id)
-      );
-      console.log("GD3 QUIMICO");
-    });
-
-    if (tareas.length === 0){
-      this.cargando = false;
-      this.notificacionService.error('Debes ingresar al menos un dato a guardar');
-      return;
-    }
-
-    console.log("GD4",tareas)
-
-    forkJoin(tareas).subscribe({
-      next: () => {
-        this.notificacionService.success(`Datos guardados correctamente (${tareas.length}) operaciones`);
-        this.resetFormularios();
-        this.cargarMediciones(this.tanque_id);
-        this.cargando = false;
-      },
-      error: (err) => {
-        console.error('Error', err);
-        this.notificacionService.error('Error al guardar los datos');
-        this.cargando = false
-      }
-    });
-  }
-
-  private guardarCalidadAgua() {
-    return this.tieneDatosCalidadAgua()
-      ? this.tanqueService.crearMediciones(this.tanque_id, this.calidadAgua)
-      : null
-  }
-
-  private guardarAlimentos() {
-    const items = this.alimentos.filter(a =>
-      a.nombre && a.nombre.trim() !== '' && a.cantidad > 0
-    );
     if (items.length === 0) return null;
 
     return forkJoin(
-      items.map(a => this.cicloService.ingresarAlimento(a, this.ciclo_id))
+      items.map(a => this.cicloService.ingresarAlimento({
+        nombre: a.nombre,
+        cantidad: Number(a.cantidad),
+        costo: Number(a.costo),
+        observacion: a.descripcion || ''
+      }, this.ciclo_id))
     );
   }
   
   private guardarQuimicos() {
+    if (!this.ciclo_id || this.ciclo_id === 0) return null;
+
     const items = this.quimicos.filter(q =>
-      q.nombre && q.nombre.trim() !== '' && q.cantidad > 0
+      q &&
+      q.nombre &&
+      q.nombre.trim() !== '' &&
+      q.cantidad != null &&
+      q.cantidad > 0 &&
+      q.costo != null &&
+      q.costo > 0
     );
     if (items.length === 0) return null;
 
     return forkJoin(
-      items.map(a => this.cicloService.ingresarQuimico(a, this.ciclo_id))
+      items.map(q => this.cicloService.ingresarQuimico({
+        nombre: q.nombre,
+        cantidad: Number(q.cantidad),
+        costo: Number(q.costo),
+        observacion: q.descripcion || ''
+      }, this.ciclo_id))
     );
   }
 
   private guardarBajas() {
+    if (!this.ciclo_id || this.ciclo_id === 0) return null;
+
     const items = this.bajas.filter(b =>
-      b.cantidad > 0 && b.causas && b.causas.trim() !== ''
+      b &&
+      b.cantidad != null &&
+      b.cantidad > 0 &&
+      b.causas &&
+      b.causas.trim() !== ''
     );
 
     if (items.length === 0) return null;
 
     return forkJoin(
-      items.map(b => this.cicloService.actualizarBajas(b, this.ciclo_id))
+      items.map(b => this.cicloService.actualizarBajas({
+        cantidad: Number(b.cantidad),
+        tanque_id: this.tanque_id,
+        causa: b.causas
+      }, this.ciclo_id))
     );
   }
 
-  guardarDiario3() {
-    if (!this.tanque_id) {
+  guardarDiario() {
+    if (!this.tanque_id || this.tanque_id === 0) {
       this.notificacionService.error('Debe seleccionar un tanque');
-      return;
-    }
-
-    if(!this.ciclo_id) {
-      this.notificacionService.error('el tanque no tiene un ciclo activo');
       return;
     }
 
@@ -775,21 +598,24 @@ export class DiarioComponent implements OnInit {
     ].filter(t => t !== null);
 
     if (tareas.length === 0) {
-      this.notificacionService.error('Ningun dato que guardar');
+      this.notificacionService.error('Debe ingresar al menos un dato para guardar');
       this.cargando = false;
       return;
     }
 
     forkJoin(tareas).subscribe({
       next: () => {
-        this.notificacionService.success('Reporte Guardado');
+        const mensaje = this.ciclo_id 
+          ? 'Reporte diario guardado correctamente' 
+          : 'Calidad del agua guardada correctamente';
+        this.notificacionService.success(mensaje);
         this.resetFormularios();
         this.cargarMediciones(this.tanque_id);
         this.cargando = false;
       },
       error: (err) => {
-        console.error(err);
-        this.notificacionService.error('Error al guardar');
+        console.error('Error al guardar:', err);
+        this.notificacionService.error('Error al guardar los datos');
         this.cargando = false
       }
     });
@@ -805,12 +631,10 @@ export class DiarioComponent implements OnInit {
       nitratos: null,
       salinidad: null
     };
-    // ✅ CORREGIDO: Reset correcto de arrays
     this.alimentos = [];
     this.quimicos = [];
     this.bajas = [];
     
-    // Agregar elementos iniciales
     this.agregarAlimento();
     this.agregarQuimico();
     this.agregarBaja();

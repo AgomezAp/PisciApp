@@ -6,16 +6,8 @@
     <div class="carrusel-item" *ngFor="let ciclo of ciclos" [class.seleccionado]="ciclo.ciclo_id_usuario === cicloSeleccionado?.id"
     [ngClass]="ciclo.fecha_fin ? 'carrusel-rojo' : 'carrusel-azul'" (click)="seleccionarCiclo(ciclo)">
     <div><b>Ciclo #{{ ciclo.ciclo_id_usuario }}</b></div>
-    <div>Inicio: {{ ciclo.fecha_inicio | date:'dd/MM/yyyy' }}</div>
-    <div>Especie: {{ ciclo.especie }}</div>
-    <div>Peces: {{ ciclo.numero_actual }}</div>
-    <div>Bajas: {{ ciclo.total_bajas && ciclo.total_bajas > 0 ? ciclo.total_bajas : 'Sin bajas' }}</div>
-    <div>Costos: {{ ciclo.costos | currency:'$':'symbol':'1.0-0' }}</div>
-    </div>
-    <div class="carrusel-item nuevo-ciclo" (click)="agregarCiclo()">
-    |   <div class="icono-agregar">+</div>
-      <div><b>Nuevo Ciclo</b></div>
-      <div>Crear un ciclo nuevo</div>
+    <div>{{ ciclo.fecha_inicio | date:'dd/MM/yyyy' }}</div>
+    <div> {{ ciclo.numero_actual }} peces</div>
     </div>
   </div>
 </div>
@@ -29,14 +21,7 @@
       [ngClass]="getTanqueInfo(tanqueCiclo.tanque_id)?.disponible ? 'carrusel-azul' : 'carrusel-rojo' "
       (click)="seleccionarTanque(getTanqueInfo(tanqueCiclo.tanque_id))" >
       <div><b>{{ getTanqueNombre(tanqueCiclo.tanque_id) }}</b></div>
-      <div>Volumen: {{ getTanqueInfo(tanqueCiclo.tanque_id)?.volumen}}</div>
-      <div>Peces: {{ tanqueCiclo.numero_peces}}</div>
-      <div>Forma: {{ getTanqueInfo(tanqueCiclo.tanque_id)?.forma}}</div>
-    </div>
-    <div class="carrusel-item nuevo-ciclo" (click)="agregarTanque()">
-      <div class="icono-agregar">+</div>
-      <div><b>Nuevo Tanque</b></div>
-      <div>Crear un tanque nuevo</div>
+      <div> {{ tanqueCiclo.numero_peces}} peces</div>
     </div>
   </div>
 </div>
@@ -69,7 +54,7 @@
     <div class="tabla-contenedor">
       <div class="tabla-header">
         <h4>Alimentos</h4>
-        <button title="Información de alimentos" class="tabla-icono" [disabled]="cicloSeleccionado?.fecha_fin"><span (click)="abrirModalAlimentos()">🍽️</span></button>
+        <!-- <button title="Información de alimentos" class="tabla-icono" [disabled]="cicloSeleccionado?.fecha_fin"><span (click)="abrirModalAlimentos()">🍽️</span></button> -->
       </div>
       <table>
         <tr>
@@ -83,7 +68,7 @@
           <td>{{ item.nombre }}</td>
           <td>{{ item.cantidad }}</td>
           <td>{{ item.costo | currency:'$':'symbol':'1.0-0' }}</td>
-          <td>{{ item.descripcion }}</td>
+          <td>{{ item.observacion }}</td>
           <td>{{ item.createdAt | date:'dd-MM-yyyy' }}</td>
         </tr>
       </table>
@@ -106,7 +91,7 @@
     <div class="tabla-contenedor">
       <div class="tabla-header">
         <h4>Químicos</h4>
-        <button title="Información de químicos" class="tabla-icono" [disabled]="cicloSeleccionado?.fecha_fin"><span (click)="abrirModalQuimico()">🧪</span></button>
+        <!-- <button title="Información de químicos" class="tabla-icono" [disabled]="cicloSeleccionado?.fecha_fin"><span (click)="abrirModalQuimico()">🧪</span></button> -->
       </div>
       <table>
         <tr>
@@ -120,7 +105,7 @@
           <td>{{ item.nombre }}</td>
           <td>{{ item.cantidad }}</td>
           <td>{{ item.costo | currency:'$':'symbol':'1.0-0' }}</td>
-          <td>{{ item.descripcion }}</td>
+          <td>{{ item.observacion }}</td>
           <td>{{ item.createdAt | date:'dd-MM-yyyy' }}</td>
         </tr>
       </table>
@@ -141,7 +126,7 @@
     <div class="tabla-contenedor">
       <div class="tabla-header">
         <h4>Bajas ciclo</h4>
-        <button title="Información de bajas" class="tabla-icono" [disabled]="cicloSeleccionado?.fecha_fin"><span (click)="abrirModalBajas()">⚠️</span></button>
+        <!-- <button title="Información de bajas" class="tabla-icono" [disabled]="cicloSeleccionado?.fecha_fin"><span (click)="abrirModalBajas()">⚠️</span></button> -->
       </div>
       <table>
         <tr>
@@ -168,7 +153,7 @@
     <div class="tabla-contenedor">
       <div class="tabla-header">
         <h4>Movimientos tanque</h4>
-        <button title="Información de movimientos" class="tabla-icono" [disabled]="cicloSeleccionado?.fecha_fin"><span (click)="abrirModalMovimiento()">🔄</span></button>
+        <!-- <button title="Información de movimientos" class="tabla-icono" [disabled]="cicloSeleccionado?.fecha_fin"><span (click)="abrirModalMovimiento()">🔄</span></button> -->
       </div>
       <table>
         <tr>
@@ -187,9 +172,9 @@
     </div>
   </div>
 
-  <div style="display: flex; justify-content: flex-end; margin-top: 24px;">
+  <!-- <div style="display: flex; justify-content: flex-end; margin-top: 24px;">
     <button (click)="terminarCiclo()" class="terminar" [disabled]="cicloSeleccionado?.fecha_fin"> Terminar ciclo </button>
-  </div>
+  </div> -->
 </div>
 
 

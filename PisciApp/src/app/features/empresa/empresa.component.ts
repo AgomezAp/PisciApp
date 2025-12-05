@@ -32,10 +32,12 @@ export class EmpresaComponent implements OnInit {
   mostrarModalCiclo = false;
   mostrarModalTanque = false;
   mostrarModalVenta = false;
+  mostrarModalMovimiento = false;
   modoEdicion = false;
   tanqueIdEditar: number | null = null;
   costoUnidad: number | null = null;
-  clienteExistente: boolean = false
+  clienteExistente: boolean = false;
+  cicloSeleccionadoMovimiento: any = null
   nuevoCiclo = {
     tanques: null as number | null,
     numero_peces: null as number | null,
@@ -64,7 +66,11 @@ export class EmpresaComponent implements OnInit {
     direccion: '',
     correo: '',
     telefono: ''
-
+  };
+  nuevoMovimiento = {
+    origen: null as number | null,
+    destino: null as number | null,
+    cantidad: null as number | null
   }
 
   constructor(
@@ -126,10 +132,14 @@ export class EmpresaComponent implements OnInit {
     this.cargando = true;
     this.tanqueService.obtenerTanquesPorUsuario(this.usuario_id).subscribe({
       next: (data) => {
-        this.tanques = data;
+        this.tanques = data.map((tanque: any) => ({
+          ...tanque,
+          numero_peces: 0
+        }));
         this.tanquesDisponibles = this.tanques.filter(tanque => tanque.disponible === true);
         this.tanquesDisponiblesCantidad = this.tanquesDisponibles.length;
         this.cargando = false;
+        this.cargarPecesEnTanques();
         console.log('disponibles',this.tanquesDisponibles)
       },
       error: (err) => {
@@ -137,6 +147,26 @@ export class EmpresaComponent implements OnInit {
         this.notificationService.error('Error al cargar los tanques');
         this.tanques = [];
         this.cargando = false;
+      }
+    });
+  }
+
+  private cargarPecesEnTanques(): void {
+    this.ciclos.forEach(ciclo => {
+      if (!ciclo.fecha_fin) {
+        this.cicloService.obtenerCicloTanques(ciclo.id).subscribe({
+          next: (cicloTanques: any[]) => {
+            cicloTanques.forEach(ct => {
+              const tanque = this.tanques.find(t => t.id === ct.tanque_id);
+              if (tanque) {
+                tanque.numero_peces = (tanque.numero_peces || 0) + (ct.numero_peces || 0);
+              }
+            });
+          },
+          error: (err) => {
+            console.error('Error al cargar peces del ciclo', ciclo.id, err);
+          }
+        });
       }
     });
   }
@@ -272,23 +302,6 @@ export class EmpresaComponent implements OnInit {
     };
   }
 
-  // eliminarCiclo(cicloId: number): void {
-  //   if (!confirm('¿Estás seguro de eliminar este ciclo? Esta acción no se puede deshacer.')) {
-  //     return;
-  //   }
-
-  //   this.cicloService.eliminarCiclo(cicloId, this.usuario_id).subscribe({
-  //     next: () => {
-  //       this.notificationService.success('Ciclo eliminado correctamente');
-  //       this.cargarCiclos();
-  //     },
-  //     error: (err) => {
-  //       console.error('Error al eliminar ciclo:', err);
-  //       this.notificationService.error('Error al eliminar el ciclo');
-  //     }
-  //   });
-  // }
-
   eliminarTanque(tanqueId: number): void {
     this.notificationService.confirm(
       'Estas seguro de eliminar este tanque? ',
@@ -308,12 +321,168 @@ export class EmpresaComponent implements OnInit {
     );
   }
 
-  agregarVenta() {
-
+  abrirModalVenta(): void {
+    this.mostrarModalVenta = true;
+    this.clienteExistente = false;
+    this.nuevaVenta = {
+      ciclo_id_usuario: null,
+      precio: null,
+      toneladas: null,
+      comprador_id: null
+    };
+    this.nuevoComprador = {
+      nombre: '',
+      empresa: '',
+      direccion: '',
+      correo: '',
+      telefono: ''
+    };
+    this.cargarCompradores();
   }
-  onCicloSeleccionado(event: any) {}
 
-  onClienteExistenteChange() {}
+  private cargarCompradores(): void {
+    this.ventaService.obtenerCompradores().subscribe({
+      next: (data) => {
+        this.compradores = data.compradores || [];
+      },
+      error: (err) => {
+        console.error('Error al cargar compradores:', err);
+        this.compradores = [];
+      }
+    });
+  }
 
-  cerrarModalVenta() {}
+  onCicloSeleccionado(event: any): void {
+    const cicloId = this.nuevaVenta.ciclo_id_usuario;
+    if (cicloId) {
+      const ciclo = this.ciclos.find(c => c.ciclo_id_usuario === cicloId);
+      if (ciclo) {
+        console.log('Ciclo seleccionado:', ciclo);
+      }
+    }
+  }
+
+  onClienteExistenteChange(): void {
+    if (this.clienteExistente) {
+      this.nuevaVenta.comprador_id = null;
+      this.nuevoComprador = {
+        nombre: '',
+        empresa: '',
+        direccion: '',
+        correo: '',
+        telefono: ''
+      };
+    } else {
+      this.nuevaVenta.comprador_id = null;
+    }
+  }
+
+  agregarVenta(): void {
+    if (!this.nuevaVenta.ciclo_id_usuario || !this.nuevaVenta.toneladas || !this.nuevaVenta.precio) {
+      this.notificationService.error('Por favor completa todos los campos obligatorios');
+      return;
+    }
+
+    const datos: any = {
+      ciclo_id_usuario: this.nuevaVenta.ciclo_id_usuario,
+      toneladas: this.nuevaVenta.toneladas,
+      precio: this.nuevaVenta.precio
+    };
+
+    if (this.clienteExistente) {
+      if (!this.nuevaVenta.comprador_id) {
+        this.notificationService.error('Selecciona un cliente');
+        return;
+      }
+      datos.comprador_id = this.nuevaVenta.comprador_id;
+    } else {
+      if (!this.nuevoComprador.nombre || !this.nuevoComprador.empresa || 
+          !this.nuevoComprador.direccion || !this.nuevoComprador.correo) {
+        this.notificationService.error('Completa todos los datos del cliente');
+        return;
+      }
+      datos.nombre = this.nuevoComprador.nombre;
+      datos.empresa = this.nuevoComprador.empresa;
+      datos.direccion = this.nuevoComprador.direccion;
+      datos.correo = this.nuevoComprador.correo;
+      datos.telefono = this.nuevoComprador.telefono || '';
+    }
+
+    this.cargando = true;
+    this.ventaService.crearVenta(datos).subscribe({
+      next: (response) => {
+        this.notificationService.success('Venta registrada exitosamente');
+        this.cargarVentas();
+        this.cargarCiclos();
+        this.cerrarModalVenta();
+        this.cargando = false;
+      },
+      error: (err) => {
+        console.error('Error al crear venta:', err);
+        this.notificationService.error(err?.error?.error || 'Error al registrar la venta');
+        this.cargando = false;
+      }
+    });
+  }
+
+  cerrarModalVenta(): void {
+    this.mostrarModalVenta = false;
+  }
+
+  abrirModalMovimientoDesde(ciclo: any): void {
+    this.cicloSeleccionadoMovimiento = ciclo;
+    this.mostrarModalMovimiento = true;
+    this.nuevoMovimiento = {
+      origen: null,
+      destino: null,
+      cantidad: null
+    };
+    this.cargarTanques();
+  }
+
+  cerrarModalMovimiento(): void {
+    this.mostrarModalMovimiento = false;
+    this.cicloSeleccionadoMovimiento = null;
+  }
+
+  agregarMovimiento(): void {
+    if (!this.nuevoMovimiento.origen || !this.nuevoMovimiento.destino || !this.nuevoMovimiento.cantidad) {
+      this.notificationService.error('Completa todos los campos');
+      return;
+    }
+
+    if (this.nuevoMovimiento.origen === this.nuevoMovimiento.destino) {
+      this.notificationService.error('El tanque origen y destino no pueden ser el mismo');
+      return;
+    }
+
+    const datos = {
+      origen: this.nuevoMovimiento.origen,
+      destino: this.nuevoMovimiento.destino,
+      cantidad: this.nuevoMovimiento.cantidad
+    };
+
+    this.cicloService.cambiarTanque(datos, this.cicloSeleccionadoMovimiento.id).subscribe({
+      next: () => {
+        this.notificationService.success('Movimiento registrado exitosamente');
+        this.cargarCiclos();
+        this.cargarTanques();
+        this.cerrarModalMovimiento();
+      },
+      error: (err) => {
+        console.error('Error al registrar movimiento:', err);
+        this.notificationService.error(err?.error?.error || 'Error al registrar el movimiento');
+      }
+    });
+  }
+
+  getTanqueNombre(tanque_id: number): string {
+    const tanque = this.tanques?.find(t => t.id === tanque_id);
+    return tanque?.nombre || ('Tanque ' + tanque_id);
+  }
+
+  abrirModalVentaDesde(ciclo: any): void {
+    this.nuevaVenta.ciclo_id_usuario = ciclo.ciclo_id_usuario;
+    this.abrirModalVenta();
+  }
 }

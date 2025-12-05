@@ -1,6 +1,5 @@
 <app-navbar></app-navbar>
 
-<!-- Perfil móvil PRIMERO -->
 <div class="perfil-mobile" *ngIf="isMobile">
     <button class="perfil-toggle" (click)="togglePerfilMobile()">
         <div class="perfil-avatar-small">{{ userInitials }}</div>
@@ -14,7 +13,6 @@
     </div>
 </div>
 
-<!-- Dashboard container -->
 <div class="dashboard-container">
     <aside class="perfil-sidebar">
         <div class="perfil-card">
@@ -25,14 +23,6 @@
                 <h2 class="perfil-nombre">{{ userName }}</h2>
                 <p class="perfil-email">{{ userEmail }}</p>
                 <button class="btn-perfil" (click)="perfil()">Ver perfil</button>
-            </div>
-
-            <div class="recordatorios">
-                <h3>Recordatorios</h3>
-                <div class="recordatorio-item" *ngFor="let recordatorio of recordatorios">
-                    <span class="recordatorio-icon">💡</span>
-                    <p>{{ recordatorio }}</p>
-                </div>
             </div>
         </div>
     </aside>
@@ -80,20 +70,6 @@
                     <p class="balance-label">UTILIDAD APROXIMADA</p>
                     <h2 class="balance-valor">{{ balanceFormateados }}</h2>
                     <div class="balance-icono azul">$</div>
-                </div>
-            </div>
-        </section>
-
-        <section class="biomasa-section">
-            <h3>Biomasa</h3>
-            <div class="biomasa-cards">
-                <div class="biomasa-card">
-                    <p class="biomasa-label">Actual</p>
-                    <h2 class="biomasa-valor">{{ biomasaActual }} kg</h2>
-                </div>
-                <div class="biomasa-card">
-                    <p class="biomasa-label">Proyectada a {{ diasProyeccion }} días</p>
-                    <h2 class="biomasa-valor">{{ biomasaProyectada }} kg</h2>
                 </div>
             </div>
         </section>

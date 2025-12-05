@@ -21,5 +21,8 @@ export class VentaService {
     .pipe(catchError(error => this.errorService.handleError(error)))
   }
 
-
+  obtenerCompradores(): Observable<any> {
+    return this.http.get(`${this.apiUrl}venta/compradores`)
+    .pipe(catchError(error => this.errorService.handleError(error)))
+  }
 }

@@ -30,7 +30,6 @@
                 </div>
             </div>
 
-            <!-- Calidad del agua -->
             <div class="group" id="grp-agua">
                 <h2>1. Calidad del agua</h2>
                 <div class="grid4">
@@ -88,14 +87,12 @@
                 </div>
             </div>
 
-            <!-- Alimentación -->
             <div class="group">
                 <h2>2. Alimentación</h2>
                 <div *ngFor="let alimento of alimentos; let i = index" class="registro-inline">
                     <label>Nombre
                         <select [name]="'alimentoNombre' + i" [(ngModel)]="alimento.nombre"
                             (change)="onAlimentoSeleccionado($event, i)" [disabled]="!ciclo_id">
-                            <!-- ✅ NUEVO: Opción para deseleccionar -->
                             <option value="">-- Selecciona un alimento --</option>
                             <option *ngFor="let item of alimentoInventario"
                                 [value]="item.producto?.nombre || item.nombre">
@@ -104,8 +101,8 @@
                             </option>
                         </select>
                     </label>
-                    <!-- ✅ CORREGIDO: Usar unidad_medida dinámica -->
-                    <label>Cantidad{{ alimento.total_kg_disponible ? ' (máx: ' + alimento.total_kg_disponible + (alimento.unidad_medida || 'kg') + ')' : '' }}
+                    <label>Cantidad{{ alimento.total_kg_disponible ? ' (máx: ' + alimento.total_kg_disponible +
+                        (alimento.unidad_medida || 'kg') + ')' : '' }}
                         <input type="number" step="0.01" [name]="'alimentoCantidad' + i" [(ngModel)]="alimento.cantidad"
                             (ngModelChange)="onAlimentoCantidadChange(i)" [disabled]="!ciclo_id"
                             [max]="alimento.total_kg_disponible" />
@@ -132,14 +129,12 @@
                 </div>
             </div>
 
-            <!-- Químico -->
             <div class="group">
                 <h2>3. Químico</h2>
                 <div *ngFor="let quimico of quimicos; let i = index" class="registro-inline">
                     <label>Nombre
                         <select [name]="'quimicoNombre' + i" [(ngModel)]="quimico.nombre"
                             (change)="onQuimicoSeleccionado($event, i)" [disabled]="!ciclo_id">
-                            <!-- ✅ NUEVO: Opción para deseleccionar -->
                             <option value="">-- Selecciona un químico --</option>
                             <option *ngFor="let item of quimicoInventario"
                                 [value]="item.producto?.nombre || item.nombre">
@@ -148,9 +143,9 @@
                             </option>
                         </select>
                     </label>
-                    <!-- ✅ CORREGIDO: Usar unidad_medida dinámica -->
 
-                    <label>Cantidad {{ quimico.total_kg_disponible ? '(máx: ' + quimico.total_kg_disponible + (quimico.unidad_medida || 'kg') + ')' : '' }}
+                    <label>Cantidad {{ quimico.total_kg_disponible ? '(máx: ' + quimico.total_kg_disponible +
+                        (quimico.unidad_medida || 'kg') + ')' : '' }}
                         <input type="number" step="0.01" [name]="'quimicoCantidad' + i" [(ngModel)]="quimico.cantidad"
                             (ngModelChange)="onQuimicoCantidadChange(i)" [disabled]="!ciclo_id"
                             [max]="quimico.total_kg_disponible" />
@@ -177,7 +172,6 @@
                 </div>
             </div>
 
-            <!-- Mortalidad -->
             <div class="group">
                 <h2>4. Mortalidad Diaria</h2>
                 <div *ngFor="let baja of bajas; let i = index" class="registro-inline mortalidad">
@@ -206,57 +200,13 @@
                 </div>
             </div>
 
-            <!-- Botones -->
             <div class="form-actions">
-                <button class="btn" type="button" (click)="guardarDiario3()" [disabled]="!tanque_id">
+                <button class="btn" type="button" (click)="guardarDiario()" [disabled]="!tanque_id">
                     {{ cargando ? 'Guardando...' : 'Guardar' }}
                 </button>
-                <!-- <button class="btn btn-outline" type="button" (click)="toggleHistorial()" [disabled]="!tanque_id">
-                    {{ mostrarHistorial ? 'Ocultar historial' : 'Ver historial' }}
-                </button> -->
             </div>
         </form>
     </section>
 
-    <!-- Historial -->
-    <!-- <section class="card" *ngIf="mostrarHistorial">
-        <div class="card-head">
-            <h2>Historial - {{getTanqueNombre(tanque_id)}}</h2>
-            <button class="btn btn-outline btn-sm" (click)="exportarCSV()" *ngIf="historial.length > 0">
-                Exportar CSV
-            </button>
-            <button class="btn btn-sm" (click)="toggleHistorial()">✕</button>
-        </div>
-        <div class="table-wrap" *ngIf="historial.length > 0; else sinHistorial">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Fecha</th>
-                        <th>Temperatura</th>
-                        <th>Oxígeno</th>
-                        <th>pH</th>
-                        <th>Alimento</th>
-                        <th>Cantidad</th>
-                        <th>Bajas</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr *ngFor="let registro of historial">
-                        <td>{{ registro.fecha }}</td>
-                        <td>{{ registro.temperatura }}°C</td>
-                        <td>{{ registro.oxigeno_disuelto }} mg/L</td>
-                        <td>{{ registro.ph }}</td>
-                        <td>{{ registro.alimento }}</td>
-                        <td>{{ registro.cantidad_alimento }}</td>
-                        <td>{{ registro.bajas }}</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <ng-template #sinHistorial>
-            <p class="muted" style="text-align: center; padding: 20px;">
-                No hay registros históricos para este tanque
-            </p>
-        </ng-template>
-    </section> -->
+
 </main>

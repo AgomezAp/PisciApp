@@ -44,4 +44,9 @@ export class CicloService {
       .pipe(catchError(error => this.errorService.handleError(error)));
   }
 
+  obtenerCicloTanques(ciclo_id: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}ciclos/tanques/${ciclo_id}`)
+      .pipe(catchError(error => this.errorService.handleError(error)));
+  }
+
 }

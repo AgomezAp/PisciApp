@@ -100,15 +100,14 @@ export class CiclosComponent implements OnInit {
   chartOptionsA: ChartOptions = {
     responsive: true,
     plugins: { 
-      title: { display: true, text: 'Cantidad y Costo vs Fecha' },
+      title: { display: true, text: 'Alimentos - Cantidad y Costo por Fecha' },
       tooltip: {
         callbacks: {
           title: (context) => {
-            // Mostrar fecha y nombre del alimento
             const index = context[0].dataIndex;
-            const createdAt = context[0].label;
-            const nombreAlimento = this.nombresAlimentos[index] || 'N/A';
-            return [`Fecha: ${createdAt}`, `${nombreAlimento}`];
+            const fecha = context[0].label;
+            const nombres = this.nombresAlimentos[index] || 'N/A';
+            return [`Fecha: ${fecha}`, `Alimentos: ${nombres}`];
           },
           label: (context) => {
             const datasetLabel = context.dataset.label || '';
@@ -122,17 +121,23 @@ export class CiclosComponent implements OnInit {
             return `${datasetLabel}: ${value}`;
           }
         }
+      },
+      legend: {
+        display: true,
+        position: 'top'
       }
     },
     scales: {
       y: { 
-        position: 'left', 
-        title: { display: true, text: 'Cantidad (kg)' } 
+        position: 'left',
+        beginAtZero: true,
+        title: { display: true, text: 'Cantidad (kg)' }
       },
       y1: { 
-        position: 'right', 
-        title: { display: true, text: 'Costo' }, 
-        grid: { drawOnChartArea: false } 
+        position: 'right',
+        beginAtZero: true,
+        title: { display: true, text: 'Costo ($)' },
+        grid: { drawOnChartArea: false }
       }
     }
   };
@@ -140,15 +145,14 @@ export class CiclosComponent implements OnInit {
   chartOptionsQ: ChartOptions = {
     responsive: true,
     plugins: { 
-      title: { display: true, text: 'Cantidad y Costo vs Fecha' },
+      title: { display: true, text: 'Químicos - Cantidad y Costo por Fecha' },
       tooltip: {
         callbacks: {
           title: (context) => {
-            // Mostrar fecha y nombre del alimento
             const index = context[0].dataIndex;
-            const createdAt = context[0].label;
-            const nombreQuimicos = this.nombresQuimicos[index] || 'N/A';
-            return [`Fecha: ${createdAt}`, `${nombreQuimicos}`];
+            const fecha = context[0].label;
+            const nombres = this.nombresQuimicos[index] || 'N/A';
+            return [`Fecha: ${fecha}`, `Químicos: ${nombres}`];
           },
           label: (context) => {
             const datasetLabel = context.dataset.label || '';
@@ -162,17 +166,23 @@ export class CiclosComponent implements OnInit {
             return `${datasetLabel}: ${value}`;
           }
         }
+      },
+      legend: {
+        display: true,
+        position: 'top'
       }
     },
     scales: {
       y: { 
-        position: 'left', 
-        title: { display: true, text: 'Cantidad (kg)' } 
+        position: 'left',
+        beginAtZero: true,
+        title: { display: true, text: 'Cantidad (kg)' }
       },
       y1: { 
-        position: 'right', 
-        title: { display: true, text: 'Costo' }, 
-        grid: { drawOnChartArea: false } 
+        position: 'right',
+        beginAtZero: true,
+        title: { display: true, text: 'Costo ($)' },
+        grid: { drawOnChartArea: false }
       }
     }
   };
@@ -383,29 +393,50 @@ export class CiclosComponent implements OnInit {
 
   crearGraficaAlimentos() {
     const alimentos = this.cicloSeleccionado.alimentos || [];
-    const fechas = alimentos.map((a: any) => new Date(a.createdAt).toLocaleDateString());
-    const cantidades = alimentos.map((a: any) => a.cantidad);
-    const costos = alimentos.map((a: any) => a.costo);
-    this.nombresAlimentos = alimentos.map((a: any) => a.nombre)
+    
+    // Agrupar por fecha
+    const datosPorFecha: { [fecha: string]: { cantidad: number, costo: number, nombres: Set<string> } } = {};
+    
+    alimentos.forEach((a: any) => {
+      const fecha = new Date(a.createdAt).toLocaleDateString();
+      if (!datosPorFecha[fecha]) {
+        datosPorFecha[fecha] = { cantidad: 0, costo: 0, nombres: new Set<string>() };
+      }
+      datosPorFecha[fecha].cantidad += a.cantidad;
+      datosPorFecha[fecha].costo += a.costo;
+      datosPorFecha[fecha].nombres.add(a.nombre);
+    });
+    
+    // Ordenar fechas
+    const fechasOrdenadas = Object.keys(datosPorFecha).sort((a, b) => {
+      return new Date(a.split('/').reverse().join('-')).getTime() - 
+             new Date(b.split('/').reverse().join('-')).getTime();
+    });
+    
+    const cantidades = fechasOrdenadas.map(f => datosPorFecha[f].cantidad);
+    const costos = fechasOrdenadas.map(f => datosPorFecha[f].costo);
+    this.nombresAlimentos = fechasOrdenadas.map(f => Array.from(datosPorFecha[f].nombres).join(', '));
 
     this.alimentosChart = {
-      labels: fechas,
+      labels: fechasOrdenadas,
       datasets: [
         {
-          label: 'Cantidad de Alimento (kg)',
+          label: 'Cantidad (kg)',
           data: cantidades,
           borderColor: 'rgb(54, 162, 235)',
           backgroundColor: 'rgba(54, 162, 235, 0.2)',
           tension: 0.4,
           yAxisID: 'y',
+          fill: false
         },
         {
-          label: 'Costo',
+          label: 'Costo ($)',
           data: costos,
           borderColor: 'rgb(255, 99, 132)',
           backgroundColor: 'rgba(255, 99, 132, 0.2)',
           tension: 0.4,
           yAxisID: 'y1',
+          fill: false
         }
       ]
     };
@@ -413,30 +444,50 @@ export class CiclosComponent implements OnInit {
 
   crearGraficaQuimicos() {
     const quimicos = this.cicloSeleccionado.quimicos || [];
-    const fechas = quimicos.map((a: any) => new Date(a.createdAt).toLocaleDateString());
-    const cantidades = quimicos.map((a: any) => a.cantidad);
-    const costos = quimicos.map((a: any) => a.costo);
-    this.nombresQuimicos = quimicos.map((a: any) => a.nombre)
-
+    
+    // Agrupar por fecha
+    const datosPorFecha: { [fecha: string]: { cantidad: number, costo: number, nombres: Set<string> } } = {};
+    
+    quimicos.forEach((q: any) => {
+      const fecha = new Date(q.createdAt).toLocaleDateString();
+      if (!datosPorFecha[fecha]) {
+        datosPorFecha[fecha] = { cantidad: 0, costo: 0, nombres: new Set<string>() };
+      }
+      datosPorFecha[fecha].cantidad += q.cantidad;
+      datosPorFecha[fecha].costo += q.costo;
+      datosPorFecha[fecha].nombres.add(q.nombre);
+    });
+    
+    // Ordenar fechas
+    const fechasOrdenadas = Object.keys(datosPorFecha).sort((a, b) => {
+      return new Date(a.split('/').reverse().join('-')).getTime() - 
+             new Date(b.split('/').reverse().join('-')).getTime();
+    });
+    
+    const cantidades = fechasOrdenadas.map(f => datosPorFecha[f].cantidad);
+    const costos = fechasOrdenadas.map(f => datosPorFecha[f].costo);
+    this.nombresQuimicos = fechasOrdenadas.map(f => Array.from(datosPorFecha[f].nombres).join(', '));
 
     this.quimicosChart = {
-      labels: fechas,
+      labels: fechasOrdenadas,
       datasets: [
         {
-          label: 'Cantidad de Quimicos (kg)',
+          label: 'Cantidad (kg)',
           data: cantidades,
-          borderColor: 'rgb(54, 162, 235)',
-          backgroundColor: 'rgba(54, 162, 235, 0.2)',
+          borderColor: 'rgb(75, 192, 192)',
+          backgroundColor: 'rgba(75, 192, 192, 0.2)',
           tension: 0.4,
           yAxisID: 'y',
+          fill: false
         },
         {
-          label: 'Costo',
+          label: 'Costo ($)',
           data: costos,
-          borderColor: 'rgb(255, 99, 132)',
-          backgroundColor: 'rgba(255, 99, 132, 0.2)',
+          borderColor: 'rgb(255, 159, 64)',
+          backgroundColor: 'rgba(255, 159, 64, 0.2)',
           tension: 0.4,
           yAxisID: 'y1',
+          fill: false
         }
       ]
     };

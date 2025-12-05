@@ -3,25 +3,24 @@ import { Ciclo, Alimento, Quimico, Bajas, CicloTanque, MovimientoTanque } from "
 import { Tanque } from "../models/tanque";
 import sequelize from "../database/connection";
 import { Inventario } from "../models";
-import { error } from "console";
 
 export const crearCiclo = async (req: Request, res: Response): Promise<any> => {
     const tra = await sequelize.transaction();
     try {
-        const { usuario_id, tanques, numero_peces,especie, costos, fecha_inicio , costos_transporte} = req.body;
-        if (!usuario_id  || !tanques  || !numero_peces  || !costos  || !fecha_inicio || !especie) {
+        const { usuario_id, tanques, numero_peces, especie, costos, fecha_inicio, costos_transporte } = req.body;
+        if (!usuario_id || !tanques || !numero_peces || !costos || !fecha_inicio || !especie) {
             await tra.rollback()
             return res.status(400).json({ error: "Todos los campos son requeridos." });
         }
-        const tanqueSeleccionado = await Tanque.findByPk(tanques, {transaction:tra,});
-        if(!tanqueSeleccionado) {
+        const tanqueSeleccionado = await Tanque.findByPk(tanques, { transaction: tra, });
+        if (!tanqueSeleccionado) {
             await tra.rollback();
-            return res.status(404).json({error: "El tanque seleccionado no existe"});
+            return res.status(404).json({ error: "El tanque seleccionado no existe" });
         }
 
-        if(tanqueSeleccionado.get('disponible') === false) {
+        if (tanqueSeleccionado.get('disponible') === false) {
             await tra.rollback();
-            return res.status(409).json({error: "El tanque seleccionado no esta disponible"});
+            return res.status(409).json({ error: "El tanque seleccionado no esta disponible" });
         }
 
         const ultimo_id_usuario = await Ciclo.max('ciclo_id_usuario', {
@@ -29,9 +28,9 @@ export const crearCiclo = async (req: Request, res: Response): Promise<any> => {
             transaction: tra,
         });
         const siguienteId = (Number(ultimo_id_usuario) || 0) + 1;
-        const nuevoCiclo = await Ciclo.create({ usuario_id, numero_peces, numero_actual: numero_peces,especie, costos, fecha_inicio, costos_transporte, ciclo_id_usuario: siguienteId }, {transaction: tra}) as any;
-        const nuevoCT = await CicloTanque.create({ciclo_id: nuevoCiclo.id, tanque_id: tanques, numero_peces}, {transaction: tra});
-        const update = await tanqueSeleccionado.update({disponible: false}, {transaction: tra});
+        const nuevoCiclo = await Ciclo.create({ usuario_id, numero_peces, numero_actual: numero_peces, especie, costos, fecha_inicio, costos_transporte, ciclo_id_usuario: siguienteId }, { transaction: tra }) as any;
+        const nuevoCT = await CicloTanque.create({ ciclo_id: nuevoCiclo.id, tanque_id: tanques, numero_peces }, { transaction: tra });
+        const update = await tanqueSeleccionado.update({ disponible: false }, { transaction: tra });
         await tra.commit();
         res.status(201).json(nuevoCiclo)
     } catch (error) {
@@ -50,7 +49,7 @@ export const verCiclo = async (req: Request, res: Response): Promise<any> => {
         const ciclo = await Ciclo.findAll({
             where: { usuario_id },
             include: [
-                { model: CicloTanque, as: "ciclotanques_ciclo"},
+                { model: CicloTanque, as: "ciclotanques_ciclo" },
                 { model: Alimento, as: "alimentos" },
                 { model: Quimico, as: "quimicos" },
                 { model: Bajas, as: "bajas_ciclo" },
@@ -67,31 +66,31 @@ export const verCiclo = async (req: Request, res: Response): Promise<any> => {
 export const cerrarCiclo = async (req: Request, res: Response): Promise<any> => {
     const tra = await sequelize.transaction();
     try {
-        const { usuario_id, ciclo_id, fecha_fin} = req.body;
-        if(!ciclo_id || !fecha_fin || !usuario_id) {
+        const { usuario_id, ciclo_id, fecha_fin } = req.body;
+        if (!ciclo_id || !fecha_fin || !usuario_id) {
             await tra.rollback();
-            return res.status(400).json({error: "ciclo y fecha son requeridos"});
+            return res.status(400).json({ error: "ciclo y fecha son requeridos" });
         }
-        const ciclo = await Ciclo.findOne({where: {id: ciclo_id, usuario_id}, transaction: tra}) as any;
+        const ciclo = await Ciclo.findOne({ where: { id: ciclo_id, usuario_id }, transaction: tra }) as any;
         if (!ciclo) {
             await tra.rollback();
-            return res.status(404).json({error: "Ciclo no encotrado"})
+            return res.status(404).json({ error: "Ciclo no encotrado" })
         }
-        if (ciclo.fecha_fin){
+        if (ciclo.fecha_fin) {
             await tra.rollback();
-            return res.status(400).json({error: "el ciclo fue cerrado en " + ciclo.fecha_fin})
+            return res.status(400).json({ error: "el ciclo fue cerrado en " + ciclo.fecha_fin })
         }
-        if (ciclo.numero_actual > 0 ){
+        if (ciclo.numero_actual > 0) {
             await tra.rollback();
-            return res.status(400).json({error: "Aun tienes existencia de peces en el ciclo"});
+            return res.status(400).json({ error: "Aun tienes existencia de peces en el ciclo" });
         }
         ciclo.fecha_fin = fecha_fin;
-        await Ciclo.update({fecha_fin: fecha_fin}, {where: {id: ciclo_id, usuario_id}, transaction: tra});
+        await Ciclo.update({ fecha_fin: fecha_fin }, { where: { id: ciclo_id, usuario_id }, transaction: tra });
         await tra.commit();
-        res.status(200).json({message:"Ciclo cerrado correctamente", ciclo})
+        res.status(200).json({ message: "Ciclo cerrado correctamente", ciclo })
     } catch (error) {
         await tra.rollback();
-        res.status(500).json({error: "Error interno del servidor"})
+        res.status(500).json({ error: "Error interno del servidor" })
         console.error(error)
     }
 }
@@ -100,40 +99,40 @@ export const actualizarBajas = async (req: Request, res: Response): Promise<any>
     const tra = await sequelize.transaction();
     try {
         const ciclo_id = req.params.ciclo_id;
-        const { cantidad, tanque_id} = req.body;
-        if (!ciclo_id || !cantidad || !tanque_id) {
+        const { cantidad, tanque_id, causa } = req.body;
+        if (!ciclo_id || !cantidad || !tanque_id || !causa) {
             await tra.rollback();
-            return res.status(400).json({error: "Todos los campos son obligatorios"})
+            return res.status(400).json({ error: "Todos los campos son obligatorios (cantidad, tanque_id, causa)" })
         }
-        
+
         if (cantidad <= 0) {
             await tra.rollback();
-            return res.status(400).json({error: 'La cantidad debe ser mayor a cero'})
+            return res.status(400).json({ error: 'La cantidad debe ser mayor a cero' })
         }
-        const ciclo = await Ciclo.findByPk(ciclo_id, {transaction: tra}) as any;
+        const ciclo = await Ciclo.findByPk(ciclo_id, { transaction: tra }) as any;
         if (!ciclo) {
             await tra.rollback();
             return res.status(404).json({ error: "Ciclo no encontrado." });
         }
-        if (ciclo.fecha_fin !== null) {            
+        if (ciclo.fecha_fin !== null) {
             await tra.rollback();
             return res.status(404).json({ error: "El Ciclo ya se encuentra finalizado." });
-        } 
+        }
         const cicloTanque = await CicloTanque.findOne({ where: { ciclo_id, tanque_id }, transaction: tra }) as any;
         if (!cicloTanque) {
             await tra.rollback();
             return res.status(404).json({ error: "El tanque no pertenece al ciclo seleccionado" });
         }
         const pecesActuales = ciclo.numero_actual ?? 0;
-        if(cantidad > pecesActuales) {
+        if (cantidad > pecesActuales) {
             await tra.rollback();
-            return res.status(400).json({error: `No puedes dar de baja ${cantidad} peces. Solo hay ${pecesActuales} disponibles.`})
+            return res.status(400).json({ error: `No puedes dar de baja ${cantidad} peces. Solo hay ${pecesActuales} disponibles.` })
         }
-        await Bajas.create({ ciclo_id, cantidad, tanque_id}, {transaction: tra});
+        await Bajas.create({ ciclo_id, cantidad, tanque_id, causa }, { transaction: tra });
 
-        await ciclo.increment('total_bajas', {by: cantidad, transaction: tra});
-        await ciclo.decrement('numero_actual', {by: cantidad, transaction: tra});
-        await cicloTanque.decrement('numero_peces', {by: cantidad, transaction: tra});
+        await ciclo.increment('total_bajas', { by: cantidad, transaction: tra });
+        await ciclo.decrement('numero_actual', { by: cantidad, transaction: tra });
+        await cicloTanque.decrement('numero_peces', { by: cantidad, transaction: tra });
 
         await tra.commit();
 
@@ -141,7 +140,7 @@ export const actualizarBajas = async (req: Request, res: Response): Promise<any>
         res.status(200).json(cicloActualizado);
     } catch (error) {
         await tra.rollback();
-        res.status(500).json({error: "Error interno del servidor"});
+        res.status(500).json({ error: "Error interno del servidor" });
         console.error(error)
     }
 }
@@ -150,36 +149,66 @@ export const ingresarAlimento = async (req: Request, res: Response): Promise<any
     const tra = await sequelize.transaction();
     try {
         const ciclo_id = req.params.ciclo_id
-        const {cantidad, costo, nombre, observacion} = req.body
+        const { cantidad, costo, nombre, observacion } = req.body
+
         if (!ciclo_id || !cantidad || !costo) {
             await tra.rollback();
-            return res.status(400).json({error: "Todos los campos son requeridos."})
+            return res.status(400).json({ error: "Todos los campos son requeridos." })
         }
-        const ciclo = await Ciclo.findByPk(ciclo_id, {transaction: tra}) as any;
+
+        const ciclo = await Ciclo.findByPk(ciclo_id, { transaction: tra }) as any;
         if (!ciclo) {
             await tra.rollback();
-            return res.status(404).json({error: "Ciclo no encontrado."})
+            return res.status(404).json({ error: "Ciclo no encontrado." })
         }
+
         if (ciclo.fecha_fin !== null) {
             await tra.rollback();
             return res.status(404).json({ error: "El Ciclo ya se encuentra finalizado." });
         }
-        // Se debe implementar logica para disminuir en el inventario
-        const nuevoAlimento = await Alimento.create({ciclo_id, cantidad, costo, nombre, observacion}, {transaction: tra});
-        await ciclo.increment('costos', {by: costo, transaction: tra});
-        await tra.commit();
 
-        const inventario = await Inventario.findOne({ where: nombre, transaction: tra});
+        const inventario = await Inventario.findOne({
+            where: { nombre },
+            transaction: tra
+        }) as any;
+
         if (!inventario) {
             await tra.rollback();
-            return res.status(404).json({error: "Producto no encontrado en el inventarioo"})
+            return res.status(404).json({ error: "Producto no encontrado en el inventario" })
         }
 
-        await inventario.decrement('peso_total', {by: cantidad})
+        const pesoActual = inventario.peso_total || 0;
+        if (cantidad > pesoActual) {
+            await tra.rollback();
+            return res.status(400).json({
+                error: `Stock insuficiente. Disponible: ${pesoActual}, Solicitado: ${cantidad}`
+            });
+        }
+
+        // ✅ NUEVA LÓGICA: Descontar solo costo_total proporcionalmente
+        const costoTotalActual = inventario.costo_total || 0;
+        const costoTotalProporcional = (costoTotalActual / pesoActual) * cantidad;
+
+        const nuevoAlimento = await Alimento.create({
+            ciclo_id,
+            cantidad,
+            costo,
+            nombre,
+            observacion
+        }, { transaction: tra });
+
+        await ciclo.increment('costos', { by: costo, transaction: tra });
+
+        // ✅ Descontar solo peso_total y costo_total
+        await inventario.decrement('peso_total', { by: cantidad, transaction: tra });
+        await inventario.decrement('costo_total', { by: Math.round(costoTotalProporcional), transaction: tra });
+
+        await tra.commit();
+
         res.status(201).json(nuevoAlimento)
     } catch (error) {
         await tra.rollback();
-        res.status(500).json({error: "Error interno del servidor"});
+        res.status(500).json({ error: "Error interno del servidor" });
         console.error(error)
     }
 }
@@ -188,37 +217,66 @@ export const ingresarQuimico = async (req: Request, res: Response): Promise<any>
     const tra = await sequelize.transaction();
     try {
         const ciclo_id = req.params.ciclo_id
-        const { cantidad, costo, nombre, observacion} = req.body
+        const { cantidad, costo, nombre, observacion } = req.body
+
         if (!ciclo_id || !cantidad || !costo) {
             await tra.rollback();
-            return res.status(400).json({error: "Todos los campos son requeridos."})
+            return res.status(400).json({ error: "Todos los campos son requeridos." })
         }
-        const ciclo = await Ciclo.findByPk(ciclo_id, {transaction: tra}) as any;
+
+        const ciclo = await Ciclo.findByPk(ciclo_id, { transaction: tra }) as any;
         if (!ciclo) {
             await tra.rollback();
-            return res.status(404).json({error: "Ciclo no encontrado."})
+            return res.status(404).json({ error: "Ciclo no encontrado." })
         }
-        if (ciclo.fecha_fin !== null) {            
+
+        if (ciclo.fecha_fin !== null) {
             await tra.rollback();
             return res.status(404).json({ error: "El Ciclo ya se encuentra finalizado." });
-        } 
-        const nuevoQuimico = await Quimico.create({ciclo_id, cantidad, costo, nombre, observacion}, {transaction: tra})
-        await ciclo.increment('costos', {by: costo, transaction: tra});
-        await tra.commit();
-
-         const inventario = await Inventario.findOne({ where: nombre, transaction: tra});
-        if (!inventario) {
-            await tra.rollback();
-            return res.status(404).json({error: "Producto no encontrado en el inventarioo"})
         }
 
-        await inventario.decrement('peso_total', {by: cantidad})
+        const inventario = await Inventario.findOne({
+            where: { nombre },
+            transaction: tra
+        }) as any;
+
+        if (!inventario) {
+            await tra.rollback();
+            return res.status(404).json({ error: "Producto no encontrado en el inventario" })
+        }
+
+        const pesoActual = inventario.peso_total || 0;
+        if (cantidad > pesoActual) {
+            await tra.rollback();
+            return res.status(400).json({
+                error: `Stock insuficiente. Disponible: ${pesoActual}, Solicitado: ${cantidad}`
+            });
+        }
+
+        // ✅ NUEVA LÓGICA: Descontar solo costo_total proporcionalmente
+        const costoTotalActual = inventario.costo_total || 0;
+        const costoTotalProporcional = (costoTotalActual / pesoActual) * cantidad;
+
+        const nuevoQuimico = await Quimico.create({
+            ciclo_id,
+            cantidad,
+            costo,
+            nombre,
+            observacion
+        }, { transaction: tra });
+
+        await ciclo.increment('costos', { by: costo, transaction: tra });
+
+        // ✅ Descontar solo peso_total y costo_total
+        await inventario.decrement('peso_total', { by: cantidad, transaction: tra });
+        await inventario.decrement('costo_total', { by: Math.round(costoTotalProporcional), transaction: tra });
+
         await tra.commit();
 
         res.status(201).json(nuevoQuimico)
     } catch (error) {
         await tra.rollback();
-        res.status(500).json({error: "Error interno del servidor"});
+        res.status(500).json({ error: "Error interno del servidor" });
         console.error(error)
     }
 }
@@ -227,67 +285,97 @@ export const cambiarTanque = async (req: Request, res: Response): Promise<any> =
     const tra = await sequelize.transaction();
     try {
         const ciclo_id = req.params.ciclo_id
-        const { origen, destino, cantidad} = req.body;
+        const { origen, destino, cantidad } = req.body;
         if (!ciclo_id || !origen || !destino || !cantidad) {
             await tra.rollback();
-            return res.status(400).json({error: "Todos los campos son requeridos."})
+            return res.status(400).json({ error: "Todos los campos son requeridos." })
         }
         if (origen === destino) {
             await tra.rollback();
             return res.status(400).json({ error: "El tanque de origen y destino no pueden ser el mismo." });
         }
         // Verificar que el tanque de origen pertenece al ciclo
-        const cicloTanqueOrigenCheck = await CicloTanque.findOne({ where: { ciclo_id, tanque_id: origen }, transaction: tra}) as any;
+        const cicloTanqueOrigenCheck = await CicloTanque.findOne({ where: { ciclo_id, tanque_id: origen }, transaction: tra }) as any;
         if (!cicloTanqueOrigenCheck) {
             await tra.rollback();
             return res.status(400).json({ error: "El tanque de origen no pertenece al ciclo." });
         }
         const [ciclo, tanqueOrigen, tanqueDestino] = await Promise.all([
-            Ciclo.findByPk(ciclo_id, {transaction: tra}),
-            Tanque.findByPk(origen, {transaction: tra}) as any,
-            Tanque.findByPk(destino, {transaction: tra}) as any
+            Ciclo.findByPk(ciclo_id, { transaction: tra }),
+            Tanque.findByPk(origen, { transaction: tra }) as any,
+            Tanque.findByPk(destino, { transaction: tra }) as any
         ]);
         if (!ciclo || !tanqueOrigen || !tanqueDestino) {
             await tra.rollback();
             return res.status(404).json({ error: "Ciclo o Tanque no encontrado." });
         }
-        if (ciclo.get('fecha_fin') !== null) {            
+        if (ciclo.get('fecha_fin') !== null) {
             await tra.rollback();
             return res.status(404).json({ error: "El Ciclo ya se encuentra finalizado." });
-        } 
-        if (!tanqueDestino.disponible){
+        }
+        if (!tanqueDestino.disponible) {
             await tra.rollback();
-            return res.status(400).json({error: "Tanque destino no esta disponible"});
+            return res.status(400).json({ error: "Tanque destino no esta disponible" });
         }
         if (cicloTanqueOrigenCheck.numero_actual < cantidad) {
             await tra.rollback();
-            return res.status(400).json({error: "No hay suficientes peces en el tanque de origen."});
+            return res.status(400).json({ error: "No hay suficientes peces en el tanque de origen." });
         }
-        let cicloTanqueDestino = await CicloTanque.findOne({where: { ciclo_id, tanque_id: destino}, transaction: tra}) as any;
+        let cicloTanqueDestino = await CicloTanque.findOne({ where: { ciclo_id, tanque_id: destino }, transaction: tra }) as any;
 
         if (!cicloTanqueDestino) {
             cicloTanqueDestino = await CicloTanque.create({ ciclo_id, tanque_id: destino, numero_peces: 0 }, { transaction: tra });
         }
-        await cicloTanqueOrigenCheck.decrement('numero_peces', {by: cantidad, transaction: tra});
-        await cicloTanqueDestino.increment('numero_peces', {by: cantidad, transaction: tra});
-        
-        const nuevoConteoOrigen = cicloTanqueOrigenCheck.numero_peces - cantidad;
-        if(nuevoConteoOrigen === 0) {
-            await CicloTanque.destroy({where: {ciclo_id, tanque_id: origen}, transaction:tra});
-            await Tanque.update({disponible: true}, {where: {id: origen}, transaction: tra})
-        }
-        await Tanque.update({disponible: false}, {where: {id: destino}, transaction: tra})
+        await cicloTanqueOrigenCheck.decrement('numero_peces', { by: cantidad, transaction: tra });
+        await cicloTanqueDestino.increment('numero_peces', { by: cantidad, transaction: tra });
 
-        const movTanque = await MovimientoTanque.create({ciclo_id, origen, destino, cantidad}, {transaction: tra});
+        const nuevoConteoOrigen = cicloTanqueOrigenCheck.numero_peces - cantidad;
+        if (nuevoConteoOrigen === 0) {
+            await CicloTanque.destroy({ where: { ciclo_id, tanque_id: origen }, transaction: tra });
+            await Tanque.update({ disponible: true }, { where: { id: origen }, transaction: tra })
+        }
+        await Tanque.update({ disponible: false }, { where: { id: destino }, transaction: tra })
+
+        const movTanque = await MovimientoTanque.create({ ciclo_id, origen, destino, cantidad }, { transaction: tra });
         await tra.commit();
         res.status(200).json(movTanque);
     } catch (error) {
         await tra.rollback();
         console.error(error)
-        return res.status(500).json({error: "Error interno del servidor"});
+        return res.status(500).json({ error: "Error interno del servidor" });
     }
 }
 
+
+export const verCicloTanques = async (req: Request, res: Response): Promise<any> => {
+    try {
+        const { ciclo_id } = req.params;
+
+        if (!ciclo_id) {
+            return res.status(400).json({ error: "El ciclo_id es requerido." });
+        }
+
+        const cicloTanques = await CicloTanque.findAll({
+            where: { ciclo_id },
+            include: [
+                {
+                    model: Tanque,
+                    as: "tanque",
+                    attributes: ['id', 'nombre', 'volumen', 'tipoTanque']
+                }
+            ]
+        });
+
+        if (!cicloTanques || cicloTanques.length === 0) {
+            return res.status(404).json({ error: "No se encontraron tanques para este ciclo." });
+        }
+
+        res.status(200).json(cicloTanques);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Error interno del servidor." });
+    }
+}
 
 export const eliminarCiclo = async (req: Request, res: Response): Promise<any> => {
     const tra = await sequelize.transaction();
@@ -297,12 +385,12 @@ export const eliminarCiclo = async (req: Request, res: Response): Promise<any> =
 
         if (!ciclo_id || !usuario_id) {
             await tra.rollback();
-            return res.status(400).json({error: "Completa los datos"});
+            return res.status(400).json({ error: "Completa los datos" });
         }
 
-        const ciclo = await Ciclo.findOne({ where: { id: ciclo_id, usuario_id}, })
+        const ciclo = await Ciclo.findOne({ where: { id: ciclo_id, usuario_id }, })
 
     } catch (error) {
-        
+
     }
 }
