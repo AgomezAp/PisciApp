@@ -168,7 +168,7 @@ export const loginConGoogle = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Token de Google requerido" });
     }
 
-    // 🔎 Validar token con Google
+    // ✅ Validamos token de Google
     const ticket = await client.verifyIdToken({
       idToken,
       audience: process.env.GOOGLE_CLIENT_ID!,
@@ -181,11 +181,10 @@ export const loginConGoogle = async (req: Request, res: Response) => {
         .json({ message: "Token de Google inválido (sin correo)" });
     }
 
-    // Buscar/crear usuario
+    // ✅ Buscar o crear usuario
     let usuario = await Usuario.findOne({ where: { correo: payload.email } });
 
     if (!usuario) {
-      // 🔥 Crear usuario si nunca existió
       usuario = await Usuario.create({
         nombre: payload.name || "Usuario Google",
         correo: payload.email,
@@ -196,25 +195,26 @@ export const loginConGoogle = async (req: Request, res: Response) => {
         periodo_gracia: false,
         rol: "Cliente",
         fecha_cobro: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
-        telefono: null,
-        departamento: null,
-        ciudad: null,
       });
-      console.log("🆕 Usuario registrado con Google:", usuario.correo);
-    } else {
-      console.log("✅ Usuario existente login Google:", usuario.correo);
     }
 
-    // Revocar sesiones previas activas de este usuario
+    // 🚨 REVISAR 2FA
+    if (usuario.twofa_enabled) {
+      return res.json({
+        requires2FA: true,
+        userId: usuario.id,
+        message: "Se requiere validación de 2FA para login con Google",
+      });
+    }
+
+    // ✅ Si no tiene 2FA activo, sesión normal:
     await Sesion.update(
       { is_revoked: true },
       { where: { user_id: usuario.id, is_revoked: false } }
     );
 
-    // Generar nuevos tokens + sesión
     const { accessToken, refreshToken } = await generateTokens(usuario);
 
-    // Guardar refresh en cookie
     res.cookie("refresh_token", refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
@@ -223,6 +223,7 @@ export const loginConGoogle = async (req: Request, res: Response) => {
     });
 
     return res.json({
+      success: true,
       message: "Login con Google exitoso",
       usuario: {
         id: usuario.id,

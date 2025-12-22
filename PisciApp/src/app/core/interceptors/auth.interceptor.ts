@@ -19,12 +19,17 @@ import {
 import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
 import { jwtDecode } from 'jwt-decode';
+import { NotificationService } from '../services/notification.service';
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
   private isRefreshing = false;
   private refreshTokenSubject = new BehaviorSubject<string | null>(null);
 
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    private notification: NotificationService
+  ) {}
 
   intercept(
     req: HttpRequest<any>,
@@ -48,6 +53,7 @@ export class AuthInterceptor implements HttpInterceptor {
 
     return next.handle(authReq).pipe(
       catchError((error: HttpErrorResponse) => {
+        // ⚡ Caso token vencido o inválido
         if (error.status === 401 && !this.isRefreshing && !isAuthRoute) {
           this.isRefreshing = true;
           this.refreshTokenSubject.next(null);
@@ -65,7 +71,17 @@ export class AuthInterceptor implements HttpInterceptor {
             }),
             catchError((err) => {
               this.isRefreshing = false;
-              this.authService.logout();
+
+              // 🔥 Aquí reseteamos sesión, mandamos notificación y redirigimos
+              this.authService.logout().subscribe();
+
+              this.notification.toast(
+                'Sesión cerrada. Vuelve a iniciar por favor.',
+                'info'
+              );
+
+              this.router.navigate(['/login']);
+
               return throwError(() => err);
             })
           );
@@ -83,23 +99,23 @@ export class AuthInterceptor implements HttpInterceptor {
             )
           );
         }
+
         return throwError(() => error);
       })
     );
   }
+
   isTokenExpired(token: string): boolean {
     try {
       const decoded: any = jwtDecode(token);
       if (!decoded.exp) return true; // sin exp = inválido
-
-      const now = Math.floor(Date.now() / 1000); // tiempo actual en segundos
-      return decoded.exp < now; // true si ya venció
-    } catch (err) {
-      return true; // error decodificando => inválido
+      const now = Math.floor(Date.now() / 1000);
+      return decoded.exp < now;
+    } catch {
+      return true;
     }
   }
 
-  // 🔑 Nuevo método: valida si está logueado y su token es válido
   isLoggedIn(): boolean {
     const token = this.authService.getToken();
     if (!token) return false;

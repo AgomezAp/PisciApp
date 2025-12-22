@@ -67,18 +67,27 @@
 }
 
 .configuracion ::ng-deep .mat-expansion-panel.mat-expanded {
-  box-shadow: 0 15px 40px rgba(0, 151, 167, 0.15), 0 8px 20px rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 15px 40px rgba(0, 151, 167, 0.15),
+    0 8px 20px rgba(0, 0, 0, 0.08) !important;
   border-color: rgba(0, 151, 167, 0.2) !important;
 }
 
 .configuracion ::ng-deep .mat-expansion-panel-header {
   padding: 1.5rem 2rem !important;
-  background: linear-gradient(135deg, rgba(0, 151, 167, 0.02) 0%, rgba(0, 150, 136, 0.02) 100%) !important;
+  background: linear-gradient(
+    135deg,
+    rgba(0, 151, 167, 0.02) 0%,
+    rgba(0, 150, 136, 0.02) 100%
+  ) !important;
   border-radius: 16px !important;
 }
 
 .configuracion ::ng-deep .mat-expansion-panel-header:hover {
-  background: linear-gradient(135deg, rgba(0, 151, 167, 0.05) 0%, rgba(0, 150, 136, 0.05) 100%) !important;
+  background: linear-gradient(
+    135deg,
+    rgba(0, 151, 167, 0.05) 0%,
+    rgba(0, 150, 136, 0.05) 100%
+  ) !important;
 }
 
 .configuracion ::ng-deep .mat-expansion-panel-header-title {
@@ -98,7 +107,10 @@
   margin-right: 12px;
 }
 
-.configuracion ::ng-deep .mat-expansion-panel-content .mat-expansion-panel-body {
+.configuracion
+  ::ng-deep
+  .mat-expansion-panel-content
+  .mat-expansion-panel-body {
   padding: 2rem !important;
   background: white !important;
 }
@@ -125,7 +137,10 @@
   transform: translateY(-1px) !important;
 }
 
-.configuracion ::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-text-field-wrapper {
+.configuracion
+  ::ng-deep
+  .mat-mdc-form-field.mat-focused
+  .mat-mdc-text-field-wrapper {
   background: white !important;
   box-shadow: 0 6px 16px rgba(0, 151, 167, 0.15) !important;
   border-color: #0097a7 !important;
@@ -140,8 +155,14 @@
   transform: translateY(-50%) !important;
 }
 
-.configuracion ::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-floating-label,
-.configuracion ::ng-deep .mat-mdc-form-field .mat-mdc-floating-label.mdc-floating-label--float-above {
+.configuracion
+  ::ng-deep
+  .mat-mdc-form-field.mat-focused
+  .mat-mdc-floating-label,
+.configuracion
+  ::ng-deep
+  .mat-mdc-form-field
+  .mat-mdc-floating-label.mdc-floating-label--float-above {
   color: #0097a7 !important;
   font-weight: 600 !important;
   font-size: 11px !important;
@@ -159,7 +180,10 @@
   line-height: 1.4 !important;
 }
 
-.configuracion ::ng-deep .mat-mdc-form-field .mat-mdc-input-element::placeholder {
+.configuracion
+  ::ng-deep
+  .mat-mdc-form-field
+  .mat-mdc-input-element::placeholder {
   color: #94a3b8 !important;
   opacity: 0.7 !important;
   font-size: 13px !important;
@@ -229,19 +253,31 @@
   padding: 8px !important;
 }
 
-.configuracion ::ng-deep .mat-mdc-checkbox .mdc-checkbox .mdc-checkbox__background {
+.configuracion
+  ::ng-deep
+  .mat-mdc-checkbox
+  .mdc-checkbox
+  .mdc-checkbox__background {
   border: 2px solid #cbd5e1 !important;
   border-radius: 6px !important;
   background-color: transparent !important;
   transition: all 0.3s ease !important;
 }
 
-.configuracion ::ng-deep .mat-mdc-checkbox:hover .mdc-checkbox .mdc-checkbox__background {
+.configuracion
+  ::ng-deep
+  .mat-mdc-checkbox:hover
+  .mdc-checkbox
+  .mdc-checkbox__background {
   border-color: #0097a7 !important;
   box-shadow: 0 0 0 8px rgba(0, 151, 167, 0.08) !important;
 }
 
-.configuracion ::ng-deep .mat-mdc-checkbox .mdc-checkbox.mdc-checkbox--selected .mdc-checkbox__background {
+.configuracion
+  ::ng-deep
+  .mat-mdc-checkbox
+  .mdc-checkbox.mdc-checkbox--selected
+  .mdc-checkbox__background {
   background: linear-gradient(135deg, #0097a7, #009688) !important;
   border-color: #0097a7 !important;
   box-shadow: 0 2px 8px rgba(0, 151, 167, 0.3) !important;
@@ -722,7 +758,8 @@
 
 /* ===== ANIMACIONES ===== */
 @keyframes gradientFlow {
-  0%, 100% {
+  0%,
+  100% {
     background-position: 0% 50%;
   }
   50% {
@@ -771,7 +808,10 @@
     padding: 1.2rem 1.5rem !important;
   }
 
-  .configuracion ::ng-deep .mat-expansion-panel-content .mat-expansion-panel-body {
+  .configuracion
+    ::ng-deep
+    .mat-expansion-panel-content
+    .mat-expansion-panel-body {
     padding: 1.5rem !important;
   }
 
@@ -860,14 +900,14 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   text-align: center;
   cursor: pointer;
-  border: 2px dashed rgba(0, 151, 167, 0.3);
-  border-radius: 16px;
-  padding: 1rem;
-  background: #f8fafc;
-  transition: all 0.3s ease;
-  grid-column: span 2; /* se expande en todo el ancho del grid */
+  border: none;
+  padding: 1rem 0;
+  margin-bottom: 1.5rem;
+  background: transparent;
+  grid-column: 1 / -1;
 }
 
 .foto-perfil-upload:hover {
@@ -876,21 +916,22 @@
 }
 
 .foto-perfil-upload img {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
+  width: 130px;
+  height: 130px;
+  border-radius: 50%; /* círculo */
   object-fit: cover;
+  border: 3px solid #0097a7; /* borde lindo */
   margin-bottom: 0.5rem;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .foto-perfil-upload mat-icon {
-  font-size: 120px;
+  font-size: 130px;
   color: #94a3b8;
   margin-bottom: 0.5rem;
 }
 
 .foto-perfil-upload p {
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   color: #64748b;
 }

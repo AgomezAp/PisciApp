@@ -4,34 +4,30 @@ import Swal from 'sweetalert2';
   providedIn: 'root',
 })
 export class NotificationService {
-  success(message: string, title: string = 'Éxito') {
+  toast(message: string, icon: 'success' | 'error' | 'info' = 'info') {
     Swal.fire({
-      icon: 'success',
-      title,
-      text: message,
-      confirmButtonColor: '#0097a7',
+      toast: true,
+      position: 'top-end',
+      icon,
+      title: message,
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true,
     });
+  }
+
+  success(message: string, title: string = 'Éxito') {
+    Swal.fire({ icon: 'success', title, text: message });
   }
 
   error(message: string, title: string = 'Error') {
-    Swal.fire({
-      icon: 'error',
-      title,
-      text: message,
-      confirmButtonColor: '#e53935',
-    });
+    Swal.fire({ icon: 'error', title, text: message });
   }
 
   info(message: string, title: string = 'Info') {
-    Swal.fire({
-      icon: 'info',
-      title,
-      text: message,
-      confirmButtonColor: '#1976d2',
-    });
+    Swal.fire({ icon: 'info', title, text: message });
   }
-
-  confirm(
+   confirm(
     message: string,
     callback: () => void,
     title: string = '¿Estás seguro?'

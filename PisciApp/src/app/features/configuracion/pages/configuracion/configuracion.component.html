@@ -11,6 +11,28 @@
 
       <form class="perfil-form" #f="ngForm" (ngSubmit)="actualizarPerfil()">
         <div *ngIf="user" class="perfil-grid">
+          <!-- Foto de perfil primero -->
+          <div class="foto-perfil-upload">
+            <label for="fotoPerfil" class="foto-label">
+              <img
+                *ngIf="user.foto_perfil; else defaultAvatar"
+                [src]="user.foto_perfil"
+                alt="Foto de perfil"
+              />
+              <ng-template #defaultAvatar>
+                <mat-icon>account_circle</mat-icon>
+              </ng-template>
+            </label>
+            <input
+              type="file"
+              id="fotoPerfil"
+              name="foto_perfil"
+              (change)="onFotoPerfilChange($event)"
+              hidden
+            />
+            <p>Haz clic en el icono para cambiar tu foto de perfil</p>
+          </div>
+
           <!-- Nombre -->
           <mat-form-field appearance="outline">
             <mat-label>Nombre completo</mat-label>
@@ -54,28 +76,6 @@
               name="departamento"
             />
           </mat-form-field>
-
-          <!-- Foto de perfil -->
-          <div class="foto-perfil-upload">
-            <label for="fotoPerfil" class="foto-label">
-              <img
-                *ngIf="user.foto_perfil; else defaultAvatar"
-                [src]="user.foto_perfil"
-                alt="Foto de perfil"
-              />
-              <ng-template #defaultAvatar>
-                <mat-icon>account_circle</mat-icon>
-              </ng-template>
-            </label>
-            <input
-              type="file"
-              id="fotoPerfil"
-              name="foto_perfil"
-              (change)="onFotoPerfilChange($event)"
-              hidden
-            />
-            <p>Haz clic en el icono para cambiar tu foto de perfil</p>
-          </div>
         </div>
 
         <div class="perfil-actions">

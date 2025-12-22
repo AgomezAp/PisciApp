@@ -226,7 +226,7 @@ export class AuthService {
       )
       .pipe(
         tap((response) => {
-          if (response.accessToken) {
+          if (!response.requires2FA && response.accessToken) {
             localStorage.setItem('accessToken', response.accessToken);
             this.loadUserFromToken();
           }

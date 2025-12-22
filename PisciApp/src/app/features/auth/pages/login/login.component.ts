@@ -10,11 +10,12 @@ import {
 import { AuthService } from '../../../../core/services/auth.service';
 import { Router } from '@angular/router';
 import { TwofaService } from '../../../../core/services/twofa.service';
+import { SpinnerComponent } from '../../../../shared/components/spinner/spinner.component';
 declare const google: any;
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule,SpinnerComponent],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',
 })
@@ -41,7 +42,8 @@ export class LoginComponent {
     this.loadGoogleScript().then(() => {
       // inicializa Google solo cuando el script ya está cargado
       google.accounts.id.initialize({
-        client_id: '686048642614-rn8l8btsrt7cfg16chpukrmk39n6g3vn.apps.googleusercontent.com', // ⚡ pon aquí tu client_id
+        client_id:
+          '686048642614-rn8l8btsrt7cfg16chpukrmk39n6g3vn.apps.googleusercontent.com',
         callback: (resp: any) => this.handleGoogleResponse(resp),
       });
 
@@ -161,8 +163,13 @@ export class LoginComponent {
     console.log('✅ Google ID Token recibido:', response.credential);
 
     this.authService.loginWithGoogle(response.credential).subscribe({
-      next: () => {
-        this.router.navigate(['/inventory']);
+      next: (res) => {
+        if (res.requires2FA) {
+          this.showTwofa = true; // ✅ mostrar input para el código
+          this.userId = res.userId;
+        } else {
+          this.router.navigate(['/inventory']);
+        }
       },
       error: (err) => {
         console.error('❌ Error login con Google:', err);
