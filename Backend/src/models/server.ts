@@ -14,9 +14,12 @@ import rateLimit from "express-rate-limit";
 import RInventario from "../routes/inventario";
 import RProducto from "../routes/producto";
 import RTanque from "../routes/tanque";
-/* 
-/* 
 import RCiclo from "../routes/ciclo";
+import REmpresa from "../routes/empresa";
+import RVenta from "../routes/ventas"
+import { MedicionesCalidad } from "../models";
+/* 
+/* 
 import RTarea from "../routes/tarea";
 import RCompra from "../routes/compra"; */
 
@@ -64,10 +67,13 @@ class Server {
     this.app.use("/inventario", RInventario);
     this.app.use("/tanque", RTanque);
     this.app.use("/productos", RProducto);
-    /*     this.app.use("/usuarios", RUsuario);
     this.app.use("/ciclos", RCiclo);
-    this.app.use("/tareas", RTarea);
     this.app.use("/inventario", RInventario);
+    this.app.use("/empresa", REmpresa);
+    this.app.use("/venta", RVenta);
+
+    /*     this.app.use("/usuarios", RUsuario);
+    this.app.use("/tareas", RTarea);
     this.app.use("/compras", RCompra); */
   }
 
@@ -95,8 +101,9 @@ class Server {
   async DBconnect() {
     try {
       await sequelize.authenticate();
+      // Sincronizar todas las tablas con alter
       await sequelize.sync({ alter: true });
-
+      // await Inventario.sync({alter: true})
       console.log(
         "✅ Conexión establecida y tablas sincronizadas correctamente"
       );

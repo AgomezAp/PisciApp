@@ -111,7 +111,7 @@ export class LoginComponent {
       next: (res) => {
         // 🚀 Guardar token de acceso
         localStorage.setItem('accessToken', res.accessToken);
-        this.router.navigate(['/inventory']);
+        this.router.navigate(['/inicioPerfil']);
       },
       error: (err) => {
         this.errorMessage = err.message || 'Error al validar 2FA';

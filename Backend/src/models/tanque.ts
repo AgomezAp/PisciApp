@@ -1,48 +1,35 @@
 import { DataTypes, Model } from "sequelize";
 import sequelize from "../database/connection";
-import { Ciclo, CicloTanque } from "./ciclo";
 
-export class Tanque extends Model {
-  public id!: number;
-  public nombre!: string;
-  public volumen!: number;
-  public tipoTanque!: string;
-  public disponible!: boolean;
-  public usuario_id!: number;
-}
 
-Tanque.init(
+export const Tanque = sequelize.define(
+  "tanques",
   {
     id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
     nombre: { type: DataTypes.STRING, allowNull: false},
+    forma: { type: DataTypes.ENUM('Rectangular', 'Redondo'), allowNull: false},
+    profundidad: { type: DataTypes.FLOAT, allowNull: true},
+    largo: { type: DataTypes.FLOAT, allowNull: true},
+    ancho: { type: DataTypes.FLOAT, allowNull: true},
+    diametro: { type: DataTypes.FLOAT, allowNull: true},
     volumen: { type: DataTypes.FLOAT, allowNull: true },
     tipoTanque: {type: DataTypes.STRING, allowNull: true},
     disponible: { type: DataTypes.BOOLEAN, allowNull: false },
     usuario_id: {
       type: DataTypes.INTEGER, references: {model: "usuarios", key: "id"}, allowNull: false,
     },
+    tanque_id_usuario: { type: DataTypes.INTEGER, allowNull: false},
   },
   {
-    sequelize,
-    tableName: "tanques",
     timestamps: false,
   }
 );
 
-export class MedicionesCalidad extends Model {
-  public tanque_id!: number;
-  public ph!: number;
-  public oxigeno_disuelto!: number;
-  public temperatura!: number;
-  public nitritos!: number;
-  public amoniaco!: number;
-  public nitratos!: number;
-  public dureza!: number;
-  public salinidad!: number;
-}
 
-MedicionesCalidad.init(
+export const MedicionesCalidad = sequelize.define(
+  "mediciones",
   {
+    id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
     tanque_id: {type: DataTypes.INTEGER, references: {model: "tanques", key: "id"}, allowNull: false},
     ph: { type: DataTypes.FLOAT, allowNull: false },
     oxigeno_disuelto: { type: DataTypes.FLOAT, allowNull: false },
@@ -50,12 +37,10 @@ MedicionesCalidad.init(
     nitritos: { type: DataTypes.FLOAT, allowNull: false },
     amoniaco: { type: DataTypes.FLOAT, allowNull: true },
     nitratos: { type: DataTypes.FLOAT, allowNull: true },
-    dureza: { type: DataTypes.FLOAT, allowNull: true },
     salinidad: { type: DataTypes.FLOAT, allowNull: true },
   },
   {
-    sequelize,
-    tableName: "mediciones",
-    timestamps: true
+    timestamps: true,
+    updatedAt: false,
   }
 )

@@ -1,0 +1,250 @@
+<app-navbar></app-navbar>
+<div class="inventario-header">
+  <h2>Inventario</h2>
+  <input type="text" class="buscador-inventario" placeholder="Buscar por nombre..." [(ngModel)]="busquedaInventario">
+  <select class="filtro-tipo-inventario" [(ngModel)]="filtroTipoInventario">
+    <option value="">Todos los tipos</option>
+    <option value="Alimento">Alimento</option>
+    <option value="Quimico">Quimico</option>
+    <option value="Maquina">Maquina</option>
+    <option value="Herramienta">Herramienta</option>
+  </select>
+  <div class="botones-filtro">
+    <button class="btn-filtro" [class.activo]="datosGenerales" (click)="mostrarSeccion('generales')">
+      📋
+    </button>
+    <button class="btn-filtro" [class.activo]="datosEconomicos" (click)="mostrarSeccion('economicos')">
+      💰
+    </button>
+    <button class="btn-filtro" [class.activo]="datosFisicos" (click)="mostrarSeccion('fisicos')">
+      📦
+    </button>
+  </div>
+  
+  <button class="btn-agregar-inventario" (click)="mostrarAgregar()">
+    + Agregar al inventario
+  </button>
+</div>
+
+<div class="tabla-margen">
+  <table class="tabla-inventario">
+    <thead>
+      <tr>
+        <th *ngIf="datosGenerales">Nombre</th>
+        <th *ngIf="datosGenerales">Tipo</th>
+        <th *ngIf="datosGenerales">Cantidad</th>
+        <th *ngIf="datosGenerales">Lote</th>
+        <th *ngIf="datosGenerales">Proveedor</th>
+        <th *ngIf="datosGenerales">Fecha Caducidad</th>
+        <th *ngIf="datosGenerales">Acciones</th>
+        
+        <th *ngIf="datosEconomicos">Nombre</th>
+        <th *ngIf="datosEconomicos">Tipo</th>
+        <th *ngIf="datosEconomicos">Cantidad</th>
+        <th *ngIf="datosEconomicos">Costo Insumo</th>
+        <th *ngIf="datosEconomicos">Costo Transporte</th>
+        <th *ngIf="datosEconomicos">Costo Total</th>
+        <th *ngIf="datosEconomicos">Costo Unidad</th>
+        <th *ngIf="datosEconomicos">Acciones</th>
+
+        <th *ngIf="datosFisicos">Nombre</th>
+        <th *ngIf="datosFisicos">Tipo</th>
+        <th *ngIf="datosFisicos">Cantidad</th>
+        <th *ngIf="datosFisicos">Unidad de Medida</th>
+        <th *ngIf="datosFisicos">Peso Unidad</th>
+        <th *ngIf="datosFisicos">Peso Total</th>
+        <th *ngIf="datosFisicos">Granularidad</th>
+        <th *ngIf="datosFisicos">Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of inventarioFiltrado">
+        <ng-container *ngIf="datosGenerales">
+          <td>{{ item.nombre }}</td>
+          <td>{{ item.tipo_material }}</td>
+          <td>{{ item.cantidad }}</td>
+          <td>{{ item.lote || '-' }}</td> 
+          <td>{{ item.provedor }}</td>
+          <td>{{ item.fecha_caducidad ? (item.fecha_caducidad | date:'dd - MM - yyyy') : '-' }}</td>
+          <td class="acciones-celda">
+            <button class="btn-editar" (click)="mostrarEditar(item)">✏️</button>
+            <button class="btn-eliminar" (click)="eliminarItem(item.id)" >🗑️</button>
+          </td>
+        </ng-container>
+
+        <ng-container *ngIf="datosFisicos">
+          <td>{{ item.nombre }}</td>
+          <td>{{ item.tipo_material }}</td>
+          <td>{{ item.cantidad }}</td>
+          <td>{{ item.unidad_medida || '-' }}</td>
+          <td>{{ item.peso_unidad || '-' }}</td>
+          <td>{{ item.peso_total || '-' }}</td>
+          <td>{{ item.granularidad || '-' }}</td>
+          <td class="acciones-celda">
+            <button class="btn-editar" (click)="mostrarEditar(item)">✏️</button>
+            <button class="btn-eliminar" (click)="eliminarItem(item.id)" >🗑️</button>
+          </td>
+        </ng-container>
+
+        <ng-container *ngIf="datosEconomicos">
+          <td>{{ item.nombre }}</td>
+          <td>{{ item.tipo_material }}</td>
+          <td>{{ item.cantidad }}</td>
+          <td>$ {{ item.costo_insumo | number:'1.0-0' }}</td>
+          <td>$ {{ item.costo_transporte | number:'1.0-0'}}</td>
+          <td>$ {{ item.costo_total | number:'1.0-0'}}</td>
+          <td>$ {{ item.costo_unidad | number:'1.0-0'}}</td>
+          <td class="acciones-celda">
+            <button class="btn-editar" (click)="mostrarEditar(item)">✏️</button>
+            <button class="btn-eliminar" (click)="eliminarItem(item.id)" >🗑️</button>
+          </td>
+        </ng-container>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Modal Agregar -->
+<div class="modal-backdrop" *ngIf="mostrarModalAgregar" (click)="cerrarModal($event)">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <h3>Agregar al Inventario</h3>
+    <form (ngSubmit)="agregarInventario()">
+      <label>
+        Tipo:
+        <select [(ngModel)]="nuevoItem.tipo_material" name="tipo_material" required>
+          <option value="" disabled selected>Seleccione tipo</option>
+          <option value="Alimento">Alimento</option>
+          <option value="Quimico">Quimico</option>
+          <option value="Maquina">Maquina</option>
+          <option value="Herramienta">Herramienta</option>
+        </select>
+      </label>
+      <label>
+        Nombre:
+        <input type="text" [(ngModel)]="nuevoItem.nombre" name="nombre" required placeholder="Nombre"/>
+      </label>
+      <label>
+        Lote:
+        <input type="number" [(ngModel)]="nuevoItem.lote" name="lote" required placeholder="0"/>
+      </label>
+      <label>
+        Proveedor:
+        <input type="text" [(ngModel)]="nuevoItem.provedor" name="provedor" required placeholder="Proveedor"/>
+      </label>
+      <label>
+        Cantidad:
+        <input type="number" [(ngModel)]="nuevoItem.cantidad" name="cantidad" required placeholder="0"/>
+      </label>
+      <label>
+        Costo Insumo:
+        <input type="number" [(ngModel)]="nuevoItem.costo_insumo" name="costo_insumo" required placeholder="$0"/>
+      </label>
+      <label>
+        Costo Transporte:
+        <input type="number" [(ngModel)]="nuevoItem.costo_transporte" name="costo_transporte" required placeholder="$0"/>
+      </label>
+      <div *ngIf="nuevoItem.tipo_material === 'Alimento' || nuevoItem.tipo_material === 'Quimico'">
+        <label>
+          Fecha Caducidad:
+          <input type="date" [(ngModel)]="nuevoItem.fecha_caducidad" name="fecha_caducidad"/>
+        </label>
+        <div class="form-group-inline">
+          <label class="peso-input">
+            Peso/Cantidad:
+            <input type="number" [(ngModel)]="nuevoItem.peso_unidad" name="peso_unidad" 
+                   placeholder="Cantidad" step="0.01"/>
+          </label>
+          <label class="unidad-select">
+            Unidad:
+            <select [(ngModel)]="nuevoItem.unidad_medida" name="unidad_medida" required>
+              <option value="" disabled selected>Unidad</option>
+              <option *ngFor="let unidad of unidadesMedida" [value]="unidad">
+                {{ unidad }}
+              </option>
+            </select>
+          </label>
+        </div>
+        <label>
+          Granularidad:
+          <input type="text" [(ngModel)]="nuevoItem.granularidad" name="granularidad" placeholder="0.00"/>
+        </label>
+      </div>
+      <div class="modal-actions">
+        <button type="submit">Agregar</button>
+        <button type="button" (click)="cerrarModalInventario()">Cancelar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal Editar -->
+<div class="modal-backdrop" *ngIf="mostrarModalEditar" (click)="cerrarModal($event)">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <h3>Editar Inventario</h3>
+    <form (ngSubmit)="actualizarItem()">
+      <label>
+        Tipo:
+        <select [(ngModel)]="nuevoItem.tipo_material" name="tipo_material" required>
+          <option value="" disabled>Seleccione tipo</option>
+          <option value="Alimento">Alimento</option>
+          <option value="Quimico">Quimico</option>
+          <option value="Maquina">Maquina</option>
+          <option value="Herramienta">Herramienta</option>
+        </select>
+      </label>
+      <label>
+        Nombre:
+        <input type="text" [(ngModel)]="nuevoItem.nombre" name="nombre" required />
+      </label>
+      <label>
+        Lote:
+        <input type="number" [(ngModel)]="nuevoItem.lote" name="lote" required />
+      </label>
+      <label>
+        Proveedor:
+        <input type="text" [(ngModel)]="nuevoItem.provedor" name="provedor" required />
+      </label>
+      <label>
+        Cantidad:
+        <input type="number" [(ngModel)]="nuevoItem.cantidad" name="cantidad" required />
+      </label>
+      <label>
+        Costo Insumo:
+        <input type="number" [(ngModel)]="nuevoItem.costo_insumo" name="costo_insumo" required />
+      </label>
+      <label>
+        Costo Transporte:
+        <input type="number" [(ngModel)]="nuevoItem.costo_transporte" name="costo_transporte" required />
+      </label>
+      <div *ngIf="nuevoItem.tipo_material === 'Alimento' || nuevoItem.tipo_material === 'Quimico'">
+        <label>
+          Fecha Caducidad:
+          <input type="date" [(ngModel)]="nuevoItem.fecha_caducidad" name="fecha_caducidad" />
+        </label>
+        <div class="form-group-inline">
+          <label class="peso-input">
+            Peso/Cantidad:
+            <input type="number" [(ngModel)]="nuevoItem.peso_unidad" name="peso_unidad" step="0.01"/>
+          </label>
+          <label class="unidad-select">
+            Unidad:
+            <select [(ngModel)]="nuevoItem.unidad_medida" name="unidad_medida" required>
+              <option value="" disabled>Unidad</option>
+              <option *ngFor="let unidad of unidadesMedida" [value]="unidad">
+                {{ unidad }}
+              </option>
+            </select>
+          </label>
+        </div>
+        <label>
+          Granularidad:
+          <input type="text" [(ngModel)]="nuevoItem.granularidad" name="granularidad" />
+        </label>
+      </div>
+      <div class="modal-actions">
+        <button type="submit">Actualizar</button>
+        <button type="button" (click)="cerrarModalInventario()">Cancelar</button>
+      </div>
+    </form>
+  </div>
+</div>

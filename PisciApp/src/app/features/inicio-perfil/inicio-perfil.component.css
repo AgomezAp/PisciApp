@@ -1,0 +1,691 @@
+.dashboard-container {
+  display: grid;
+  grid-template-columns: 350px 1fr;
+  gap: 24px;
+  padding: 24px;
+  max-width: 1600px;
+  margin: 0 auto;
+  background: #f5f7fa;
+  min-height: calc(100vh - 60px);
+}
+
+/* ===== SIDEBAR PERFIL ===== */
+.perfil-sidebar {
+  display: flex;
+  flex-direction: column;
+}
+
+.perfil-card {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.perfil-header {
+  text-align: center;
+  border-bottom: 1px solid #e0e0e0;
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+}
+
+.perfil-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #00bcd4 0%, #0097a7 100%);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0 auto 16px;
+}
+
+.perfil-nombre {
+  font-size: 1.3rem;
+  color: #222;
+  margin: 0 0 8px 0;
+  font-weight: 600;
+}
+
+.perfil-email {
+  color: #666;
+  font-size: 0.95rem;
+  margin: 0 0 16px 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+  max-width: 100%;
+}
+
+.btn-perfil {
+  background: #00bcd4;
+  color: white;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-perfil:hover {
+  background: #0097a7;
+}
+
+.plan-info {
+  border-bottom: 1px solid #e0e0e0;
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+}
+
+.plan-info h3 {
+  font-size: 1.1rem;
+  color: #222;
+  margin: 0 0 12px 0;
+}
+
+.plan-badge {
+  background: #e0f7fa;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.plan-nombre {
+  color: #00bcd4;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.plan-proximo {
+  color: #666;
+  font-size: 0.9rem;
+  margin: 4px 0 0 0;
+}
+
+.plan-costo {
+  text-align: center;
+  margin: 16px 0;
+}
+
+.costo-signo {
+  font-size: 1.5rem;
+  color: #222;
+  font-weight: 600;
+}
+
+.costo-valor {
+  font-size: 2rem;
+  color: #222;
+  font-weight: 700;
+}
+
+.btn-mejorar {
+  width: 100%;
+  background: linear-gradient(90deg, #00bcd4 0%, #0097a7 100%);
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.btn-mejorar:hover {
+  opacity: 0.9;
+}
+
+.recordatorios h3 {
+  font-size: 1.1rem;
+  color: #00bcd4;
+  margin: 0 0 12px 0;
+}
+
+.recordatorio-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: #fffde7;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+.recordatorio-icon {
+  font-size: 1.2rem;
+}
+
+.recordatorio-item p {
+  margin: 0;
+  color: #666;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+/* ===== DASHBOARD MAIN ===== */
+.dashboard-main {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.ecopeces-section,
+.salud-agua,
+.balance-section,
+.biomasa-section,
+.estadisticas-section {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.ecopeces-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.ecopeces-header h1 {
+  font-size: 2rem;
+  color: #222;
+  margin: 0 0 8px 0;
+}
+
+.especie-badge {
+  background: #e0f7fa;
+  color: #00796b;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  display: inline-block;
+}
+
+.unidades-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: #e0f7fa;
+  padding: 20px;
+  border-radius: 12px;
+}
+
+.unidades-icono {
+  font-size: 2.5rem;
+}
+
+.unidades-info h2 {
+  font-size: 2.5rem;
+  color: #00bcd4;
+  margin: 0;
+  font-weight: 700;
+}
+
+.unidades-info p {
+  margin: 0;
+  color: #666;
+  font-size: 0.9rem;
+  line-height: 1.3;
+}
+
+.btn-ver-unidades {
+  background: #00bcd4;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s;
+}
+
+.btn-ver-unidades:hover {
+  background: #0097a7;
+}
+
+.ubicacion-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #f5f5f5;
+  padding: 16px;
+  border-radius: 8px;
+}
+
+.ubicacion-icon {
+  font-size: 1.5rem;
+}
+
+.ubicacion-nombre {
+  font-weight: 600;
+  color: #222;
+  margin: 0 0 4px 0;
+}
+
+.ubicacion-direccion {
+  color: #666;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+/* Salud del Agua */
+.salud-agua h3 {
+  font-size: 1.3rem;
+  color: #222;
+  margin: 0 0 16px 0;
+}
+
+.salud-mensaje {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #e3f2fd;
+  padding: 16px;
+  border-radius: 8px;
+}
+
+.info-icon {
+  font-size: 1.5rem;
+}
+
+.salud-mensaje p {
+  margin: 0;
+  color: #1976d2;
+  font-weight: 500;
+}
+
+/* Balance Económico */
+.balance-section h3 {
+  font-size: 1.3rem;
+  color: #222;
+  margin: 0 0 20px 0;
+}
+
+.balance-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.balance-card {
+  position: relative;
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 12px;
+  border-left: 4px solid;
+}
+
+.balance-card.gastos {
+  border-left-color: #f44336;
+}
+
+.balance-card.ingresos {
+  border-left-color: #4caf50;
+}
+
+.balance-card.total {
+  border-left-color: #00bcd4;
+}
+
+.balance-label {
+  font-size: 0.85rem;
+  color: #666;
+  margin: 0 0 8px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.balance-valor {
+  font-size: 1.8rem;
+  color: #222;
+  margin: 0;
+  font-weight: 700;
+}
+
+.balance-icono {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: white;
+  font-weight: 700;
+}
+
+.balance-icono.rojo {
+  background: #f44336;
+}
+
+.balance-icono.verde {
+  background: #4caf50;
+}
+
+.balance-icono.azul {
+  background: #00bcd4;
+}
+
+/* Biomasa */
+.biomasa-section h3 {
+  font-size: 1.3rem;
+  color: #222;
+  margin: 0 0 20px 0;
+}
+
+.biomasa-cards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.biomasa-card {
+  background: #e0f7fa;
+  padding: 20px;
+  border-radius: 12px;
+}
+
+.biomasa-label {
+  font-size: 0.9rem;
+  color: #666;
+  margin: 0 0 8px 0;
+}
+
+.biomasa-valor {
+  font-size: 2rem;
+  color: #00796b;
+  margin: 0;
+  font-weight: 700;
+}
+
+/* Estadísticas */
+.estadisticas-section {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.estadistica-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 12px;
+}
+
+.estadistica-icono {
+  width: 60px;
+  height: 60px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  flex-shrink: 0;
+}
+
+.estadistica-icono.azul {
+  background: #e3f2fd;
+}
+
+.estadistica-icono.rojo {
+  background: #ffebee;
+}
+
+.estadistica-label {
+  font-size: 0.85rem;
+  color: #666;
+  margin: 0 0 8px 0;
+}
+
+.estadistica-valor {
+  font-size: 1.5rem;
+  color: #222;
+  margin: 0 0 4px 0;
+  font-weight: 700;
+}
+
+.estadistica-sub {
+  font-size: 0.85rem;
+  color: #999;
+  margin: 0;
+  line-height: 1.3;
+}
+
+/* Estilos para el menú móvil */
+.perfil-mobile {
+  display: none;
+}
+
+@media (max-width: 1200px) {
+  /* Perfil móvil al principio */
+  .perfil-mobile {
+    display: block;
+    padding: 12px 24px 0 24px; /* Padding superior e inferior */
+    background: #f5f7fa;
+  }
+
+  .perfil-sidebar {
+    display: none;
+  }
+
+  .dashboard-container {
+    grid-template-columns: 1fr;
+    padding-top: 12px; /* Reducir padding superior ya que el perfil está arriba */
+  }
+
+  .perfil-toggle {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: white;
+    border: none;
+    padding: 12px 16px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+
+  .perfil-toggle:active {
+    transform: scale(0.98);
+  }
+
+  .perfil-avatar-small {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #00bcd4 0%, #0097a7 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .toggle-icon {
+    margin-left: auto;
+    color: #00bcd4;
+    font-size: 0.8rem;
+    transition: transform 0.2s;
+  }
+
+  .perfil-dropdown {
+    background: white;
+    margin-top: 8px;
+    padding: 16px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    animation: slideDown 0.2s ease-out;
+  }
+
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .perfil-dropdown .perfil-email {
+    color: #666;
+    font-size: 0.9rem;
+    margin: 0 0 12px 0;
+  }
+
+  .btn-perfil-mobile {
+    width: 100%;
+    background: #00bcd4;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 8px;
+    font-weight: 600;
+    margin-top: 0;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .btn-perfil-mobile:hover {
+    background: #0097a7;
+  }
+
+  .recordatorios-mobile {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid #e0e0e0;
+  }
+
+  .recordatorios-mobile h4 {
+    font-size: 1rem;
+    color: #00bcd4;
+    margin: 0 0 12px 0;
+  }
+
+  .recordatorios-mobile .recordatorio-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: #fffde7;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+  }
+
+  .recordatorios-mobile .recordatorio-item:last-child {
+    margin-bottom: 0;
+  }
+
+  .recordatorios-mobile .recordatorio-icon {
+    font-size: 1.2rem;
+    flex-shrink: 0;
+  }
+
+  .recordatorios-mobile .recordatorio-item p {
+    margin: 0;
+    color: #666;
+    font-size: 0.9rem;
+    line-height: 1.4;
+  }
+}
+
+@media (max-width: 768px) {
+  .perfil-mobile {
+    padding: 12px 12px 0 12px; /* Menos padding en móviles pequeños */
+  }
+
+  .dashboard-container {
+    padding: 12px;
+  }
+
+  .balance-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .biomasa-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .estadisticas-section {
+    grid-template-columns: 1fr;
+  }
+
+  .ecopeces-header {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .unidades-card {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .balance-icono {
+    width: 40px;
+    height: 40px;
+    font-size: 1.2rem;
+    top: 16px;
+    right: 16px;
+  }
+
+  .balance-valor {
+    font-size: 1.5rem;
+  }
+
+  .ecopeces-section,
+  .salud-agua,
+  .balance-section,
+  .biomasa-section,
+  .estadisticas-section {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .perfil-toggle {
+    font-size: 0.9rem;
+    padding: 10px 12px;
+  }
+
+  .perfil-avatar-small {
+    width: 35px;
+    height: 35px;
+    font-size: 0.9rem;
+  }
+
+  .ecopeces-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .balance-valor {
+    font-size: 1.3rem;
+  }
+
+  .biomasa-valor {
+    font-size: 1.5rem;
+  }
+
+  .estadistica-valor {
+    font-size: 1.2rem;
+  }
+}

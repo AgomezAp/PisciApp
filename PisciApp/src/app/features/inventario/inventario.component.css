@@ -1,0 +1,427 @@
+.inventario-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 24px;
+  margin-bottom: 10px;
+  gap: 18px;
+  padding: 0 24px;
+  background: #f8fbfc;
+  border-radius: 12px;
+}
+
+.tabla-margen {
+  padding: 0 24px;
+}
+
+.tabla-inventario {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 16px;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 2px 12px rgba(0,151,167,0.07);
+  overflow: hidden;
+  margin: 24px 0;
+}
+
+.tabla-inventario th, .tabla-inventario td {
+  border-bottom: 1px solid #e0f7fa;
+  padding: 14px 18px;
+  text-align: left;
+  min-width: 110px;
+}
+
+.tabla-inventario th {
+  background: #e0f7fa;
+  color: #0097a7;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  font-size: 16px;
+  border-bottom: 2px solid #b2ebf2;
+}
+
+.tabla-inventario td {
+  color: #222;
+  background: #f8fbfc;
+  font-weight: 500;
+}
+
+.tabla-inventario tr:last-child td {
+  border-bottom: none;
+}
+
+.tabla-inventario tbody tr:hover {
+  background: #e0f7fa;
+  transition: background 0.2s;
+}
+
+.buscador-inventario, .filtro-tipo-inventario {
+  padding: 8px 14px;
+  border: 1px solid #b2ebf2;
+  border-radius: 8px;
+  font-size: 1rem;
+  margin-right: 12px;
+  background: #f8fbfc;
+  color: #222;
+  outline: none;
+  transition: border 0.2s;
+  min-width: 140px;
+}
+
+.buscador-inventario:focus, .filtro-tipo-inventario:focus {
+  border-color: #00bcd4;
+  background: #e0f7fa;
+}
+
+.btn-filtro {
+  background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%);
+  color: #0097a7;
+  border: 2px solid #b2ebf2;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 6px rgba(0,188,212,0.08);
+  margin-right: 8px;
+}
+
+.btn-filtro.activo {
+  background-color: #4CAF50;
+  color: white;
+  border: 2px solid #45a049;
+  box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+}
+
+.btn-filtro:hover {
+  background-color: #45a049;
+  cursor: pointer;
+}
+
+.btn-agregar-inventario {
+  background: linear-gradient(90deg, #00bcd4 60%, #0097a7 100%);
+  color: #fff;
+  border: none;
+  padding: 12px 28px;
+  border-radius: 10px;
+  font-size: 1.08rem;
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(0,151,167,0.09);
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+
+.btn-agregar-inventario:hover {
+  background: #0097a7;
+  box-shadow: 0 4px 16px rgba(0,151,167,0.13);
+}
+
+/* Modal backdrop */
+.modal-backdrop {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 151, 167, 0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px 10px; 
+  overflow-y: auto; 
+}
+
+.modal {
+  background: #fff;
+  padding: 28px 22px 18px 22px;
+  border-radius: 16px;
+  min-width: 320px;
+  max-width: 98vw;
+  max-height: 90vh; 
+  overflow-y: auto; 
+  box-shadow: 0 4px 24px rgba(0,151,167,0.18);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+  margin: auto; 
+}
+
+.modal h3 {
+  margin-top: 0;
+  color: #0097a7;
+  font-size: 1.25rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.modal label {
+  display: flex;
+  flex-direction: column;
+  font-weight: 500;
+  color: #0097a7;
+  margin-bottom: 8px;
+  font-size: 1rem;
+}
+
+.modal input, .modal select {
+  margin-top: 4px;
+  padding: 8px 10px;
+  border: 1px solid #b2ebf2;
+  border-radius: 8px;
+  font-size: 1rem;
+  background: #f8fbfc;
+  color: #222;
+  outline: none;
+  transition: border 0.2s;
+}
+
+.modal input:focus, .modal select:focus {
+  border-color: #00bcd4;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.modal-actions button {
+  background: #00bcd4;
+  color: #fff;
+  border: none;
+  padding: 8px 22px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.modal-actions button[type="button"] {
+  background: #e0f7fa;
+  color: #0097a7;
+}
+
+.modal-actions button:hover {
+  background: #0097a7;
+}
+
+/* Botones de acción en la tabla */
+.acciones-celda {
+  text-align: center;
+  white-space: nowrap;
+}
+
+.btn-editar, .btn-eliminar {
+  padding: 6px 10px;
+  margin: 0 2px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.2s;
+}
+
+.btn-editar {
+  background: #e0f7fa;
+  color: #0097a7;
+}
+
+.btn-editar:hover {
+  background: #b2ebf2;
+}
+
+.btn-eliminar {
+  background: #ffebee;
+  color: #d32f2f;
+}
+
+.btn-eliminar:hover {
+  background: #ffcdd2;
+}
+
+@media (max-width: 768px) {
+  .inventario-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    padding: 16px 12px;
+    margin-top: 16px;
+    margin-bottom: 12px;
+  }
+  
+  .inventario-header h2 {
+    font-size: 1.4rem;
+    margin: 0;
+    text-align: center;
+  }
+  
+  .buscador-inventario, .filtro-tipo-inventario {
+    width: 100%;
+    min-width: auto;
+    margin: 0;
+    font-size: 16px;
+    padding: 10px 12px;
+  }
+  
+  .btn-agregar-inventario {
+    width: 100%;
+    text-align: center;
+    font-size: 1rem;
+    padding: 12px 16px;
+  }
+  
+  .tabla-margen {
+    padding: 0 8px;
+  }
+  
+  .tabla-inventario {
+    font-size: 13px;
+    margin: 16px 0;
+    border-radius: 8px;
+    overflow-x: auto;
+    display: block;
+    white-space: nowrap;
+  }
+  
+  .tabla-inventario thead,
+  .tabla-inventario tbody,
+  .tabla-inventario tr {
+    display: block;
+  }
+  
+  .tabla-inventario th, .tabla-inventario td {
+    padding: 8px 6px;
+    font-size: 13px;
+    width: 90px; /* Ancho fijo exacto */
+    min-width: 90px;
+    max-width: 90px;
+    display: inline-block;
+    vertical-align: top;
+    border-right: 1px solid #e0f7fa;
+    text-align: center;
+    box-sizing: border-box; /* Incluye padding en el ancho */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  .tabla-inventario th:last-child,
+  .tabla-inventario td:last-child {
+    border-right: none;
+  }
+  
+  .btn-editar, .btn-eliminar {
+    padding: 4px 6px;
+    font-size: 12px;
+  }
+}
+
+/* NUEVO: Estilos para peso y unidad inline */
+.form-group-inline {
+  display: flex;
+  gap: 12px;
+  align-items: end;
+}
+
+.peso-input {
+  flex: 2;
+}
+
+.unidad-select {
+  flex: 1;
+}
+
+.form-group-inline label {
+  margin: 0;
+}
+
+.form-group-inline input,
+.form-group-inline select {
+  width: 100%;
+}
+
+@media (max-width: 480px) {
+  .inventario-header {
+    padding: 12px 8px;
+  }
+  
+  .inventario-header h2 {
+    font-size: 1.2rem;
+  }
+  
+  .tabla-margen {
+    padding: 0 4px;
+  }
+  
+  .tabla-inventario th, .tabla-inventario td {
+    padding: 6px 4px;
+    font-size: 12px;
+    width: 80px; /* Ancho fijo exacto */
+    min-width: 80px;
+    max-width: 80px;
+    box-sizing: border-box; /* Incluye padding en el ancho */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  .modal-backdrop {
+    padding: 5px;
+    padding-top: 20px;
+  }
+  
+  .modal {
+    min-width: 95vw;
+    max-height: 80vh;
+    padding: 16px 12px;
+  }
+  
+  .modal h3 {
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+  }
+  
+  .modal label {
+    margin-bottom: 6px;
+  }
+  
+  .modal input, .modal select {
+    font-size: 16px;
+    padding: 10px 8px;
+  }
+  
+  .modal-actions {
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  
+  .modal-actions button {
+    width: 100%;
+    padding: 12px;
+    font-size: 1rem;
+  }
+}
+
+/* ===== ESTILOS PARA ESCRITORIO ===== */
+@media (min-width: 769px) {
+  .modal {
+    max-width: 500px; /* <-- Limita el ancho en escritorio */
+    min-width: 450px; /* <-- Ancho mínimo apropiado */
+    max-height: 80vh; /* <-- Altura máxima en escritorio */
+    width: auto; /* <-- No ocupa todo el ancho disponible */
+  }
+  
+  .modal-actions {
+    justify-content: flex-end; /* <-- Botones alineados a la derecha */
+    flex-direction: row; /* <-- Botones en línea horizontal */
+  }
+  
+  .modal-actions button {
+    width: auto; /* <-- Botones con ancho automático */
+    min-width: 100px; /* <-- Ancho mínimo para los botones */
+  }
+}

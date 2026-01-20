@@ -16,6 +16,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { PreferenciaService } from '../../../../core/services/preferencias.service';
 import { UsuarioService } from '../../../../core/services/usuario.service';
+import { EmpresaService } from '../../../../core/services/empresa.service';
 @Component({
   selector: 'app-configuracion',
   imports: [
@@ -51,12 +52,28 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
 
   qrCodeUrl: string | null = null;
   tokenInput: string = '';
+
+  empresa: any = {
+    nombre: '',
+    direccion: '',
+    departamento: '',
+    ciudad: '',
+    codigo_postal: '',
+    pais: '',
+    especies: [],
+    actividad: []
+  };
+  isUpdatingEmpresa: boolean = false;
+  isLoadingEmpresa: boolean = false;
+
+
   constructor(
     private authService: AuthService,
     private twofaService: TwofaService,
     private notification: NotificationService,
     private preferenciaService: PreferenciaService,
-    private usuarioService: UsuarioService
+    private usuarioService: UsuarioService,
+    private empresaService: EmpresaService
   ) {}
 
   ngOnInit(): void {
@@ -67,6 +84,7 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
         this.notiAlertas = u.noti_alertas ?? false;
         this.tema = u.tema ?? 'claro';
         this.idioma = u.idioma ?? 'es';
+        this.cargarEmpresa();
       }
     });
 
@@ -82,6 +100,76 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
 
   setTab(tab: string) {
     this.activeTab = tab;
+  }
+
+  actualizarEmpresa(): void {
+    if (!this.user?.id) {
+      this.notification.error('Sin acceso debes iniciar sesion');
+      return;
+    }
+
+    this.isUpdatingEmpresa = true;
+
+    const datosEmpresa = {
+      nombre: this.empresa.nombre,
+      direccion: this.empresa.direccion,
+      departamento: this.empresa.departamento,
+      ciudad: this.empresa.ciudad,
+      codigo_postal: this.empresa.codigo_postal,
+      pais: this.empresa.pais,
+      especies: Array.isArray(this.empresa.especies) ?
+        this.empresa.especies :
+        (this.empresa.especies ? JSON.parse(this.empresa.especies) : []),
+      actividad: Array.isArray(this.empresa.actividad) ?
+        this.empresa.actividad :
+        (this.empresa.actividad ? JSON.parse(this.empresa.actividad) : [])
+    };
+
+    console.log("DATOS EMPRESASS",datosEmpresa)
+
+    this.empresaService.editarEmpresa(datosEmpresa, this.user.id).subscribe({
+      next: (response) => {
+        this.notification.success('Informacio Actualizada');
+        this.isUpdatingEmpresa = false;
+        this.cargarEmpresa();
+      },
+      error: (err) => {
+        console.error('Error al actualizar');
+        this.isUpdatingEmpresa = false;
+      }
+    });
+  }
+
+  cargarEmpresa(): void {
+    if (!this.user?.id) {
+      this.notification.error('Sin acceso debes iniciar sesion');
+      return;
+    }
+
+    this.isLoadingEmpresa = true;
+    this.empresaService.verEmpresa(this.user.id).subscribe({
+      next: (data) => {
+        if (data) {
+          this.empresa = {
+            nombre: data.nombre || '',
+            direccion: data.direccion || '',
+            departamento: data.departamento || '',
+            ciudad: data.ciudad || '',
+            codigo_postal: data.codigo_postal || '',
+            pais: data.pais || '',
+            especies: data.especies ?
+              (Array.isArray(data.especies) ? data.especies : JSON.parse(data.especies)) : [],
+            actividad: data.actividad ?
+              (Array.isArray(data.actividad) ? data.actividad : JSON.parse(data.actividad)) : [],
+          };
+        }
+        this.isLoadingEmpresa = false;
+      },
+      error: (err) => {
+        console.error('Error cargando empresa:', err);
+        this.isLoadingEmpresa = false;
+      }
+    });
   }
 
   activar2FA() {

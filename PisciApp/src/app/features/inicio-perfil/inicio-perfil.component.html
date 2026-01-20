@@ -1,0 +1,96 @@
+<app-navbar></app-navbar>
+
+<div class="perfil-mobile" *ngIf="isMobile">
+    <button class="perfil-toggle" (click)="togglePerfilMobile()">
+        <div class="perfil-avatar-small">{{ userInitials }}</div>
+        <span>{{ userName }}</span>
+        <span class="toggle-icon">{{ perfilMobileAbierto ? '▲' : '▼' }}</span>
+    </button>
+
+    <div class="perfil-dropdown" *ngIf="perfilMobileAbierto">
+        <p class="perfil-email" title="{{ userEmail }}">{{ userEmail }}</p>
+        <button class="btn-perfil-mobile" (click)="perfil()">Ver perfil completo</button>
+    </div>
+</div>
+
+<div class="dashboard-container">
+    <aside class="perfil-sidebar">
+        <div class="perfil-card">
+            <div class="perfil-header">
+                <div class="perfil-avatar">
+                    {{ userInitials }}
+                </div>
+                <h2 class="perfil-nombre">{{ userName }}</h2>
+                <p class="perfil-email">{{ userEmail }}</p>
+                <button class="btn-perfil" (click)="perfil()">Ver perfil</button>
+            </div>
+        </div>
+    </aside>
+
+    <main class="dashboard-main">
+        <section class="ecopeces-section">
+            <div class="ecopeces-header">
+                <div>
+                    <h1>{{ empresa.nombre }}</h1>
+                    <div class="especies-list" style="display: flex; gap: 8px;">
+                        <p *ngFor="let especie of empresa.especies" class="especie-badge">🐟 {{ especie }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ubicacion-card">
+                <span class="ubicacion-icon">📍</span>
+                <div>
+                    <p class="ubicacion-nombre">{{ empresa.nombre }} </p>
+                    <p class="ubicacion-direccion">{{ empresa.direccion }}, {{empresa.ciudad}} {{empresa.departamento}}</p>
+                </div>
+            </div>
+        </section>
+<!-- A PARTIR DE ACA NO SE QUE HACER -->
+        <section class="salud-agua">
+            <h3>Salud del agua</h3>
+            <div class="salud-mensaje">
+            </div>
+        </section>
+
+        <section class="balance-section">
+            <h3>Balance económico - {{ anioActual }}</h3>
+            <div class="balance-cards">
+                <div class="balance-card gastos">
+                    <p class="balance-label">GASTOS TOTALES</p>
+                    <h2 class="balance-valor">{{ gastosFormateados }}</h2>
+                    <div class="balance-icono rojo">↓</div>
+                </div>
+                <div class="balance-card ingresos">
+                    <p class="balance-label">INGRESOS TOTALES</p>
+                    <h2 class="balance-valor">{{ ingresosFormateados }}</h2>
+                    <div class="balance-icono verde">↑</div>
+                </div>
+                <div class="balance-card total">
+                    <p class="balance-label">UTILIDAD APROXIMADA</p>
+                    <h2 class="balance-valor">{{ balanceFormateados }}</h2>
+                    <div class="balance-icono azul">$</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="estadisticas-section">
+            <div class="estadistica-card">
+                <div class="estadistica-icono azul">📊</div>
+                <div>
+                    <p class="estadistica-label">Capacidad máxima de producción</p>
+                    <h3 class="estadistica-valor">{{ capacidadMaxima }}</h3>
+                    <p class="estadistica-sub">{{ capacidadSub }}</p>
+                </div>
+            </div>
+            <div class="estadistica-card">
+                <div class="estadistica-icono rojo">💀</div>
+                <div>
+                    <p class="estadistica-label">Mortalidad</p>
+                    <h3 class="estadistica-valor">{{ mortalidad }} Unidades</h3>
+                    <p class="estadistica-sub">{{ mortalidadSub }}</p>
+                </div>
+            </div>
+        </section>
+    </main>
+</div>

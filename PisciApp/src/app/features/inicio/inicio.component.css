@@ -1,0 +1,485 @@
+/* Reset y base responsive */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: #f8fbfc;
+}
+
+/* Información destacada */
+.informacion {
+  background: #e0f7fa;
+  border-radius: 12px;
+  border: 2px solid #0097a7;
+  padding: 10px 16px;
+  margin: 12px auto 8px auto;
+  max-width: 480px;
+  box-shadow: 0 1px 4px rgba(0,151,167,0.06);
+  text-align: center;
+  width: 100%;
+}
+
+.informacion h3 {
+  color: #00796b;
+  font-weight: 700;
+  margin-bottom: 4px;
+  font-size: 1.1rem;
+}
+
+.informacion p {
+  color: #263238;
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+/* Marco visible para tarjetas */
+.tarjetas-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin: 30px auto;
+  justify-content: flex-start;
+  background: #f8fbfc;
+  border: 2px solid #00bcd4;
+  border-radius: 18px;
+  box-shadow: 0 2px 12px rgba(0,151,167,0.07);
+  padding: 18px 10px;
+  max-width: 1100px;
+  width: 100%;
+  position: relative;
+}
+
+.tarjetas-lista {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  justify-content: center;
+  position: relative;
+  width: 100%;
+}
+
+/* Tarjeta individual */
+.tarjeta {
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  padding: 14px 16px;
+  min-width: 140px;
+  max-width: 200px;
+  flex: 1 1 140px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  border: 2px solid #00bcd4;
+  transition: box-shadow 0.2s, border-color 0.2s;
+  width: 100%;
+}
+
+.tarjeta:hover {
+  box-shadow: 0 4px 16px rgba(0,151,167,0.12);
+  border-color: #0097a7;
+}
+
+.tarjeta-titulo {
+  font-weight: 600;
+  color: #00796b;
+  margin-bottom: 6px;
+  font-size: 1.08rem;
+}
+
+.tarjeta-ciclo {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #263238;
+  margin-bottom: 2px;
+}
+
+.tarjeta-sub {
+  color: #757575;
+  font-size: 0.95rem;
+}
+
+/* Tarjeta para agregar */
+.tarjeta.agregar {
+  justify-content: center;
+  align-items: center;
+  background: #e0f7fa;
+  border: 2px dashed #00bcd4;
+  min-width: 80px;
+  max-width: 80px;
+  padding: 0;
+}
+
+.btn-agregar {
+  font-size: 2.2rem;
+  background: none;
+  border: none;
+  color: #00bcd4;
+  cursor: pointer;
+  font-weight: bold;
+  width: 100%;
+  height: 100%;
+  transition: color 0.2s;
+}
+.btn-agregar:hover {
+  color: #0097a7;
+}
+
+/* Botones flotantes agrupados y alineados */
+.botones-flotantes {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Botón flotante agregar */
+.btn-agregar-flotante,
+.btn-info-flotante {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #00bcd4;
+  color: #fff;
+  font-size: 1.7rem;
+  border: none;
+  box-shadow: 0 4px 16px rgba(0,151,167,0.18);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, color 0.2s;
+}
+
+.btn-agregar-flotante:hover,
+.btn-info-flotante:hover {
+  background: #0097a7;
+  color: #e0f7fa;
+}
+
+/* Icono info más pequeño y centrado */
+.btn-info-flotante span {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+/* Modal */
+.modal-backdrop {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: #fff;
+  padding: 22px 14px 16px 14px;
+  border-radius: 16px;
+  min-width: 280px;
+  max-width: 95vw;
+  box-shadow: 0 4px 24px rgba(0,151,167,0.18);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.modal h3 {
+  margin-bottom: 8px;
+  color: #00bcd4;
+  font-weight: 700;
+  font-size: 1.15rem;
+}
+
+.modal label {
+  font-weight: 500;
+  color: #00796b;
+  margin-bottom: 2px;
+  font-size: 0.98rem;
+}
+
+.modal input[type="text"],
+.modal input[type="number"],
+.modal input[type="date"] {
+  width: 100%;
+  padding: 7px 8px;
+  border-radius: 8px;
+  border: 1px solid #b2ebf2;
+  margin-bottom: 8px;
+  font-size: 0.98rem;
+  transition: border-color 0.2s;
+  background: #fff;
+  color: #263238;
+}
+
+.modal input:focus {
+  border-color: #00bcd4;
+  outline: none;
+}
+
+.modal select {
+  width: 100%;
+  padding: 7px 8px;
+  border-radius: 8px;
+  border: 1px solid #b2ebf2;
+  margin-bottom: 8px;
+  font-size: 0.98rem;
+  background: #fff;
+  color: #263238;
+  transition: border-color 0.2s;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+.modal select:focus {
+  border-color: #00bcd4;
+  outline: none;
+}
+
+.modal-actions {
+  margin-top: 6px;
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.modal-actions button {
+  padding: 6px 14px;
+  border-radius: 8px;
+  border: none;
+  font-size: 0.98rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.modal-actions button[type="submit"] {
+  background: #00bcd4;
+  color: #fff;
+}
+
+.modal-actions button[type="submit"]:hover {
+  background: #0097a7;
+}
+
+.modal-actions button[type="button"] {
+  background: #e0f7fa;
+  color: #00bcd4;
+}
+
+.modal-actions button[type="button"]:hover {
+  background: #b2ebf2;
+}
+
+/* Sin tanques */
+.sin-tanques {
+  width: 100%;
+  min-height: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 0;
+  background: #f8fbfc;
+  border-radius: 16px;
+  border: 2px dashed #00bcd4;
+  box-shadow: 0 2px 8px rgba(0,151,167,0.07);
+  position: relative;
+}
+
+.sin-tanques-icon {
+  font-size: 2.2rem;
+  margin-bottom: 8px;
+}
+
+.sin-tanques h4 {
+  color: #00796b;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.sin-tanques p {
+  color: #263238;
+  font-size: 0.98rem;
+  margin-bottom: 12px;
+}
+
+.sin-tanques .btn-agregar-flotante {
+  position: static;
+  margin-top: 8px;
+}
+
+/* Dashboard - Nuevas Clases */
+.dashboard-tarjetas {
+  display: flex;
+  gap: 18px;
+  margin: 18px auto 0 auto;
+  justify-content: center;
+  max-width: 1100px;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.dashboard-tarjeta {
+  background: linear-gradient(135deg, #e0f7fa 60%, #fff 100%);
+  border-radius: 14px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  padding: 16px 18px;
+  min-width: 140px;
+  max-width: 180px;
+  flex: 1 1 140px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  border-left: 4px solid #00bcd4;
+  border-top: 1px solid #e0f7fa;
+  border-right: 1px solid #e0f7fa;
+  border-bottom: 1px solid #e0f7fa;
+  transition: box-shadow 0.2s, border-color 0.2s;
+  width: 100%;
+}
+
+.dashboard-tarjeta:hover {
+  box-shadow: 0 4px 16px rgba(0,151,167,0.12);
+  border-left: 4px solid #0097a7;
+}
+
+.dashboard-titulo {
+  font-weight: bold;
+  color: #00796b;
+  margin-bottom: 6px;
+  font-size: 1.08rem;
+}
+
+.dashboard-valor {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #263238;
+  margin-bottom: 2px;
+}
+
+.dashboard-sub {
+  color: #00bcd4;
+  font-size: 0.98rem;
+}
+
+/* Media Queries - Responsive */
+/* PC grande */
+@media (max-width: 1100px) {
+  .tarjetas-container,
+  .dashboard-tarjetas {
+    max-width: 98vw;
+    padding: 10px 2vw;
+  }
+}
+
+/* Tablet */
+@media (max-width: 900px) {
+  .tarjetas-container {
+    gap: 10px;
+    padding: 10px 2vw;
+    max-width: 98vw;
+  }
+  .tarjeta {
+    min-width: 110px;
+    max-width: 140px;
+    padding: 10px 8px;
+    font-size: 0.95rem;
+  }
+  .informacion {
+    padding: 8px 2vw;
+    max-width: 98vw;
+  }
+  .dashboard-tarjetas {
+    gap: 8px;
+    padding: 0 2vw;
+    max-width: 98vw;
+  }
+  .dashboard-tarjeta {
+    min-width: 110px;
+    max-width: 140px;
+    padding: 10px 8px;
+    font-size: 0.95rem;
+  }
+}
+
+/* Móvil */
+@media (max-width: 600px) {
+  .tarjetas-container {
+    flex-direction: column;
+    align-items: center;
+    padding: 6px 1vw;
+    max-width: 99vw;
+  }
+  .tarjeta, .tarjeta.agregar {
+    min-width: 90vw;
+    max-width: 98vw;
+    font-size: 0.92rem;
+  }
+  .modal {
+    min-width: 90vw;
+    padding: 12px 4vw;
+    font-size: 0.92rem;
+  }
+  .informacion {
+    padding: 6px 1vw;
+    max-width: 99vw;
+  }
+  .dashboard-tarjetas {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
+    padding: 0 1vw;
+    max-width: 99vw;
+  }
+  .dashboard-tarjeta {
+    min-width: unset;
+    max-width: 98vw;
+    width: auto;
+    font-size: 0.88rem;
+    padding: 6px 4px;
+    flex: none;
+  }
+  .dashboard-titulo {
+    font-size: 1rem;
+    margin-bottom: 2px;
+  }
+  .dashboard-valor {
+    font-size: 1.1rem;
+    margin-bottom: 1px;
+  }
+  .dashboard-sub {
+    font-size: 0.9rem;
+  }
+}
+
+/* Mostrar el botón flotante solo en pantallas pequeñas */
+@media (max-width: 700px) {
+  .btn-agregar-flotante {
+    right: 8px;
+    bottom: 8px;
+    width: 40px;
+    height: 40px;
+    font-size: 1.5rem;
+  }
+}
+
+.tanque-dibujo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 12px 0 18px 0;
+}

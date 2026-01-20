@@ -1,0 +1,195 @@
+<app-navbar></app-navbar>
+<!-- Dashboard de tarjetas informativas -->
+<div class="dashboard-tarjetas">
+  <div class="dashboard-tarjeta">
+    <div class="dashboard-titulo">Estanques activos</div>
+    <div class="dashboard-valor">{{tanques.length}}</div>
+    <div class="dashboard-sub">{{tanquesDisponiblesCantidad}} Estanques Disponibles </div>
+  </div>
+  <div class="dashboard-tarjeta">
+    <div class="dashboard-titulo">Biomasa total</div>
+    <div class="dashboard-valor">1.240 kg</div>
+    <div class="dashboard-sub">{{especies.length > 0 ? especies.join(', '): 'Sin especies'}}</div>
+  </div>
+  <div class="dashboard-tarjeta">
+    <div class="dashboard-titulo">Mortalidad</div>
+    <div class="dashboard-valor">{{supervivencia > 0 ? supervivencia + '%' : 'N/A'}}</div>
+    <div class="dashboard-sub">promedio</div>
+  </div>
+</div>
+
+<div class="tarjetas-container">
+  <div class="informacion">
+    <h3>Tus Estanques </h3>
+    <p>Aqui encuentras una lista informativa de todos tus estanques</p>
+  </div>
+  <ng-container *ngIf="tanques.length > 0; else sinTanques">
+    <div class="tarjetas-lista">
+      <div class="tarjeta" *ngFor="let tanque of tanques">
+        <div class="tarjeta-titulo">{{ tanque.nombre }}</div>
+        <div class="tarjeta-ciclo">{{ tanque.volumen }} m³</div>
+        <div class="tarjeta-sub">Tipo: {{ tanque.tipoTanque }}</div>
+      </div>
+      <div class="botones-flotantes">
+        <button class="btn-agregar-flotante" (click)="abrirModalTanque()">+</button>
+        <button class="btn-info-flotante" (click)="infoTanque()"><span>i</span></button>
+      </div>
+    </div>
+  </ng-container>
+  <ng-template #sinTanques>
+    <div class="sin-tanques">
+      <span class="sin-tanques-icon">🛑</span>
+      <h4>No tienes estanques registrados</h4>
+      <p>Haz clic en <b>+</b> para agregar tu primer estanque.</p>
+      <button class="btn-agregar-flotante" (click)="abrirModalTanque()">+</button>
+    </div>
+  </ng-template>
+</div>
+
+<div class="tarjetas-container">
+  <div class="informacion">
+    <h3>Tus Ciclos </h3>
+    <p>Aqui encuentras una lista informativa de todos tus ciclos</p>
+  </div>
+  <ng-container *ngIf="ciclos &&  ciclos.length > 0; else sinCiclos">
+    <div class="tarjetas-lista">
+      <div class="tarjeta" *ngFor="let ciclo of ciclos">
+        <div class="tarjeta-titulo">Ciclo #{{ ciclo.ciclo_id_usuario }}</div>
+        <div class="tarjeta-ciclo"># Peces: {{ ciclo.numero_peces }}</div>
+        <div class="tarjeta-sub">Inicio: {{ ciclo.fecha_inicio | date:'yyyy MM dd' }}</div>
+        <!-- Puedes agregar más datos aquí -->
+      </div>
+      <div class="botones-flotantes">
+        <button class="btn-agregar-flotante" (click)="abrirModalCiclo()">+</button>
+        <button class="btn-info-flotante" (click)="infoCiclo()"><span>i</span></button>
+      </div>
+    </div>
+  </ng-container>
+  <ng-template #sinCiclos>
+    <div class="sin-tanques">
+      <span class="sin-tanques-icon">🛑</span>
+      <h4>No tienes ciclos registrados</h4>
+      <p>Haz clic en <b>+</b> para agregar tu primer ciclo.</p>
+      <button class="btn-agregar-flotante" (click)="abrirModalCiclo()">+</button>
+    </div>
+  </ng-template>
+</div>         
+
+<div class="modal-backdrop" *ngIf="mostrarModalTanque">
+  <div class="modal">
+    <h3>Agregar Tanque</h3>
+    <form (ngSubmit)="agregarTanque()">
+      <!-- Forma del tanque -->
+      <label>Forma del tanque *</label>
+      <select [(ngModel)]="nuevoTanque.forma" name="forma" required>
+        <option value="" disabled selected>Selecciona la forma</option>
+        <option value="Rectangular">Rectangular</option>
+        <option value="Redondo">Redondo</option>
+      </select>
+
+      <!-- Profundidad -->
+      <label>Profundidad (m) *</label>
+      <input type="number" [(ngModel)]="nuevoTanque.profundidad" name="profundidad" required min="0" />
+
+      <!-- Campos solo si es rectangular -->
+      <div *ngIf="nuevoTanque.forma === 'Rectangular'">
+        <label>Largo (m) *</label>
+        <input type="number" [(ngModel)]="nuevoTanque.largo" name="largo" required min="0" />
+        <label>Ancho (m) *</label>
+        <input type="number" [(ngModel)]="nuevoTanque.ancho" name="ancho" required min="0" />
+
+        <!-- Dibujo interactivo con valores -->
+        <div class="tanque-dibujo" *ngIf="nuevoTanque.forma === 'Rectangular'">
+          <svg width="180" height="110" viewBox="0 0 180 110">
+            <rect x="40" y="35" width="100" height="40" fill="#e0f7fa" stroke="#00bcd4" stroke-width="3"/>
+            <!-- Largo -->
+            <text x="90" y="100" text-anchor="middle" fill="#0097a7" font-size="15">
+              Largo: {{nuevoTanque.largo || 0}} m
+            </text>
+            <!-- Ancho -->
+            <text x="45" y="55" text-anchor="end" fill="#0097a7" font-size="15" transform="rotate(-90 15,55)">
+              Ancho: {{nuevoTanque.ancho || 0}} m
+            </text>
+            <!-- Profundidad -->
+            <text x="90" y="25" text-anchor="middle" fill="#0097a7" font-size="15">
+              Prof: {{nuevoTanque.profundidad || 0}} m
+            </text>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Campo solo si es redondo -->
+      <div *ngIf="nuevoTanque.forma === 'Redondo'">
+        <label>Diámetro (m) *</label>
+        <input type="number" [(ngModel)]="nuevoTanque.diametro" name="diametro" required min="0" />
+
+        <!-- Dibujo interactivo con valores -->
+        <div class="tanque-dibujo" *ngIf="nuevoTanque.forma === 'Redondo'">
+          <svg width="140" height="140" viewBox="0 0 140 140">
+            <ellipse cx="70" cy="70" rx="50" ry="50" fill="#e0f7fa" stroke="#00bcd4" stroke-width="3"/>
+            <!-- Diámetro -->
+            <text x="70" y="140" text-anchor="middle" fill="#0097a7" font-size="15">
+              Diám: {{nuevoTanque.diametro || 0}} m
+            </text>
+            <!-- Profundidad -->
+            <text x="70" y="15" text-anchor="middle" fill="#0097a7" font-size="15">
+              Prof: {{nuevoTanque.profundidad || 0}} m
+            </text>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Tipo de tanque -->
+      <label>Tipo de tanque *</label>
+      <select name="tipoTanque" required [(ngModel)]="nuevoTanque.tipoTanque">
+        <option value="" disabled selected>Selecciona tipo de Tanque</option>
+        <option *ngFor="let tipo of tipoTanques" [ngValue]="tipo">
+          {{tipo}}
+        </option>
+      </select>
+
+      <div class="modal-actions">
+        <button type="submit">Agregar</button>
+        <button type="button" (click)="cerrarModalTanque()">Cancelar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal-backdrop" *ngIf="mostrarModalCiclo">
+  <div class="modal">
+    <h3>Agregar Ciclo</h3>
+    <form (ngSubmit)="agregarCiclo()">
+      <label>Numero de peces *:</label>
+      <input type="number" [(ngModel)]="nuevoCiclo.numero_peces" name="numero_peces" required />
+
+      <label>Costos Unidad: </label>
+      <input type="number" name="costoUnidad" [(ngModel)]="costoUnidad" required />
+
+      <label>Costos Transporte *:</label>
+      <input type="number" [(ngModel)]="nuevoCiclo.costos_transporte" name="costos" required />
+
+      <label>Selecciona el tanque * (debes tener creado algun tanque): </label>
+      <select [(ngModel)]="nuevoCiclo.tanques" name="tanques" required>
+        <option value="" disabled selected>Selecciona un tanque</option>
+        <option *ngFor="let tanque of tanquesDisponibles" [ngValue]="tanque.id">
+          {{ tanque.nombre }} ({{ tanque.volumen }} m³)
+        </option>
+      </select>
+      <label>Especie *:</label>
+      <select [(ngModel)]="nuevoCiclo.especie" name="especie" required>
+        <option value="" disabled selected>Selecciona la especie</option>
+        <option *ngFor="let especie of especiesDisponibles" [value]="especie">
+          {{especie}}
+        </option>
+      </select>
+      <label>Fecha De Inicio *:</label>
+      <input type="date" [(ngModel)]="nuevoCiclo.fecha_inicio" name="fechva" required />
+
+      <div class="modal-actions">
+        <button type="submit">Agregar</button>
+        <button type="button" (click)="cerrarModalCiclo()">Cancelar</button>
+      </div>
+    </form>
+  </div>
+</div>

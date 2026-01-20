@@ -5,13 +5,18 @@
   background: linear-gradient(to right, #0097a7, #009688);
   padding: 0.5rem 2rem;
   color: white;
-  position: relative;
+  position: fixed; /* Cambiar de relative a fixed */
+  top: 0; /* Fijar en la parte superior */
+  left: 0; /* Alinear a la izquierda */
+  right: 0; /* Alinear a la derecha */
   min-height: 60px;
+  z-index: 1000; /* Asegurar que esté por encima de otros elementos */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); /* Sombra opcional para mejor visibilidad */
 }
 
 .logo {
   height: 50px;
-  flex-shrink: 0; /* Evita que el logo se reduzca */
+  flex-shrink: 0; 
 }
 
 .nav-links {
@@ -30,7 +35,7 @@
   padding: 8px 12px;
   border-radius: 6px;
   transition: background 0.3s;
-  white-space: nowrap; /* Evita que el texto se rompa */
+  white-space: nowrap;
 }
 
 .nav-links a:hover {
@@ -51,11 +56,43 @@
 .user-info {
   display: flex;
   align-items: center;
-  gap: 8px;
+  /* gap: 8px;
   border: 1px solid white;
   padding: 3px 10px;
   border-radius: 20px;
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(255, 255, 255, 0.1); */
+}
+
+.user-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: white;
+  color: #009688;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease; 
+  padding: 0;
+  outline: none;
+}
+
+.user-icon:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 188, 212, 0.3);
+}
+
+.user-icon:active {
+  transform: scale(0.98);
+}
+
+.user-icon:focus-visible {
+  outline: 2px solid #00bcd4;
+  outline-offset: 2px;
 }
 
 .avatar {
@@ -184,6 +221,13 @@
     text-align: center;
   }
   
+  .nav-links.active a {
+    padding: 8px 10px;
+    font-size: 14px;
+    border-radius: 6px;
+    margin-bottom: 2px;
+  }
+  
   .menu-toggle {
     display: block;
     order: 2;
@@ -256,4 +300,90 @@
   .user-info {
     gap: 4px;
   }
+}
+
+/* Estilos para el buscador */
+.nav-search {
+  display: flex;
+  align-items: center;
+  margin: 0 20px;
+}
+
+.search-container {
+  display: flex;
+  align-items: center;
+  background: #f8fbfc;
+  border: 1px solid #b2ebf2;
+  border-radius: 25px;
+  padding: 2px;
+  transition: border-color 0.2s;
+}
+
+.search-container:focus-within {
+  border-color: #00bcd4;
+  box-shadow: 0 0 0 2px rgba(0, 188, 212, 0.1);
+}
+
+.search-input {
+  border: none;
+  outline: none;
+  padding: 8px 15px;
+  font-size: 14px;
+  background: transparent;
+  color: #222;
+  width: 200px;
+  border-radius: 25px;
+}
+
+.search-input::placeholder {
+  color: #666;
+}
+
+.search-btn {
+  background: #00bcd4;
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 14px;
+  color: white;
+  transition: background 0.2s;
+  margin-right: 2px;
+}
+
+.search-btn:hover {
+  background: #0097a7;
+}
+
+/* Responsive para el buscador */
+@media (max-width: 768px) {
+  .nav-search {
+    display: none; /* Ocultar en mobile por defecto */
+  }
+  
+  .nav-links.active ~ .nav-search {
+    display: flex;
+    order: 1;
+    margin: 10px 0;
+    width: 100%;
+  }
+  
+  .search-container {
+    width: 100%;
+  }
+  
+  .search-input {
+    width: 100%;
+  }
+}
+
+/* Agregar padding al body para compensar el navbar fijo */
+/* Esto puedes agregarlo a tu styles.css global o aquí con :host */
+:host {
+  display: block;
+  padding-top: 60px; /* Mismo alto que min-height del navbar */
 }

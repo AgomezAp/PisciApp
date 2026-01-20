@@ -1,1 +1,298 @@
 <app-navbar></app-navbar>
+
+<div class="ciclos-carrusel">
+  <h2>Lista de ciclos</h2>
+  <div class="carrusel-lista">
+    <div class="carrusel-item" *ngFor="let ciclo of ciclos" [class.seleccionado]="ciclo.ciclo_id_usuario === cicloSeleccionado?.id"
+    [ngClass]="ciclo.fecha_fin ? 'carrusel-rojo' : 'carrusel-azul'" (click)="seleccionarCiclo(ciclo)">
+    <div><b>Ciclo #{{ ciclo.ciclo_id_usuario }}</b></div>
+    <div>{{ ciclo.fecha_inicio | date:'dd/MM/yyyy' }}</div>
+    <div> {{ ciclo.numero_actual }} peces</div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="cicloSeleccionado" class="tanques-carrusel">
+  <h2>Tanques del Ciclo #{{cicloSeleccionado.ciclo_id_usuario}}</h2>
+  <div class="carrusel-lista">
+    <div class="carrusel-item"
+      *ngFor="let tanqueCiclo of cicloSeleccionado.ciclotanques_ciclo"
+      [class.seleccionado]="getTanqueInfo(tanqueCiclo.tanque_id)?.id === tanqueSeleccionado?.id"
+      [ngClass]="getTanqueInfo(tanqueCiclo.tanque_id)?.disponible ? 'carrusel-azul' : 'carrusel-rojo' "
+      (click)="seleccionarTanque(getTanqueInfo(tanqueCiclo.tanque_id))" >
+      <div><b>{{ getTanqueNombre(tanqueCiclo.tanque_id) }}</b></div>
+      <div> {{ tanqueCiclo.numero_peces}} peces</div>
+    </div>
+  </div>
+</div>
+
+
+
+<div *ngIf="cicloSeleccionado" class="ciclo-detalle">
+
+  <div *ngIf="tanquesChart.datasets.length > 0" class="chart-container pie-small">
+    <h3> Distribucion de Peces por Tanque</h3>
+    <div>
+      <canvas baseChart [data]="tanquesChart" [type]="'pie'" [options]="pieChartOptions">
+      </canvas>
+    </div>
+  </div>
+
+  <div *ngIf="cicloSeleccionado.alimentos && cicloSeleccionado.alimentos.length > 0 && alimentosChart.datasets.length > 0" class="chart-container">
+    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+      <h3>📊 Consumo de Alimento</h3>
+      <button (click)="cambiarTipoGrafico()"
+        style="padding: 4px 12px; border-radius: 6px; border: 1px solid #0097a7; background: #e0f7fa; color: #00796b; cursor: pointer;">
+        Cambiar a {{ chartType === 'line' ? 'Barras' : 'Líneas' }}
+      </button>
+    </div>
+    <canvas baseChart [data]="alimentosChart" [type]="chartType" [options]="chartOptionsA">
+    </canvas>
+  </div>
+
+  <div class="listas-ciclo">
+    <div class="tabla-contenedor">
+      <div class="tabla-header">
+        <h4>Alimentos</h4>
+        <!-- <button title="Información de alimentos" class="tabla-icono" [disabled]="cicloSeleccionado?.fecha_fin"><span (click)="abrirModalAlimentos()">🍽️</span></button> -->
+      </div>
+      <table>
+        <tr>
+          <th>Nombre</th>
+          <th>Cantidad</th>
+          <th>Costo</th>
+          <th>Descripción</th>
+          <th>Fecha</th>
+        </tr>
+        <tr *ngFor="let item of cicloSeleccionado.alimentos">
+          <td>{{ item.nombre }}</td>
+          <td>{{ item.cantidad }}</td>
+          <td>{{ item.costo | currency:'$':'symbol':'1.0-0' }}</td>
+          <td>{{ item.observacion }}</td>
+          <td>{{ item.createdAt | date:'dd-MM-yyyy' }}</td>
+        </tr>
+      </table>
+    </div>
+
+    <div
+      *ngIf="cicloSeleccionado.quimicos && cicloSeleccionado.quimicos.length > 0 && quimicosChart.datasets.length > 0"
+      class="chart-container">
+      <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+        <h3>📊 Consumo de Quimicos</h3>
+        <button (click)="cambiarTipoGrafico()"
+          style="padding: 4px 12px; border-radius: 6px; border: 1px solid #0097a7; background: #e0f7fa; color: #00796b; cursor: pointer;">
+          Cambiar a {{ chartType === 'line' ? 'Barras' : 'Líneas' }}
+        </button>
+      </div>
+      <canvas baseChart [data]="quimicosChart" [type]="chartType" [options]="chartOptionsQ">
+      </canvas>
+    </div>
+
+    <div class="tabla-contenedor">
+      <div class="tabla-header">
+        <h4>Químicos</h4>
+        <!-- <button title="Información de químicos" class="tabla-icono" [disabled]="cicloSeleccionado?.fecha_fin"><span (click)="abrirModalQuimico()">🧪</span></button> -->
+      </div>
+      <table>
+        <tr>
+          <th>Nombre</th>
+          <th>Cantidad</th>
+          <th>Costo</th>
+          <th>Descripción</th>
+          <th>Fecha</th>
+        </tr>
+        <tr *ngFor="let item of cicloSeleccionado.quimicos">
+          <td>{{ item.nombre }}</td>
+          <td>{{ item.cantidad }}</td>
+          <td>{{ item.costo | currency:'$':'symbol':'1.0-0' }}</td>
+          <td>{{ item.observacion }}</td>
+          <td>{{ item.createdAt | date:'dd-MM-yyyy' }}</td>
+        </tr>
+      </table>
+    </div>
+
+    <div *ngIf="cicloSeleccionado.bajas_ciclo && cicloSeleccionado.bajas_ciclo.length > 0 && bajasChart.datasets.length > 0" class="chart-container">
+      <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+        <h3>📊 Bajas</h3>
+        <button (click)="cambiarTipoGrafico()"
+          style="padding: 4px 12px; border-radius: 6px; border: 1px solid #0097a7; background: #e0f7fa; color: #00796b; cursor: pointer;">
+          Cambiar a {{ chartType === 'line' ? 'Barras' : 'Líneas' }}
+        </button>
+      </div>
+      <canvas baseChart [data]="bajasChart" [type]="chartType" [options]="chartOptionB">
+      </canvas>
+    </div>
+
+    <div class="tabla-contenedor">
+      <div class="tabla-header">
+        <h4>Bajas ciclo</h4>
+        <!-- <button title="Información de bajas" class="tabla-icono" [disabled]="cicloSeleccionado?.fecha_fin"><span (click)="abrirModalBajas()">⚠️</span></button> -->
+      </div>
+      <table>
+        <tr>
+          <th>Tanque</th>
+          <th>Cantidad</th>
+          <th>Fecha</th>
+        </tr>
+        <tr *ngFor="let item of cicloSeleccionado.bajas_ciclo">
+          <td>{{ getTanqueNombre(item.tanque_id) }}</td>
+          <td>{{ item.cantidad }}</td>
+          <td>{{ item.createdAt | date:'dd-MM-yyyy' }}</td>
+        </tr>
+      </table>
+    </div>
+
+    <div *ngIf="movimientosChart.datasets.length > 0" class="chart-container">
+      <h3>Movimientos de Peces por Tanque</h3>
+      <div style="max-width: 400px; margin: 0 auto;">
+        <canvas baseChart [data]="movimientosChart" type="bar" [options]="movimientosChartOptions">
+        </canvas>
+      </div>
+    </div>
+
+    <div class="tabla-contenedor">
+      <div class="tabla-header">
+        <h4>Movimientos tanque</h4>
+        <!-- <button title="Información de movimientos" class="tabla-icono" [disabled]="cicloSeleccionado?.fecha_fin"><span (click)="abrirModalMovimiento()">🔄</span></button> -->
+      </div>
+      <table>
+        <tr>
+          <th>Origen</th>
+          <th>Destino</th>
+          <th>Cantidad</th>
+          <th>Fecha</th>
+        </tr>
+        <tr *ngFor="let item of cicloSeleccionado.movimientos_tanque">
+          <td>{{ getTanqueNombre(item.origen) }}</td>
+          <td>{{ getTanqueNombre(item.destino)}}</td>
+          <td>{{ item.cantidad }}</td>
+          <td>{{ item.createdAt | date:'dd-MM-yyyy' }}</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- <div style="display: flex; justify-content: flex-end; margin-top: 24px;">
+    <button (click)="terminarCiclo()" class="terminar" [disabled]="cicloSeleccionado?.fecha_fin"> Terminar ciclo </button>
+  </div> -->
+</div>
+
+
+<div class="modal-backdrop" *ngIf="mostrarModalAlimento">
+  <div class="modal">
+    <h3>Agregar Alimento</h3>
+    <form (ngSubmit)="agregarAlimento()">
+      <label>Nombre:</label>
+      <input type="text" [(ngModel)]="nuevoAlimento.nombre" name="nombre" required />
+
+      <label>Costo*:</label>
+      <input type="number" [(ngModel)]="nuevoAlimento.costo" name="volumen" required />
+
+      <label>cantidad*:</label>
+      <input type="text" [(ngModel)]="nuevoAlimento.cantidad" name="tipoTanque" required />
+
+      <label>Descripción:</label>
+      <input type="text" [(ngModel)]="nuevoAlimento.descripcion" name="tipoTanque" required />
+
+      <div class="modal-actions">
+        <button type="submit">Agregar</button>
+        <button type="button" (click)="cerrarModalAlimento()">Cancelar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal-backdrop" *ngIf="mostrarModalQuimico">
+  <div class="modal">
+    <h3>Agregar Quimico</h3>
+    <form (ngSubmit)="agregarQuimico()">
+      <label>Nombre:</label>
+      <input type="text" [(ngModel)]="nuevoQuimico.nombre" name="nombre" required />
+
+      <label>Costo*:</label>
+      <input type="number" [(ngModel)]="nuevoQuimico.costo" name="volumen" required />
+
+      <label>cantidad*:</label>
+      <input type="text" [(ngModel)]="nuevoQuimico.cantidad" name="tipoTanque" required />
+
+      <label>Descripción:</label>
+      <input type="text" [(ngModel)]="nuevoQuimico.descripcion" name="tipoTanque" required />
+
+      <div class="modal-actions">
+        <button type="submit">Agregar</button>
+        <button type="button" (click)="cerrarModalQuimico()">Cancelar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal-backdrop" *ngIf="mostrarModalBajas">
+  <div class="modal">
+    <h3>Agregar Bajas</h3>
+    <form (ngSubmit)="agregarBaja()">
+      <label>Tanque:</label>
+      <select [(ngModel)]="nuevoBajas.tanque_id" name="tanque_id" >
+        <option *ngFor="let tanque of cicloSeleccionado.ciclotanques_ciclo" [value]="tanque.tanque_id" >
+          {{ getTanqueNombre(tanque.tanque_id) }}
+        </option>
+      </select>
+
+      <label>cantidad*:</label>
+      <input type="number" [(ngModel)]="nuevoBajas.cantidad" name="cantidad" required />
+
+      <div class="modal-actions">
+        <button type="submit">Agregar</button>
+        <button type="button" (click)="cerrarModalBajas()">Cancelar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal-backdrop" *ngIf="mostrarModalMovimiento">
+  <div class="modal">
+    <h3>Agregar Movimiento</h3>
+    <form (ngSubmit)="agregarMovimiento()">
+      <label>Tanque Origen:</label>
+      <select [(ngModel)]="nuevoMovimiento.origen" name="origen" >
+        <option *ngFor="let tanque of cicloSeleccionado.ciclotanques_ciclo" [value]="tanque.tanque_id" >
+          {{ getTanqueNombre(tanque.tanque_id) }}
+        </option>
+      </select>
+      <label>Tanque Destino:</label>
+      <div *ngIf="tanquesdisponibles && tanquesdisponibles.length > 0; else sinTanquesDestino">
+        <select [(ngModel)]="nuevoMovimiento.destino" name="destino">
+          <option *ngFor="let tanque of tanquesdisponibles" [value]="tanque.id">
+            {{ getTanqueNombre(tanque.id) }}
+          </option>
+        </select>
+      </div>
+      <ng-template #sinTanquesDestino>
+        <div style="color: #b71c1c; font-weight: 600; margin-bottom: 8px;">
+          No hay ningún tanque disponible
+        </div>
+      </ng-template>
+
+      <label>cantidad*:</label>
+      <input type="number" [(ngModel)]="nuevoMovimiento.cantidad" name="cantidad" required />
+
+      <div class="modal-actions">
+        <button type="submit">Agregar</button>
+        <button type="button" (click)="cerrarModalMovimiento()">Cancelar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+<div class="modal-backdrop" *ngIf="mostrarModalCierre">
+  <div class="modal">
+    <label>Para Confirmar el cierre del ciclo escribe "<b>{{fraseConfirmacion}}</b>"</label>
+    <input type="text" [(ngModel)]="fraseUser" name="fraseUser" />
+    <div class="modal-actions">
+      <button type="button" (click)="confirmarCierre()" style="background: #d32f2f; color: #fff;">
+        Confirmar cierre
+      </button>
+      <button type="button" (click)="mostrarModalCierre = false">Cancelar</button>
+    </div>
+  </div>
+</div>
