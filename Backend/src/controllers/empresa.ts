@@ -52,11 +52,16 @@ export const crearEmpresa = async (req: Request, res: Response): Promise<any> =>
 
 export const editarEmpresa = async(req: Request, res: Response): Promise<any> => {
     try {
-        const id = req.params.id;
+        const idRaw = req.params.id;
+        const id = Array.isArray(idRaw) ? idRaw[0] : idRaw;
         const { nombre, direccion, codigo_postal, pais, departamento, ciudad, especies, actividad } = req.body;
 
+        if (!id) {
+            return res.status(400).json({ error: "El id es requerido" });
+        }
+
         // Buscar la empresa
-        const empresa = await Empresa.findByPk(id);
+        const empresa = await Empresa.findByPk(id as any);
 
         if (!empresa) {
             return res.status(404).json({ 
@@ -110,7 +115,12 @@ export const editarEmpresa = async(req: Request, res: Response): Promise<any> =>
 
 export const verEmpresa = async(req: Request, res: Response): Promise<any> => {
     try {
-        const usuario_id  = req.params.id;
+        const usuario_id_raw  = req.params.id;
+        const usuario_id = Array.isArray(usuario_id_raw) ? usuario_id_raw[0] : usuario_id_raw;
+
+        if (!usuario_id) {
+            return res.status(400).json({ error: "El usuario_id es requerido." });
+        }
 
         // Buscar empresa por usuario_id
         const empresa = await Empresa.findOne({
