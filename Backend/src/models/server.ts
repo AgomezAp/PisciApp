@@ -36,9 +36,9 @@ class Server {
       helmet.contentSecurityPolicy({
         directives: {
           defaultSrc: ["'self'"],
-          imgSrc: ["'self'", "http://localhost:3010", "data:", "blob:"], // imágenes locales y base64
-          scriptSrc: ["'self'", "http://localhost:4200"],
-          styleSrc: ["'self'", "http://localhost:4200", "'unsafe-inline'"],
+          imgSrc: ["'self'", "http://localhost:3001", "data:", "blob:"], // imágenes locales y base64
+          scriptSrc: ["'self'", "http://localhost:4201"],
+          styleSrc: ["'self'", "http://localhost:4201", "'unsafe-inline'"],
         },
       })
     );
@@ -90,7 +90,7 @@ class Server {
     this.app.use(cookieParser());
     this.app.use(
       cors({
-        origin: "http://localhost:4200",
+        origin: ["https://lecturascartastarotcolombia","http://localhost:4200"],
         methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
         allowedHeaders: ["Content-Type", "Authorization"],
         credentials: true,
