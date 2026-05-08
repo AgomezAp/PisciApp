@@ -12,7 +12,8 @@ export const crearCiclo = async (req: Request, res: Response): Promise<any> => {
             await tra.rollback()
             return res.status(400).json({ error: "Todos los campos son requeridos." });
         }
-        const tanqueSeleccionado = await Tanque.findByPk(tanques, { transaction: tra, });
+        const tanques_normalized = Array.isArray(tanques) ? tanques[0] : tanques;
+        const tanqueSeleccionado = await Tanque.findByPk(tanques_normalized as any, { transaction: tra, });
         if (!tanqueSeleccionado) {
             await tra.rollback();
             return res.status(404).json({ error: "El tanque seleccionado no existe" });
@@ -29,7 +30,7 @@ export const crearCiclo = async (req: Request, res: Response): Promise<any> => {
         });
         const siguienteId = (Number(ultimo_id_usuario) || 0) + 1;
         const nuevoCiclo = await Ciclo.create({ usuario_id, numero_peces, numero_actual: numero_peces, especie, costos, fecha_inicio, costos_transporte, ciclo_id_usuario: siguienteId }, { transaction: tra }) as any;
-        const nuevoCT = await CicloTanque.create({ ciclo_id: nuevoCiclo.id, tanque_id: tanques, numero_peces }, { transaction: tra });
+        const nuevoCT = await CicloTanque.create({ ciclo_id: nuevoCiclo.id, tanque_id: tanques_normalized, numero_peces }, { transaction: tra });
         const update = await tanqueSeleccionado.update({ disponible: false }, { transaction: tra });
         await tra.commit();
         res.status(201).json(nuevoCiclo)
@@ -100,7 +101,9 @@ export const actualizarBajas = async (req: Request, res: Response): Promise<any>
     try {
         const ciclo_id = req.params.ciclo_id;
         const { cantidad, tanque_id, causa } = req.body;
-        if (!ciclo_id || !cantidad || !tanque_id || !causa) {
+        const ciclo_id_normalized = Array.isArray(ciclo_id) ? ciclo_id[0] : ciclo_id;
+        const tanque_id_normalized = Array.isArray(tanque_id) ? tanque_id[0] : tanque_id;
+        if (!ciclo_id_normalized || !cantidad || !tanque_id_normalized || !causa) {
             await tra.rollback();
             return res.status(400).json({ error: "Todos los campos son obligatorios (cantidad, tanque_id, causa)" })
         }
@@ -109,7 +112,7 @@ export const actualizarBajas = async (req: Request, res: Response): Promise<any>
             await tra.rollback();
             return res.status(400).json({ error: 'La cantidad debe ser mayor a cero' })
         }
-        const ciclo = await Ciclo.findByPk(ciclo_id, { transaction: tra }) as any;
+        const ciclo = await Ciclo.findByPk(ciclo_id_normalized as any, { transaction: tra }) as any;
         if (!ciclo) {
             await tra.rollback();
             return res.status(404).json({ error: "Ciclo no encontrado." });
@@ -118,7 +121,7 @@ export const actualizarBajas = async (req: Request, res: Response): Promise<any>
             await tra.rollback();
             return res.status(404).json({ error: "El Ciclo ya se encuentra finalizado." });
         }
-        const cicloTanque = await CicloTanque.findOne({ where: { ciclo_id, tanque_id }, transaction: tra }) as any;
+        const cicloTanque = await CicloTanque.findOne({ where: { ciclo_id: ciclo_id_normalized, tanque_id: tanque_id_normalized }, transaction: tra }) as any;
         if (!cicloTanque) {
             await tra.rollback();
             return res.status(404).json({ error: "El tanque no pertenece al ciclo seleccionado" });
@@ -128,7 +131,7 @@ export const actualizarBajas = async (req: Request, res: Response): Promise<any>
             await tra.rollback();
             return res.status(400).json({ error: `No puedes dar de baja ${cantidad} peces. Solo hay ${pecesActuales} disponibles.` })
         }
-        await Bajas.create({ ciclo_id, cantidad, tanque_id, causa }, { transaction: tra });
+        await Bajas.create({ ciclo_id: ciclo_id_normalized, cantidad, tanque_id: tanque_id_normalized, causa }, { transaction: tra });
 
         await ciclo.increment('total_bajas', { by: cantidad, transaction: tra });
         await ciclo.decrement('numero_actual', { by: cantidad, transaction: tra });
@@ -136,7 +139,7 @@ export const actualizarBajas = async (req: Request, res: Response): Promise<any>
 
         await tra.commit();
 
-        const cicloActualizado = await Ciclo.findByPk(ciclo_id);
+        const cicloActualizado = await Ciclo.findByPk(ciclo_id_normalized as any);
         res.status(200).json(cicloActualizado);
     } catch (error) {
         await tra.rollback();
@@ -149,14 +152,15 @@ export const ingresarAlimento = async (req: Request, res: Response): Promise<any
     const tra = await sequelize.transaction();
     try {
         const ciclo_id = req.params.ciclo_id
+        const ciclo_id_normalized = Array.isArray(ciclo_id) ? ciclo_id[0] : ciclo_id;
         const { cantidad, costo, nombre, observacion } = req.body
 
-        if (!ciclo_id || !cantidad || !costo) {
+        if (!ciclo_id_normalized || !cantidad || !costo) {
             await tra.rollback();
             return res.status(400).json({ error: "Todos los campos son requeridos." })
         }
 
-        const ciclo = await Ciclo.findByPk(ciclo_id, { transaction: tra }) as any;
+        const ciclo = await Ciclo.findByPk(ciclo_id_normalized as any, { transaction: tra }) as any;
         if (!ciclo) {
             await tra.rollback();
             return res.status(404).json({ error: "Ciclo no encontrado." })
@@ -190,7 +194,7 @@ export const ingresarAlimento = async (req: Request, res: Response): Promise<any
         const costoTotalProporcional = (costoTotalActual / pesoActual) * cantidad;
 
         const nuevoAlimento = await Alimento.create({
-            ciclo_id,
+            ciclo_id: ciclo_id_normalized,
             cantidad,
             costo,
             nombre,
@@ -217,14 +221,15 @@ export const ingresarQuimico = async (req: Request, res: Response): Promise<any>
     const tra = await sequelize.transaction();
     try {
         const ciclo_id = req.params.ciclo_id
+        const ciclo_id_normalized = Array.isArray(ciclo_id) ? ciclo_id[0] : ciclo_id;
         const { cantidad, costo, nombre, observacion } = req.body
 
-        if (!ciclo_id || !cantidad || !costo) {
+        if (!ciclo_id_normalized || !cantidad || !costo) {
             await tra.rollback();
             return res.status(400).json({ error: "Todos los campos son requeridos." })
         }
 
-        const ciclo = await Ciclo.findByPk(ciclo_id, { transaction: tra }) as any;
+        const ciclo = await Ciclo.findByPk(ciclo_id_normalized as any, { transaction: tra }) as any;
         if (!ciclo) {
             await tra.rollback();
             return res.status(404).json({ error: "Ciclo no encontrado." })
@@ -258,7 +263,7 @@ export const ingresarQuimico = async (req: Request, res: Response): Promise<any>
         const costoTotalProporcional = (costoTotalActual / pesoActual) * cantidad;
 
         const nuevoQuimico = await Quimico.create({
-            ciclo_id,
+            ciclo_id: ciclo_id_normalized,
             cantidad,
             costo,
             nombre,
@@ -286,24 +291,27 @@ export const cambiarTanque = async (req: Request, res: Response): Promise<any> =
     try {
         const ciclo_id = req.params.ciclo_id
         const { origen, destino, cantidad } = req.body;
-        if (!ciclo_id || !origen || !destino || !cantidad) {
+        const ciclo_id_normalized = Array.isArray(ciclo_id) ? ciclo_id[0] : ciclo_id;
+        const origen_normalized = Array.isArray(origen) ? origen[0] : origen;
+        const destino_normalized = Array.isArray(destino) ? destino[0] : destino;
+        if (!ciclo_id_normalized || !origen_normalized || !destino_normalized || !cantidad) {
             await tra.rollback();
             return res.status(400).json({ error: "Todos los campos son requeridos." })
         }
-        if (origen === destino) {
+        if (origen_normalized === destino_normalized) {
             await tra.rollback();
             return res.status(400).json({ error: "El tanque de origen y destino no pueden ser el mismo." });
         }
         // Verificar que el tanque de origen pertenece al ciclo
-        const cicloTanqueOrigenCheck = await CicloTanque.findOne({ where: { ciclo_id, tanque_id: origen }, transaction: tra }) as any;
+        const cicloTanqueOrigenCheck = await CicloTanque.findOne({ where: { ciclo_id: ciclo_id_normalized, tanque_id: origen_normalized }, transaction: tra }) as any;
         if (!cicloTanqueOrigenCheck) {
             await tra.rollback();
             return res.status(400).json({ error: "El tanque de origen no pertenece al ciclo." });
         }
         const [ciclo, tanqueOrigen, tanqueDestino] = await Promise.all([
-            Ciclo.findByPk(ciclo_id, { transaction: tra }),
-            Tanque.findByPk(origen, { transaction: tra }) as any,
-            Tanque.findByPk(destino, { transaction: tra }) as any
+            Ciclo.findByPk(ciclo_id_normalized as any, { transaction: tra }),
+            Tanque.findByPk(origen_normalized, { transaction: tra }) as any,
+            Tanque.findByPk(destino_normalized, { transaction: tra }) as any
         ]);
         if (!ciclo || !tanqueOrigen || !tanqueDestino) {
             await tra.rollback();
@@ -321,22 +329,22 @@ export const cambiarTanque = async (req: Request, res: Response): Promise<any> =
             await tra.rollback();
             return res.status(400).json({ error: "No hay suficientes peces en el tanque de origen." });
         }
-        let cicloTanqueDestino = await CicloTanque.findOne({ where: { ciclo_id, tanque_id: destino }, transaction: tra }) as any;
+        let cicloTanqueDestino = await CicloTanque.findOne({ where: { ciclo_id: ciclo_id_normalized, tanque_id: destino_normalized }, transaction: tra }) as any;
 
         if (!cicloTanqueDestino) {
-            cicloTanqueDestino = await CicloTanque.create({ ciclo_id, tanque_id: destino, numero_peces: 0 }, { transaction: tra });
+            cicloTanqueDestino = await CicloTanque.create({ ciclo_id: ciclo_id_normalized, tanque_id: destino_normalized, numero_peces: 0 }, { transaction: tra });
         }
         await cicloTanqueOrigenCheck.decrement('numero_peces', { by: cantidad, transaction: tra });
         await cicloTanqueDestino.increment('numero_peces', { by: cantidad, transaction: tra });
 
         const nuevoConteoOrigen = cicloTanqueOrigenCheck.numero_peces - cantidad;
         if (nuevoConteoOrigen === 0) {
-            await CicloTanque.destroy({ where: { ciclo_id, tanque_id: origen }, transaction: tra });
-            await Tanque.update({ disponible: true }, { where: { id: origen }, transaction: tra })
+            await CicloTanque.destroy({ where: { ciclo_id: ciclo_id_normalized, tanque_id: origen_normalized }, transaction: tra });
+            await Tanque.update({ disponible: true }, { where: { id: origen_normalized }, transaction: tra })
         }
-        await Tanque.update({ disponible: false }, { where: { id: destino }, transaction: tra })
+        await Tanque.update({ disponible: false }, { where: { id: destino_normalized }, transaction: tra })
 
-        const movTanque = await MovimientoTanque.create({ ciclo_id, origen, destino, cantidad }, { transaction: tra });
+        const movTanque = await MovimientoTanque.create({ ciclo_id: ciclo_id_normalized, origen: origen_normalized, destino: destino_normalized, cantidad }, { transaction: tra });
         await tra.commit();
         res.status(200).json(movTanque);
     } catch (error) {
@@ -350,13 +358,14 @@ export const cambiarTanque = async (req: Request, res: Response): Promise<any> =
 export const verCicloTanques = async (req: Request, res: Response): Promise<any> => {
     try {
         const { ciclo_id } = req.params;
+        const ciclo_id_normalized = Array.isArray(ciclo_id) ? ciclo_id[0] : ciclo_id;
 
-        if (!ciclo_id) {
+        if (!ciclo_id_normalized) {
             return res.status(400).json({ error: "El ciclo_id es requerido." });
         }
 
         const cicloTanques = await CicloTanque.findAll({
-            where: { ciclo_id },
+            where: { ciclo_id: ciclo_id_normalized },
             include: [
                 {
                     model: Tanque,
