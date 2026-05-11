@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://lecturascartastarotcolombia/',
+  apiUrl: 'https://lecturascartastarotcolombia.com/',
 };
 
 /* export const environment = {
