@@ -90,7 +90,7 @@ class Server {
     this.app.use(cookieParser());
     this.app.use(
       cors({
-        origin: ["https://lecturascartastarotcolombia","http://localhost:4200"],
+        origin: ["https://lecturascartastarotcolombia.com", "https://www.lecturascartastarotcolombia.com", "http://localhost:4200"],
         methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
         allowedHeaders: ["Content-Type", "Authorization"],
         credentials: true,
