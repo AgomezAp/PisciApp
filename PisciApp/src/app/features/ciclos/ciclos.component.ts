@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { NavbarComponent } from '../../shared/components/navbar/navbar.component';
 import { CicloService } from '../../core/services/ciclo.service';
 import { DatePipe } from '@angular/common';
 import { CommonModule } from '@angular/common';
@@ -16,7 +15,7 @@ Chart.register(...registerables);
 @Component({
   selector: 'app-ciclos',
   standalone: true,
-  imports: [NavbarComponent, DatePipe, CommonModule, BaseChartDirective, FormsModule],
+  imports: [DatePipe, CommonModule, BaseChartDirective, FormsModule],
   templateUrl: './ciclos.component.html',
   styleUrls: ['./ciclos.component.css']
 })
@@ -96,6 +95,8 @@ export class CiclosComponent implements OnInit {
   };
 
   chartType: 'bar' | 'line' = 'bar';
+  activeDataTab: string = 'alimentos';
+  activeChartTab: string = 'tanques';
 
   chartOptionsA: ChartOptions = {
     responsive: true,
@@ -377,8 +378,35 @@ export class CiclosComponent implements OnInit {
     });
   }
 
+  getDiasCiclo(): number {
+    if (!this.cicloSeleccionado?.fecha_inicio) return 0;
+    const inicio = new Date(this.cicloSeleccionado.fecha_inicio);
+    const fin = this.cicloSeleccionado.fecha_fin
+      ? new Date(this.cicloSeleccionado.fecha_fin)
+      : new Date();
+    return Math.floor((fin.getTime() - inicio.getTime()) / (1000 * 60 * 60 * 24));
+  }
+
+  getTotalBajas(): number {
+    return (this.cicloSeleccionado?.bajas_ciclo || [])
+      .reduce((s: number, b: any) => s + (b.cantidad || 0), 0);
+  }
+
+  getTotalCostos(): number {
+    const al = (this.cicloSeleccionado?.alimentos || [])
+      .reduce((s: number, a: any) => s + (a.costo || 0), 0);
+    const qu = (this.cicloSeleccionado?.quimicos || [])
+      .reduce((s: number, q: any) => s + (q.costo || 0), 0);
+    return al + qu + (this.cicloSeleccionado?.costos || 0) + (this.cicloSeleccionado?.costos_transporte || 0);
+  }
+
+  setChartTab(tab: string) {
+    this.activeChartTab = tab;
+  }
+
   seleccionarCiclo(ciclo: any) {
     this.cicloSeleccionado = ciclo;
+    this.activeChartTab = 'tanques';
     this.crearGraficaAlimentos();
     this.crearGraficaQuimicos();
     this.crearGraficaBajas();

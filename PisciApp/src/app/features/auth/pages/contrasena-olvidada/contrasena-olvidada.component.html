@@ -1,1 +1,91 @@
-<p>contrasena-olvidada works!</p>
+<div class="background">
+  <div class="forgot-container">
+
+    <!-- PASO 1: Solicitar enlace -->
+    <div *ngIf="step === 'request'">
+      <h2>¿Olvidaste tu contraseña?</h2>
+      <p class="subtitle">Ingresa tu correo y te enviaremos un enlace para restablecerla.</p>
+
+      <div *ngIf="errorMessage" class="error-banner">{{ errorMessage }}</div>
+
+      <form [formGroup]="requestForm" (ngSubmit)="onRequestSubmit()">
+        <div class="form-group">
+          <label for="correo">Correo electrónico</label>
+          <input
+            id="correo"
+            type="email"
+            formControlName="correo"
+            placeholder="tu@correo.com"
+          />
+          <span
+            class="error"
+            *ngIf="requestForm.get('correo')?.invalid && requestForm.get('correo')?.touched"
+          >
+            Ingresa un correo válido.
+          </span>
+        </div>
+
+        <button type="submit" [disabled]="requestForm.invalid || requestLoading">
+          {{ requestLoading ? 'Enviando...' : 'Enviar enlace' }}
+        </button>
+      </form>
+
+      <p class="back-link"><a href="/login">Volver al inicio de sesión</a></p>
+    </div>
+
+    <!-- PASO 2: Nueva contraseña -->
+    <div *ngIf="step === 'reset'">
+      <h2>Nueva contraseña</h2>
+      <p class="subtitle">Crea una contraseña segura para tu cuenta.</p>
+
+      <div *ngIf="errorMessage" class="error-banner">{{ errorMessage }}</div>
+
+      <form [formGroup]="resetForm" (ngSubmit)="onResetSubmit()">
+        <div class="form-group">
+          <label for="nuevacontrasena">Nueva contraseña</label>
+          <input
+            id="nuevacontrasena"
+            type="password"
+            formControlName="nuevacontrasena"
+            placeholder="Mínimo 8 caracteres"
+          />
+          <span
+            class="error"
+            *ngIf="resetForm.get('nuevacontrasena')?.invalid && resetForm.get('nuevacontrasena')?.touched"
+          >
+            Debe tener mínimo 8 caracteres, mayúscula, minúscula, número y caracter especial (&#64;$!%*?&amp;).
+          </span>
+        </div>
+
+        <div class="form-group">
+          <label for="confirmarcontrasena">Confirmar contraseña</label>
+          <input
+            id="confirmarcontrasena"
+            type="password"
+            formControlName="confirmarcontrasena"
+            placeholder="Repite la contraseña"
+          />
+          <span
+            class="error"
+            *ngIf="resetForm.errors?.['mismatch'] && resetForm.get('confirmarcontrasena')?.touched"
+          >
+            Las contraseñas no coinciden.
+          </span>
+        </div>
+
+        <button type="submit" [disabled]="resetForm.invalid || resetLoading">
+          {{ resetLoading ? 'Guardando...' : 'Restablecer contraseña' }}
+        </button>
+      </form>
+    </div>
+
+    <!-- PASO 3: Confirmación -->
+    <div *ngIf="step === 'done'" class="done-panel">
+      <div class="check-icon">✓</div>
+      <h2>¡Listo!</h2>
+      <p>{{ successMessage }}</p>
+      <a href="/login" class="btn-login">Ir al inicio de sesión</a>
+    </div>
+
+  </div>
+</div>

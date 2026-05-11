@@ -18,6 +18,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   private sub!: Subscription;
 
   menuAbierto = false;
+  sidebarColapsado = false;
   textoBusqueda: string = '';
 
   constructor(private authService: AuthService, private router: Router) {}
@@ -48,6 +49,18 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   toggleMenu() {
     this.menuAbierto = !this.menuAbierto;
+  }
+
+  cerrarMenuMobile() {
+    this.menuAbierto = false;
+  }
+
+  toggleSidebar() {
+    this.sidebarColapsado = !this.sidebarColapsado;
+    document.documentElement.style.setProperty(
+      '--sidebar-width',
+      this.sidebarColapsado ? '64px' : '260px'
+    );
   }
 
   onBuscar() {

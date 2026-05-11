@@ -1,36 +1,67 @@
-<nav class="navbar">
-  <div class="nav-left">
-    <img src="/assets/logob.png" alt="PisciApp" class="logo" />
+<!-- Botón hamburguesa (solo mobile) -->
+<button class="mobile-toggle" (click)="toggleMenu()" aria-label="Abrir menú">
+  <span class="material-icons">{{ menuAbierto ? 'close' : 'menu' }}</span>
+</button>
+
+<!-- Backdrop oscuro (mobile) -->
+<div class="sidebar-backdrop" [class.visible]="menuAbierto" (click)="toggleMenu()"></div>
+
+<!-- Sidebar principal -->
+<aside class="sidebar" [class.open]="menuAbierto" [class.colapsado]="sidebarColapsado">
+
+  <!-- Logo + botón colapsar -->
+  <div class="sidebar-header">
+    <img src="/assets/logob.png" alt="PisciApp" class="sidebar-logo" />
+    <button
+      class="collapse-btn"
+      (click)="toggleSidebar()"
+      [title]="sidebarColapsado ? 'Expandir menú' : 'Colapsar menú'">
+      <span class="material-icons">{{ sidebarColapsado ? 'chevron_right' : 'chevron_left' }}</span>
+    </button>
   </div>
 
-  <button class="menu-toggle" (click)="toggleMenu()">
-    &#9776;
-  </button>
+  <!-- Navegación -->
+  <nav class="sidebar-nav">
+    <a routerLink="/inicioPerfil" routerLinkActive="active" class="nav-item" data-label="Inicio" (click)="cerrarMenuMobile()">
+      <span class="material-icons nav-icon">dashboard</span>
+      <span class="nav-label">Inicio</span>
+    </a>
+    <a routerLink="/diario" routerLinkActive="active" class="nav-item" data-label="Reporte Diario" (click)="cerrarMenuMobile()">
+      <span class="material-icons nav-icon">assignment</span>
+      <span class="nav-label">Reporte Diario</span>
+    </a>
+    <a routerLink="/empresa" routerLinkActive="active" class="nav-item" data-label="Mi Empresa" (click)="cerrarMenuMobile()">
+      <span class="material-icons nav-icon">business</span>
+      <span class="nav-label">Mi Empresa</span>
+    </a>
+    <a routerLink="/estanques" routerLinkActive="active" class="nav-item" data-label="Estanques" (click)="cerrarMenuMobile()">
+      <span class="material-icons nav-icon">water</span>
+      <span class="nav-label">Estanques</span>
+    </a>
+    <a routerLink="/ciclos" routerLinkActive="active" class="nav-item" data-label="Producción" (click)="cerrarMenuMobile()">
+      <span class="material-icons nav-icon">loop</span>
+      <span class="nav-label">Producción</span>
+    </a>
+    <a routerLink="/inventario" routerLinkActive="active" class="nav-item" data-label="Inventario" (click)="cerrarMenuMobile()">
+      <span class="material-icons nav-icon">inventory_2</span>
+      <span class="nav-label">Inventario</span>
+    </a>
+  </nav>
 
-  <ul class="nav-links" [class.active]="menuAbierto">
-    <li><a routerLink="/inicioPerfil" routerLinkActive="active">Inicio</a></li>
-    <li>
-      <a routerLink="/diario" routerLinkActive="active">Reporte Diario</a>
-    </li>
-    <li><a routerLink="/empresa" routerLinkActive="active">Mi Empresa</a></li>
-    <li>
-      <a routerLink="/ciclos" routerLinkActive="active">Producción</a>
-    </li>
-    <li>
-      <a routerLink="/inventario" routerLinkActive="active">Inventario</a>
-    </li>
-  </ul>
+  <!-- Footer: usuario + logout -->
+  <div class="sidebar-footer">
+    <button class="user-profile" *ngIf="user" (click)="perfil()">
+      <div class="user-avatar">{{ userInitials }}</div>
+      <div class="user-details">
+        <span class="user-name">{{ user.nombre }}</span>
+        <span class="user-role">{{ user.rol }}</span>
+      </div>
+      <span class="material-icons user-settings-icon">settings</span>
+    </button>
 
-  
-
-  <div class="nav-right" *ngIf="user">
-    <div class="user-info">
-      <button class="user-icon" (click)="perfil()" title="Perfil">
-        
-          {{ userInitials }}
-
-      </button>
-    </div>
-    <button class="logout-btn" (click)="logout()">Cerrar sesión</button>
+    <button class="logout-btn" (click)="logout()">
+      <span class="material-icons">logout</span>
+      <span class="logout-label">Cerrar sesión</span>
+    </button>
   </div>
-</nav>
+</aside>

@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { NavbarComponent } from '../../shared/components/navbar/navbar.component';
 import { TanqueService } from '../../core/services/tanque.service';
 import { NgFor, NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -9,7 +8,7 @@ import { DatePipe } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 @Component({
   selector: 'app-inicio',
-  imports: [NavbarComponent, NgFor, NgIf, FormsModule, DatePipe],
+  imports: [NgFor, NgIf, FormsModule, DatePipe],
   templateUrl: './inicio.component.html',
   styleUrl: './inicio.component.css'
 })

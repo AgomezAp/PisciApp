@@ -73,7 +73,7 @@ export class LoginComponent {
             this.userId = response.userId; // guardamos userId para el paso 2FA
           } else {
             // Caso login normal ✅
-            this.router.navigate(['/inventory']);
+            this.router.navigate(['/inicioPerfil']);
           }
         },
         error: (error) => {

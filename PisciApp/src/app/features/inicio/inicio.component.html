@@ -1,4 +1,3 @@
-<app-navbar></app-navbar>
 <!-- Dashboard de tarjetas informativas -->
 <div class="dashboard-tarjetas">
   <div class="dashboard-tarjeta">
@@ -31,17 +30,23 @@
         <div class="tarjeta-sub">Tipo: {{ tanque.tipoTanque }}</div>
       </div>
       <div class="botones-flotantes">
-        <button class="btn-agregar-flotante" (click)="abrirModalTanque()">+</button>
-        <button class="btn-info-flotante" (click)="infoTanque()"><span>i</span></button>
+        <button class="btn-agregar-flotante" (click)="abrirModalTanque()">
+          <span class="material-icons">add</span>
+        </button>
+        <button class="btn-info-flotante" (click)="infoTanque()">
+          <span class="material-icons">info</span>
+        </button>
       </div>
     </div>
   </ng-container>
   <ng-template #sinTanques>
     <div class="sin-tanques">
-      <span class="sin-tanques-icon">🛑</span>
+      <span class="sin-tanques-icon material-icons">water</span>
       <h4>No tienes estanques registrados</h4>
-      <p>Haz clic en <b>+</b> para agregar tu primer estanque.</p>
-      <button class="btn-agregar-flotante" (click)="abrirModalTanque()">+</button>
+      <p>Agrega tu primer estanque para comenzar.</p>
+      <button class="btn-agregar-flotante" (click)="abrirModalTanque()">
+        <span class="material-icons">add</span>
+      </button>
     </div>
   </ng-template>
 </div>
@@ -60,17 +65,23 @@
         <!-- Puedes agregar más datos aquí -->
       </div>
       <div class="botones-flotantes">
-        <button class="btn-agregar-flotante" (click)="abrirModalCiclo()">+</button>
-        <button class="btn-info-flotante" (click)="infoCiclo()"><span>i</span></button>
+        <button class="btn-agregar-flotante" (click)="abrirModalCiclo()">
+          <span class="material-icons">add</span>
+        </button>
+        <button class="btn-info-flotante" (click)="infoCiclo()">
+          <span class="material-icons">info</span>
+        </button>
       </div>
     </div>
   </ng-container>
   <ng-template #sinCiclos>
     <div class="sin-tanques">
-      <span class="sin-tanques-icon">🛑</span>
+      <span class="sin-tanques-icon material-icons">loop</span>
       <h4>No tienes ciclos registrados</h4>
-      <p>Haz clic en <b>+</b> para agregar tu primer ciclo.</p>
-      <button class="btn-agregar-flotante" (click)="abrirModalCiclo()">+</button>
+      <p>Agrega tu primer ciclo de producción para comenzar.</p>
+      <button class="btn-agregar-flotante" (click)="abrirModalCiclo()">
+        <span class="material-icons">add</span>
+      </button>
     </div>
   </ng-template>
 </div>         

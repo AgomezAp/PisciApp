@@ -1,96 +1,143 @@
-<app-navbar></app-navbar>
-
+<!-- Mobile profile toggle -->
 <div class="perfil-mobile" *ngIf="isMobile">
-    <button class="perfil-toggle" (click)="togglePerfilMobile()">
-        <div class="perfil-avatar-small">{{ userInitials }}</div>
-        <span>{{ userName }}</span>
-        <span class="toggle-icon">{{ perfilMobileAbierto ? '▲' : '▼' }}</span>
+  <button class="perfil-toggle" (click)="togglePerfilMobile()">
+    <div class="perfil-avatar-small">{{ userInitials }}</div>
+    <span>{{ userName }}</span>
+    <span class="material-icons toggle-icon">{{ perfilMobileAbierto ? 'expand_less' : 'expand_more' }}</span>
+  </button>
+  <div class="perfil-dropdown" *ngIf="perfilMobileAbierto">
+    <p class="perfil-email-sm" title="{{ userEmail }}">{{ userEmail }}</p>
+    <button class="btn-perfil-mobile" (click)="perfil()">
+      <span class="material-icons">person</span>
+      Ver perfil completo
     </button>
-
-    <div class="perfil-dropdown" *ngIf="perfilMobileAbierto">
-        <p class="perfil-email" title="{{ userEmail }}">{{ userEmail }}</p>
-        <button class="btn-perfil-mobile" (click)="perfil()">Ver perfil completo</button>
-    </div>
+  </div>
 </div>
 
-<div class="dashboard-container">
-    <aside class="perfil-sidebar">
-        <div class="perfil-card">
-            <div class="perfil-header">
-                <div class="perfil-avatar">
-                    {{ userInitials }}
-                </div>
-                <h2 class="perfil-nombre">{{ userName }}</h2>
-                <p class="perfil-email">{{ userEmail }}</p>
-                <button class="btn-perfil" (click)="perfil()">Ver perfil</button>
-            </div>
+<main class="perfil-page">
+
+  <!-- ═══ HEADER ═══ -->
+  <header class="page-hdr">
+    <div class="hdr-left">
+      <div class="hdr-orb"><span class="material-icons">business</span></div>
+      <div>
+        <h1>{{ empresa?.nombre || 'Mi Empresa' }}</h1>
+        <div class="species-row">
+          <span class="spec-chip" *ngFor="let esp of empresa?.especies">
+            <span class="material-icons">set_meal</span> {{ esp }}
+          </span>
+          <span class="spec-chip spec-empty" *ngIf="!empresa?.especies || empresa?.especies?.length === 0">
+            <span class="material-icons">info_outline</span> Sin especies registradas
+          </span>
         </div>
+      </div>
+    </div>
+    <div class="water-badge">
+      <span class="w-dot"></span>
+      <span class="material-icons">water_drop</span>
+      Calidad del agua monitoreada
+    </div>
+  </header>
+
+  <!-- ═══ MAIN LAYOUT ═══ -->
+  <div class="main-layout">
+
+    <!-- ─── PROFILE ASIDE (desktop) ─── -->
+    <aside class="profile-aside">
+      <div class="profile-card">
+        <div class="profile-avatar">{{ userInitials }}</div>
+        <div class="profile-name">{{ userName }}</div>
+        <div class="profile-email" title="{{ userEmail }}">{{ userEmail }}</div>
+        <button class="btn-profile" (click)="perfil()">
+          <span class="material-icons">person</span>
+          Ver perfil
+        </button>
+      </div>
+
+      <div class="location-card" *ngIf="empresa">
+        <div class="loc-icon"><span class="material-icons">location_on</span></div>
+        <div>
+          <div class="loc-name">{{ empresa?.nombre }}</div>
+          <div class="loc-addr">{{ empresa?.direccion }}</div>
+          <div class="loc-addr">{{ empresa?.ciudad }}<span *ngIf="empresa?.departamento">, {{ empresa?.departamento }}</span></div>
+        </div>
+      </div>
+
+      <div class="year-card">
+        <div class="year-ico"><span class="material-icons">calendar_today</span></div>
+        <div>
+          <div class="year-label">Balance anual</div>
+          <div class="year-num">{{ anioActual }}</div>
+        </div>
+      </div>
     </aside>
 
-    <main class="dashboard-main">
-        <section class="ecopeces-section">
-            <div class="ecopeces-header">
-                <div>
-                    <h1>{{ empresa.nombre }}</h1>
-                    <div class="especies-list" style="display: flex; gap: 8px;">
-                        <p *ngFor="let especie of empresa.especies" class="especie-badge">🐟 {{ especie }}</p>
-                    </div>
-                </div>
-            </div>
+    <!-- ─── DASHBOARD CONTENT ─── -->
+    <div class="dash-content">
 
-            <div class="ubicacion-card">
-                <span class="ubicacion-icon">📍</span>
-                <div>
-                    <p class="ubicacion-nombre">{{ empresa.nombre }} </p>
-                    <p class="ubicacion-direccion">{{ empresa.direccion }}, {{empresa.ciudad}} {{empresa.departamento}}</p>
-                </div>
-            </div>
-        </section>
-<!-- A PARTIR DE ACA NO SE QUE HACER -->
-        <section class="salud-agua">
-            <h3>Salud del agua</h3>
-            <div class="salud-mensaje">
-            </div>
-        </section>
+      <!-- KPI Strip: Gastos / Ingresos / Utilidad -->
+      <div class="kpi-strip">
+        <div class="kpi-card kpi-red">
+          <div class="kpi-ico"><span class="material-icons">trending_down</span></div>
+          <div class="kpi-body">
+            <div class="kpi-lbl">Gastos totales</div>
+            <div class="kpi-val">{{ gastosFormateados }}</div>
+          </div>
+        </div>
+        <div class="kpi-card kpi-green">
+          <div class="kpi-ico"><span class="material-icons">trending_up</span></div>
+          <div class="kpi-body">
+            <div class="kpi-lbl">Ingresos totales</div>
+            <div class="kpi-val">{{ ingresosFormateados }}</div>
+          </div>
+        </div>
+        <div class="kpi-card kpi-teal">
+          <div class="kpi-ico"><span class="material-icons">account_balance_wallet</span></div>
+          <div class="kpi-body">
+            <div class="kpi-lbl">Utilidad aproximada</div>
+            <div class="kpi-val">{{ balanceFormateados }}</div>
+          </div>
+        </div>
+      </div>
 
-        <section class="balance-section">
-            <h3>Balance económico - {{ anioActual }}</h3>
-            <div class="balance-cards">
-                <div class="balance-card gastos">
-                    <p class="balance-label">GASTOS TOTALES</p>
-                    <h2 class="balance-valor">{{ gastosFormateados }}</h2>
-                    <div class="balance-icono rojo">↓</div>
-                </div>
-                <div class="balance-card ingresos">
-                    <p class="balance-label">INGRESOS TOTALES</p>
-                    <h2 class="balance-valor">{{ ingresosFormateados }}</h2>
-                    <div class="balance-icono verde">↑</div>
-                </div>
-                <div class="balance-card total">
-                    <p class="balance-label">UTILIDAD APROXIMADA</p>
-                    <h2 class="balance-valor">{{ balanceFormateados }}</h2>
-                    <div class="balance-icono azul">$</div>
-                </div>
-            </div>
-        </section>
+      <!-- Stats row: Capacidad / Mortalidad -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-icon-wrap stat-blue">
+            <span class="material-icons">inventory_2</span>
+          </div>
+          <div class="stat-body">
+            <div class="stat-label">Capacidad máxima de producción</div>
+            <div class="stat-value">{{ capacidadMaxima }}</div>
+            <div class="stat-sub">{{ capacidadSub }}</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon-wrap stat-red">
+            <span class="material-icons">warning_amber</span>
+          </div>
+          <div class="stat-body">
+            <div class="stat-label">Mortalidad</div>
+            <div class="stat-value">{{ mortalidad }} Unidades</div>
+            <div class="stat-sub">{{ mortalidadSub }}</div>
+          </div>
+        </div>
+      </div>
 
-        <section class="estadisticas-section">
-            <div class="estadistica-card">
-                <div class="estadistica-icono azul">📊</div>
-                <div>
-                    <p class="estadistica-label">Capacidad máxima de producción</p>
-                    <h3 class="estadistica-valor">{{ capacidadMaxima }}</h3>
-                    <p class="estadistica-sub">{{ capacidadSub }}</p>
-                </div>
-            </div>
-            <div class="estadistica-card">
-                <div class="estadistica-icono rojo">💀</div>
-                <div>
-                    <p class="estadistica-label">Mortalidad</p>
-                    <h3 class="estadistica-valor">{{ mortalidad }} Unidades</h3>
-                    <p class="estadistica-sub">{{ mortalidadSub }}</p>
-                </div>
-            </div>
-        </section>
-    </main>
-</div>
+      <!-- Water health -->
+      <div class="water-card">
+        <div class="water-icon"><span class="material-icons">water</span></div>
+        <div class="water-body">
+          <div class="water-title">Salud del agua</div>
+          <div class="water-msg">Los parámetros de calidad del agua se registran en el reporte diario de cada estanque.</div>
+        </div>
+        <div class="water-status">
+          <span class="ws-dot"></span>
+          Monitoreo activo
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</main>

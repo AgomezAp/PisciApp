@@ -1,5 +1,4 @@
 import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
-import { NavbarComponent } from '../../shared/components/navbar/navbar.component';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../core/services/auth.service';
 import { Router } from '@angular/router';
@@ -9,7 +8,7 @@ import { VentaService } from '../../core/services/venta.service';
 
 @Component({
   selector: 'app-inicio-perfil',
-  imports: [NavbarComponent, CommonModule],
+  imports: [CommonModule],
   templateUrl: './inicio-perfil.component.html',
   styleUrl: './inicio-perfil.component.css'
 })

@@ -1,691 +1,595 @@
-.dashboard-container {
-  display: grid;
-  grid-template-columns: 350px 1fr;
-  gap: 24px;
-  padding: 24px;
-  max-width: 1600px;
-  margin: 0 auto;
-  background: #f5f7fa;
-  min-height: calc(100vh - 60px);
-}
-
-/* ===== SIDEBAR PERFIL ===== */
-.perfil-sidebar {
+/* ═══════════════════════════════════
+   ROOT PAGE
+═══════════════════════════════════ */
+.perfil-page {
+  height: 100%;
   display: flex;
   flex-direction: column;
-}
-
-.perfil-card {
-  background: white;
-  border-radius: 16px;
-  padding: 24px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-}
-
-.perfil-header {
-  text-align: center;
-  border-bottom: 1px solid #e0e0e0;
-  padding-bottom: 20px;
-  margin-bottom: 20px;
-}
-
-.perfil-avatar {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #00bcd4 0%, #0097a7 100%);
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 2rem;
-  font-weight: 700;
-  margin: 0 auto 16px;
-}
-
-.perfil-nombre {
-  font-size: 1.3rem;
-  color: #222;
-  margin: 0 0 8px 0;
-  font-weight: 600;
-}
-
-.perfil-email {
-  color: #666;
-  font-size: 0.95rem;
-  margin: 0 0 16px 0;
-  white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis;
-  display: block;
-  max-width: 100%;
-}
-
-.btn-perfil {
-  background: #00bcd4;
-  color: white;
-  border: none;
-  padding: 10px 24px;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.btn-perfil:hover {
-  background: #0097a7;
-}
-
-.plan-info {
-  border-bottom: 1px solid #e0e0e0;
-  padding-bottom: 20px;
-  margin-bottom: 20px;
-}
-
-.plan-info h3 {
-  font-size: 1.1rem;
-  color: #222;
-  margin: 0 0 12px 0;
-}
-
-.plan-badge {
-  background: #e0f7fa;
-  padding: 12px;
-  border-radius: 8px;
-  margin-bottom: 12px;
-}
-
-.plan-nombre {
-  color: #00bcd4;
-  font-weight: 700;
-  font-size: 1.1rem;
-}
-
-.plan-proximo {
-  color: #666;
-  font-size: 0.9rem;
-  margin: 4px 0 0 0;
-}
-
-.plan-costo {
-  text-align: center;
-  margin: 16px 0;
-}
-
-.costo-signo {
-  font-size: 1.5rem;
-  color: #222;
-  font-weight: 600;
-}
-
-.costo-valor {
-  font-size: 2rem;
-  color: #222;
-  font-weight: 700;
-}
-
-.btn-mejorar {
-  width: 100%;
-  background: linear-gradient(90deg, #00bcd4 0%, #0097a7 100%);
-  color: white;
-  border: none;
-  padding: 12px;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: opacity 0.2s;
-}
-
-.btn-mejorar:hover {
-  opacity: 0.9;
-}
-
-.recordatorios h3 {
-  font-size: 1.1rem;
-  color: #00bcd4;
-  margin: 0 0 12px 0;
-}
-
-.recordatorio-item {
-  display: flex;
-  align-items: flex-start;
+  padding: 16px 20px 0;
   gap: 12px;
-  background: #fffde7;
-  padding: 12px;
-  border-radius: 8px;
-  margin-bottom: 8px;
+  box-sizing: border-box;
 }
 
-.recordatorio-icon {
-  font-size: 1.2rem;
-}
-
-.recordatorio-item p {
-  margin: 0;
-  color: #666;
-  font-size: 0.9rem;
-  line-height: 1.4;
-}
-
-/* ===== DASHBOARD MAIN ===== */
-.dashboard-main {
+/* ═══════════════════════════════════
+   HEADER
+═══════════════════════════════════ */
+.page-hdr {
   display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-
-.ecopeces-section,
-.salud-agua,
-.balance-section,
-.biomasa-section,
-.estadisticas-section {
-  background: white;
-  border-radius: 16px;
-  padding: 24px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-}
-
-.ecopeces-header {
-  display: flex;
+  align-items: center;
   justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 20px;
-}
-
-.ecopeces-header h1 {
-  font-size: 2rem;
-  color: #222;
-  margin: 0 0 8px 0;
-}
-
-.especie-badge {
-  background: #e0f7fa;
-  color: #00796b;
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 0.9rem;
-  font-weight: 600;
-  display: inline-block;
-}
-
-.unidades-card {
-  display: flex;
-  align-items: center;
+  flex-shrink: 0;
   gap: 16px;
-  background: #e0f7fa;
-  padding: 20px;
-  border-radius: 12px;
+  animation: fadeUp 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
 }
 
-.unidades-icono {
-  font-size: 2.5rem;
-}
-
-.unidades-info h2 {
-  font-size: 2.5rem;
-  color: #00bcd4;
-  margin: 0;
-  font-weight: 700;
-}
-
-.unidades-info p {
-  margin: 0;
-  color: #666;
-  font-size: 0.9rem;
-  line-height: 1.3;
-}
-
-.btn-ver-unidades {
-  background: #00bcd4;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: background 0.2s;
-}
-
-.btn-ver-unidades:hover {
-  background: #0097a7;
-}
-
-.ubicacion-card {
+.hdr-left {
   display: flex;
   align-items: center;
-  gap: 12px;
-  background: #f5f5f5;
-  padding: 16px;
-  border-radius: 8px;
+  gap: 14px;
+  min-width: 0;
 }
 
-.ubicacion-icon {
-  font-size: 1.5rem;
-}
-
-.ubicacion-nombre {
-  font-weight: 600;
-  color: #222;
-  margin: 0 0 4px 0;
-}
-
-.ubicacion-direccion {
-  color: #666;
-  font-size: 0.9rem;
-  margin: 0;
-}
-
-/* Salud del Agua */
-.salud-agua h3 {
-  font-size: 1.3rem;
-  color: #222;
-  margin: 0 0 16px 0;
-}
-
-.salud-mensaje {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  background: #e3f2fd;
-  padding: 16px;
-  border-radius: 8px;
-}
-
-.info-icon {
-  font-size: 1.5rem;
-}
-
-.salud-mensaje p {
-  margin: 0;
-  color: #1976d2;
-  font-weight: 500;
-}
-
-/* Balance Económico */
-.balance-section h3 {
-  font-size: 1.3rem;
-  color: #222;
-  margin: 0 0 20px 0;
-}
-
-.balance-cards {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-}
-
-.balance-card {
-  position: relative;
-  background: #f8f9fa;
-  padding: 20px;
+.hdr-orb {
+  width: 44px;
+  height: 44px;
   border-radius: 12px;
-  border-left: 4px solid;
-}
-
-.balance-card.gastos {
-  border-left-color: #f44336;
-}
-
-.balance-card.ingresos {
-  border-left-color: #4caf50;
-}
-
-.balance-card.total {
-  border-left-color: #00bcd4;
-}
-
-.balance-label {
-  font-size: 0.85rem;
-  color: #666;
-  margin: 0 0 8px 0;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.balance-valor {
-  font-size: 1.8rem;
-  color: #222;
-  margin: 0;
-  font-weight: 700;
-}
-
-.balance-icono {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
+  background: linear-gradient(135deg, #00BCD4, #0097A7);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
-  color: white;
-  font-weight: 700;
-}
-
-.balance-icono.rojo {
-  background: #f44336;
-}
-
-.balance-icono.verde {
-  background: #4caf50;
-}
-
-.balance-icono.azul {
-  background: #00bcd4;
-}
-
-/* Biomasa */
-.biomasa-section h3 {
-  font-size: 1.3rem;
-  color: #222;
-  margin: 0 0 20px 0;
-}
-
-.biomasa-cards {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
-}
-
-.biomasa-card {
-  background: #e0f7fa;
-  padding: 20px;
-  border-radius: 12px;
-}
-
-.biomasa-label {
-  font-size: 0.9rem;
-  color: #666;
-  margin: 0 0 8px 0;
-}
-
-.biomasa-valor {
-  font-size: 2rem;
-  color: #00796b;
-  margin: 0;
-  font-weight: 700;
-}
-
-/* Estadísticas */
-.estadisticas-section {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
-}
-
-.estadistica-card {
-  display: flex;
-  align-items: flex-start;
-  gap: 16px;
-  background: #f8f9fa;
-  padding: 20px;
-  border-radius: 12px;
-}
-
-.estadistica-icono {
-  width: 60px;
-  height: 60px;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.8rem;
+  box-shadow: 0 4px 14px rgba(0, 151, 167, 0.3);
   flex-shrink: 0;
 }
 
-.estadistica-icono.azul {
-  background: #e3f2fd;
-}
+.hdr-orb .material-icons { color: #fff; font-size: 1.4rem; }
 
-.estadistica-icono.rojo {
-  background: #ffebee;
-}
-
-.estadistica-label {
-  font-size: 0.85rem;
-  color: #666;
-  margin: 0 0 8px 0;
-}
-
-.estadistica-valor {
-  font-size: 1.5rem;
-  color: #222;
-  margin: 0 0 4px 0;
+.page-hdr h1 {
+  font-size: 1.3rem;
   font-weight: 700;
+  color: var(--color-text-primary, #1A2B3C);
+  margin: 0 0 5px;
 }
 
-.estadistica-sub {
+.species-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.spec-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(0, 151, 167, 0.1);
+  color: #0097A7;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.76rem;
+  font-weight: 600;
+}
+
+.spec-chip .material-icons { font-size: 0.85rem; }
+.spec-chip.spec-empty { background: rgba(144, 164, 174, 0.1); color: var(--color-text-muted, #90A4AE); }
+
+.water-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(67, 160, 71, 0.08);
+  color: #2E7D32;
+  border: 1px solid rgba(67, 160, 71, 0.22);
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.water-badge .material-icons { font-size: 1rem; color: #43A047; }
+
+.w-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #43A047;
+  animation: pulse-dot 2s infinite;
+  flex-shrink: 0;
+}
+
+/* ═══════════════════════════════════
+   MAIN LAYOUT
+═══════════════════════════════════ */
+.main-layout {
+  flex: 1;
+  display: flex;
+  gap: 16px;
+  overflow: hidden;
+  min-height: 0;
+  padding-bottom: 16px;
+}
+
+/* ═══════════════════════════════════
+   PROFILE ASIDE
+═══════════════════════════════════ */
+.profile-aside {
+  width: 236px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.profile-card {
+  background: var(--color-surface, #fff);
+  border-radius: 16px;
+  padding: 22px 16px 18px;
+  border: 1px solid var(--color-border-light, #F1F5F9);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 6px;
+  animation: fadeUp 0.4s 0.05s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+.profile-avatar {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #00BCD4, #0097A7);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  font-weight: 700;
+  box-shadow: 0 4px 14px rgba(0, 151, 167, 0.35);
+  margin-bottom: 6px;
+}
+
+.profile-name {
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--color-text-primary, #1A2B3C);
+}
+
+.profile-email {
+  font-size: 0.76rem;
+  color: var(--color-text-secondary, #546E7A);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  padding: 0 4px;
+}
+
+.btn-profile {
+  margin-top: 6px;
+  background: rgba(0, 151, 167, 0.1);
+  color: #0097A7;
+  border: none;
+  border-radius: 10px;
+  padding: 8px 20px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-family: inherit;
+  transition: all 0.22s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.btn-profile:hover { background: #0097A7; color: #fff; transform: translateY(-1px); }
+.btn-profile:active { transform: scale(0.97); }
+.btn-profile .material-icons { font-size: 1rem; }
+
+.location-card {
+  background: var(--color-surface, #fff);
+  border-radius: 14px;
+  padding: 14px;
+  border: 1px solid var(--color-border-light, #F1F5F9);
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  animation: fadeUp 0.4s 0.1s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+.loc-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: rgba(239, 83, 80, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.loc-icon .material-icons { font-size: 1rem; color: #ef5350; }
+
+.loc-name {
+  font-weight: 600;
   font-size: 0.85rem;
-  color: #999;
-  margin: 0;
-  line-height: 1.3;
+  color: var(--color-text-primary, #1A2B3C);
+  margin-bottom: 2px;
 }
 
-/* Estilos para el menú móvil */
-.perfil-mobile {
-  display: none;
+.loc-addr {
+  font-size: 0.74rem;
+  color: var(--color-text-secondary, #546E7A);
+  line-height: 1.4;
 }
 
+.year-card {
+  background: linear-gradient(135deg, #0097A7, #00BCD4);
+  border-radius: 14px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  animation: fadeUp 0.4s 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+.year-ico {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.year-ico .material-icons { color: rgba(255,255,255,0.9); font-size: 1.1rem; }
+
+.year-label {
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.8);
+  font-weight: 500;
+  margin-bottom: 1px;
+}
+
+.year-num {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1;
+}
+
+/* ═══════════════════════════════════
+   DASHBOARD CONTENT
+═══════════════════════════════════ */
+.dash-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* ── KPI Strip ── */
+.kpi-strip {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.kpi-card {
+  background: var(--color-surface, #fff);
+  border-radius: 14px;
+  padding: 16px 18px;
+  border: 1px solid var(--color-border-light, #F1F5F9);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  transition: transform 0.22s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              box-shadow 0.22s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  animation: fadeUp 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+.kpi-card:nth-child(1) { animation-delay: 0.06s; }
+.kpi-card:nth-child(2) { animation-delay: 0.12s; }
+.kpi-card:nth-child(3) { animation-delay: 0.18s; }
+
+.kpi-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.08); }
+.kpi-card:active { transform: scale(0.98); }
+
+.kpi-ico {
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.kpi-ico .material-icons { font-size: 1.4rem; }
+
+.kpi-red .kpi-ico   { background: rgba(239, 83, 80, 0.12); }
+.kpi-red .kpi-ico .material-icons { color: #ef5350; }
+
+.kpi-green .kpi-ico { background: rgba(67, 160, 71, 0.12); }
+.kpi-green .kpi-ico .material-icons { color: #43a047; }
+
+.kpi-teal .kpi-ico  { background: rgba(0, 151, 167, 0.12); }
+.kpi-teal .kpi-ico .material-icons { color: #0097A7; }
+
+.kpi-lbl {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--color-text-muted, #90A4AE);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.kpi-val {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--color-text-primary, #1A2B3C);
+}
+
+/* ── Stats Row ── */
+.stats-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.stat-card {
+  background: var(--color-surface, #fff);
+  border-radius: 14px;
+  padding: 16px 18px;
+  border: 1px solid var(--color-border-light, #F1F5F9);
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  transition: transform 0.22s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              box-shadow 0.22s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  animation: fadeUp 0.4s 0.22s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+.stat-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.08); }
+.stat-card:active { transform: scale(0.98); }
+
+.stat-icon-wrap {
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.stat-icon-wrap .material-icons { font-size: 1.4rem; }
+
+.stat-blue { background: rgba(33, 150, 243, 0.12); }
+.stat-blue .material-icons { color: #1976D2; }
+.stat-red  { background: rgba(239, 83, 80, 0.12); }
+.stat-red .material-icons  { color: #ef5350; }
+
+.stat-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--color-text-muted, #90A4AE);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.stat-value {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--color-text-primary, #1A2B3C);
+  margin-bottom: 3px;
+}
+
+.stat-sub {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary, #546E7A);
+  line-height: 1.4;
+}
+
+/* ── Water Health Card ── */
+.water-card {
+  background: linear-gradient(135deg, rgba(0, 151, 167, 0.05), rgba(0, 188, 212, 0.05));
+  border: 1px solid rgba(0, 151, 167, 0.18);
+  border-radius: 14px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-shrink: 0;
+  animation: fadeUp 0.4s 0.28s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+.water-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  background: rgba(0, 151, 167, 0.14);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.water-icon .material-icons { font-size: 1.4rem; color: #0097A7; }
+
+.water-body { flex: 1; min-width: 0; }
+
+.water-title {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--color-text-primary, #1A2B3C);
+  margin-bottom: 4px;
+}
+
+.water-msg {
+  font-size: 0.8rem;
+  color: var(--color-text-secondary, #546E7A);
+  line-height: 1.45;
+}
+
+.water-status {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: rgba(67, 160, 71, 0.1);
+  color: #2E7D32;
+  border: 1px solid rgba(67, 160, 71, 0.2);
+  padding: 7px 14px;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.ws-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #43A047;
+  animation: pulse-dot 2s infinite;
+}
+
+/* ═══════════════════════════════════
+   ANIMATIONS
+═══════════════════════════════════ */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.55; transform: scale(0.8); }
+}
+
+/* ═══════════════════════════════════
+   MOBILE PROFILE TOGGLE
+═══════════════════════════════════ */
+.perfil-mobile { display: none; }
+
+.perfil-toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--color-surface, #fff);
+  border: 1px solid var(--color-border-light, #F1F5F9);
+  padding: 11px 16px;
+  border-radius: 12px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-text-primary, #1A2B3C);
+  font-family: inherit;
+  transition: box-shadow 0.2s ease;
+}
+
+.perfil-toggle:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+
+.perfil-avatar-small {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #00BCD4, #0097A7);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.toggle-icon {
+  margin-left: auto;
+  color: var(--color-primary, #0097A7);
+  font-size: 1.2rem !important;
+}
+
+.perfil-dropdown {
+  background: var(--color-surface, #fff);
+  margin-top: 8px;
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid var(--color-border-light, #F1F5F9);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+  animation: slideDown 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.perfil-email-sm {
+  color: var(--color-text-secondary, #546E7A);
+  font-size: 0.85rem;
+  margin: 0 0 10px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.btn-perfil-mobile {
+  width: 100%;
+  background: linear-gradient(135deg, #00BCD4, #0097A7);
+  color: #fff;
+  border: none;
+  padding: 10px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-family: inherit;
+  font-size: 0.875rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: opacity 0.2s ease;
+}
+
+.btn-perfil-mobile:hover { opacity: 0.88; }
+.btn-perfil-mobile .material-icons { font-size: 1rem; }
+
+/* ═══════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════ */
 @media (max-width: 1200px) {
-  /* Perfil móvil al principio */
   .perfil-mobile {
     display: block;
-    padding: 12px 24px 0 24px; /* Padding superior e inferior */
-    background: #f5f7fa;
+    padding: 12px 16px 0;
   }
 
-  .perfil-sidebar {
-    display: none;
-  }
-
-  .dashboard-container {
-    grid-template-columns: 1fr;
-    padding-top: 12px; /* Reducir padding superior ya que el perfil está arriba */
-  }
-
-  .perfil-toggle {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    background: white;
-    border: none;
-    padding: 12px 16px;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    cursor: pointer;
-    font-size: 1rem;
-    font-weight: 600;
-    transition: all 0.2s;
-  }
-
-  .perfil-toggle:active {
-    transform: scale(0.98);
-  }
-
-  .perfil-avatar-small {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #00bcd4 0%, #0097a7 100%);
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1rem;
-    font-weight: 700;
-    flex-shrink: 0;
-  }
-
-  .toggle-icon {
-    margin-left: auto;
-    color: #00bcd4;
-    font-size: 0.8rem;
-    transition: transform 0.2s;
-  }
-
-  .perfil-dropdown {
-    background: white;
-    margin-top: 8px;
-    padding: 16px;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    animation: slideDown 0.2s ease-out;
-  }
-
-  @keyframes slideDown {
-    from {
-      opacity: 0;
-      transform: translateY(-10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  .perfil-dropdown .perfil-email {
-    color: #666;
-    font-size: 0.9rem;
-    margin: 0 0 12px 0;
-  }
-
-  .btn-perfil-mobile {
-    width: 100%;
-    background: #00bcd4;
-    color: white;
-    border: none;
-    padding: 10px;
-    border-radius: 8px;
-    font-weight: 600;
-    margin-top: 0;
-    cursor: pointer;
-    transition: background 0.2s;
-  }
-
-  .btn-perfil-mobile:hover {
-    background: #0097a7;
-  }
-
-  .recordatorios-mobile {
-    margin-top: 16px;
-    padding-top: 16px;
-    border-top: 1px solid #e0e0e0;
-  }
-
-  .recordatorios-mobile h4 {
-    font-size: 1rem;
-    color: #00bcd4;
-    margin: 0 0 12px 0;
-  }
-
-  .recordatorios-mobile .recordatorio-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    background: #fffde7;
-    padding: 12px;
-    border-radius: 8px;
-    margin-bottom: 8px;
-  }
-
-  .recordatorios-mobile .recordatorio-item:last-child {
-    margin-bottom: 0;
-  }
-
-  .recordatorios-mobile .recordatorio-icon {
-    font-size: 1.2rem;
-    flex-shrink: 0;
-  }
-
-  .recordatorios-mobile .recordatorio-item p {
-    margin: 0;
-    color: #666;
-    font-size: 0.9rem;
-    line-height: 1.4;
-  }
+  .profile-aside { display: none; }
 }
 
-@media (max-width: 768px) {
-  .perfil-mobile {
-    padding: 12px 12px 0 12px; /* Menos padding en móviles pequeños */
-  }
-
-  .dashboard-container {
-    padding: 12px;
-  }
-
-  .balance-cards {
-    grid-template-columns: 1fr;
-  }
-
-  .biomasa-cards {
-    grid-template-columns: 1fr;
-  }
-
-  .estadisticas-section {
-    grid-template-columns: 1fr;
-  }
-
-  .ecopeces-header {
-    flex-direction: column;
-    gap: 16px;
-  }
-
-  .unidades-card {
-    width: 100%;
-    flex-wrap: wrap;
-  }
-
-  .balance-icono {
-    width: 40px;
-    height: 40px;
-    font-size: 1.2rem;
-    top: 16px;
-    right: 16px;
-  }
-
-  .balance-valor {
-    font-size: 1.5rem;
-  }
-
-  .ecopeces-section,
-  .salud-agua,
-  .balance-section,
-  .biomasa-section,
-  .estadisticas-section {
-    padding: 16px;
-  }
+@media (max-width: 860px) {
+  .kpi-strip { grid-template-columns: 1fr 1fr; }
+  .kpi-card:nth-child(3) { grid-column: span 2; }
 }
 
-@media (max-width: 480px) {
-  .perfil-toggle {
-    font-size: 0.9rem;
-    padding: 10px 12px;
-  }
-
-  .perfil-avatar-small {
-    width: 35px;
-    height: 35px;
-    font-size: 0.9rem;
-  }
-
-  .ecopeces-header h1 {
-    font-size: 1.5rem;
-  }
-
-  .balance-valor {
-    font-size: 1.3rem;
-  }
-
-  .biomasa-valor {
-    font-size: 1.5rem;
-  }
-
-  .estadistica-valor {
-    font-size: 1.2rem;
-  }
+@media (max-width: 680px) {
+  .perfil-page { padding: 10px 12px 0; gap: 10px; }
+  .page-hdr h1 { font-size: 1.1rem; }
+  .water-badge { display: none; }
+  .kpi-strip { grid-template-columns: 1fr; }
+  .kpi-card:nth-child(3) { grid-column: auto; }
+  .stats-row { grid-template-columns: 1fr; }
+  .water-card { flex-wrap: wrap; }
+  .water-status { width: 100%; justify-content: center; }
 }

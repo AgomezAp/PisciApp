@@ -234,4 +234,16 @@ export class AuthService {
         catchError((error) => this.errorService.handleError(error))
       );
   }
+
+  forgotPassword(correo: string): Observable<any> {
+    return this.http
+      .post(`${this.apiUrl}usuarios/forgot-password`, { correo })
+      .pipe(catchError((error) => this.errorService.handleError(error)));
+  }
+
+  resetPassword(token: string, nuevacontrasena: string): Observable<any> {
+    return this.http
+      .post(`${this.apiUrl}usuarios/reset-password/${token}`, { nuevacontrasena })
+      .pipe(catchError((error) => this.errorService.handleError(error)));
+  }
 }

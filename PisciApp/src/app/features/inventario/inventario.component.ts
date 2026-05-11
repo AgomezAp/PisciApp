@@ -3,13 +3,12 @@ import { AuthService } from '../../core/services/auth.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { InventarioService } from '../../core/services/inventario.service';
 import { CommonModule } from '@angular/common';
-import { NavbarComponent } from '../../shared/components/navbar/navbar.component';
 import { FormsModule } from '@angular/forms';
 import { Pipe, PipeTransform } from '@angular/core';
 
 @Component({
   selector: 'app-inventario',
-  imports: [CommonModule, NavbarComponent, FormsModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './inventario.component.html',
   styleUrl: './inventario.component.css'
 })

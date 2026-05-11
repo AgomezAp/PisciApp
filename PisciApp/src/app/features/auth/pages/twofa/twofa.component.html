@@ -1,6 +1,36 @@
-<div class="twofa-box">
-  <h3>⚡ Introduce tu código 2FA</h3>
-  <input [(ngModel)]="code" maxlength="6" placeholder="123456" />
-  <button (click)="verificar()">Verificar</button>
-  <div *ngIf="error" class="error">{{ error }}</div>
+<div class="auth-page">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <img src="/assets/logo.png" alt="PisciApp" />
+    </div>
+
+    <div class="shield-icon">
+      <span class="material-icons">security</span>
+    </div>
+
+    <h2 class="auth-title">Verificación en dos pasos</h2>
+    <p class="auth-subtitle">Introduce el código de 6 dígitos de tu aplicación de autenticación</p>
+
+    <div class="code-field-wrap">
+      <input
+        [(ngModel)]="code"
+        maxlength="6"
+        placeholder="000000"
+        class="code-field"
+        type="text"
+        inputmode="numeric"
+        autocomplete="one-time-code"
+      />
+    </div>
+
+    <button class="auth-btn" (click)="verificar()">
+      <span class="material-icons">verified</span>
+      Verificar código
+    </button>
+
+    <div class="error-msg" *ngIf="error">
+      <span class="material-icons">error_outline</span>
+      {{ error }}
+    </div>
+  </div>
 </div>

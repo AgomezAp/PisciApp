@@ -25,6 +25,7 @@ export const Comprador = sequelize.define(
     },
     {
         timestamps: false,
+        freezeTableName: true,
         indexes: [
             {
                 // ✅ Constraint único compuesto: mismo correo solo una vez por usuario

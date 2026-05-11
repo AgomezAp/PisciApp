@@ -8,7 +8,14 @@ export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
   {
-    path: 'reiniciar-contraseña',
+    path: 'forgot-password',
+    loadComponent: () =>
+      import(
+        './features/auth/pages/contrasena-olvidada/contrasena-olvidada.component'
+      ).then((m) => m.ContrasenaOlvidadaComponent),
+  },
+  {
+    path: 'reiniciar-contraseña/:token',
     loadComponent: () =>
       import(
         './features/auth/pages/contrasena-olvidada/contrasena-olvidada.component'

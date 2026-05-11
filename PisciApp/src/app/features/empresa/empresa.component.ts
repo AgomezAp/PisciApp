@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { NavbarComponent } from '../../shared/components/navbar/navbar.component';
 import { CommonModule } from '@angular/common';
 import { CicloService } from '../../core/services/ciclo.service';
 import { TanqueService } from '../../core/services/tanque.service';
@@ -8,14 +7,19 @@ import { NotificationService } from '../../core/services/notification.service';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { VentaService } from '../../core/services/venta.service';
+import { Chart, registerables } from 'chart.js';
+
+Chart.register(...registerables);
 
 @Component({
   selector: 'app-empresa',
-  imports: [NavbarComponent, CommonModule, FormsModule],
+  standalone: true,
+  imports: [CommonModule, FormsModule],
   templateUrl: './empresa.component.html',
   styleUrl: './empresa.component.css'
 })
 export class EmpresaComponent implements OnInit {
+  Math = Math;
   vistaActual: 'ciclos' | 'tanques' | 'ventas' = 'ciclos';
   ciclos: any[] = [];
   tanques: any[] = [];
@@ -38,6 +42,10 @@ export class EmpresaComponent implements OnInit {
   costoUnidad: number | null = null;
   clienteExistente: boolean = false;
   cicloSeleccionadoMovimiento: any = null
+
+  // Referencias a los gráficos para poder destruirlos y crearlos de nuevo
+  private chartInstance: any;
+
   nuevoCiclo = {
     tanques: null as number | null,
     numero_peces: null as number | null,
@@ -60,7 +68,7 @@ export class EmpresaComponent implements OnInit {
     toneladas: null as number | null,
     comprador_id: null as number | null
   };
-  nuevoComprador = {
+  nuevoComprador: { nombre: string; empresa: string; direccion: string; correo: string; telefono: string } = {
     nombre: '',
     empresa: '',
     direccion: '',
@@ -97,19 +105,148 @@ export class EmpresaComponent implements OnInit {
 
   cambiarVista(vista: 'ciclos' | 'tanques' | 'ventas'): void {
     this.vistaActual = vista;
+    
+    // Cargar datos si no están
     if (vista === 'ciclos' && this.ciclos.length === 0) {
       this.cargarCiclos();
     } else if (vista === 'tanques' && this.tanques.length === 0) {
       this.cargarTanques();
-    } else if (vista === 'ventas' && this.tanques.length === 0) {
+    } else if (vista === 'ventas' && this.ventas.length === 0) {
       this.cargarVentas();
+    }
+
+    // Renderizar gráficos correspondientes tras un breve delay para asegurar que el HTML se actualizó
+    setTimeout(() => {
+      this.renderGraficas();
+    }, 150);
+  }
+
+  // --- STATS COMPUTERS ---
+  get statsCiclos() {
+    const total = this.ciclos.length;
+    const activos = this.ciclos.filter(c => !c.fecha_fin).length;
+    const cerrados = total - activos;
+    const pecesTotales = this.ciclos.filter(c => !c.fecha_fin).reduce((acc, c) => acc + (c.numero_actual || c.numero_peces || 0), 0);
+    const inversion = this.ciclos.reduce((acc, c) => acc + (c.costos || 0) + (c.costos_transporte || 0), 0);
+    return { total, activos, cerrados, pecesTotales, inversion };
+  }
+
+  get statsTanques() {
+    const total = this.tanques.length;
+    const disp = this.tanquesDisponiblesCantidad;
+    const ocup = total - disp;
+    const volumenTotal = this.tanques.reduce((acc, t) => acc + (t.volumen || 0), 0);
+    return { total, disp, ocup, volumenTotal };
+  }
+
+  get statsVentas() {
+    const ventas = Array.isArray(this.ventas) ? this.ventas : [];
+    const totalVentas = ventas.length;
+    const toneladasTotales = ventas.reduce((acc, v) => acc + (Number(v.toneladas) || 0), 0);
+    const ingresos = ventas.reduce((acc, v) => acc + (Number(v.precio) || 0), 0);
+    return { totalVentas, toneladasTotales, ingresos };
+  }
+
+  // --- RENDERING CHARTS ---
+  private renderGraficas(): void {
+    if (this.chartInstance) {
+      this.chartInstance.destroy();
+    }
+
+    if (this.vistaActual === 'ciclos') {
+      const ctx = document.getElementById('chartCanvas') as HTMLCanvasElement;
+      if (!ctx) return;
+      
+      const especiesCount: any = {};
+      this.ciclos.forEach(c => {
+        if (!c.fecha_fin) {
+          especiesCount[c.especie] = (especiesCount[c.especie] || 0) + (c.numero_actual || c.numero_peces || 0);
+        }
+      });
+      const labels = Object.keys(especiesCount);
+      const data = Object.values(especiesCount);
+
+      this.chartInstance = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: labels.length ? labels : ['Sin datos'],
+          datasets: [{
+            label: 'Peces Activos',
+            data: data.length ? data : [1],
+            backgroundColor: ['#0ebc86', '#0a617a', '#facc15', '#f43f5e', '#a855f7'],
+            borderWidth: 0
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { position: 'right' } },
+          cutout: '70%'
+        }
+      });
+    }
+
+    if (this.vistaActual === 'tanques') {
+      const ctx = document.getElementById('chartCanvas') as HTMLCanvasElement;
+      if (!ctx) return;
+
+      const { disp, ocup } = this.statsTanques;
+      this.chartInstance = new Chart(ctx, {
+        type: 'pie',
+        data: {
+          labels: ['Disponibles', 'Ocupados'],
+          datasets: [{
+            data: [disp, ocup],
+            backgroundColor: ['#10b981', '#f43f5e'],
+            borderWidth: 0
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { position: 'bottom' } }
+        }
+      });
+    }
+
+    if (this.vistaActual === 'ventas') {
+      const ctx = document.getElementById('chartCanvas') as HTMLCanvasElement;
+      if (!ctx) return;
+
+      // Agrupar ingresos por cliente (solo para visualizar rápido algo valioso)
+      const ingresosCliente: any = {};
+      const ventasArr = Array.isArray(this.ventas) ? this.ventas : [];
+      ventasArr.forEach(v => {
+        const cliente = v.comprador?.nombre || 'Anónimo';
+        ingresosCliente[cliente] = (ingresosCliente[cliente] || 0) + Number(v.precio || 0);
+      });
+
+      this.chartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: Object.keys(ingresosCliente).length ? Object.keys(ingresosCliente) : ['Sin ventas'],
+          datasets: [{
+            label: 'Ingresos por Cliente ($)',
+            data: Object.keys(ingresosCliente).length ? Object.values(ingresosCliente) : [0],
+            backgroundColor: '#0a617a',
+            borderRadius: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: { y: { beginAtZero: true } }
+        }
+      });
     }
   }
 
   private cargarDatos(): void {
     this.cargarCiclos();
     this.cargarTanques();
-    this.cargarVentas()
+    this.cargarVentas();
+    setTimeout(() => this.renderGraficas(), 800);
   }
 
   private cargarCiclos(): void {
@@ -175,13 +312,22 @@ export class EmpresaComponent implements OnInit {
     this.cargando = true;
     this.ventaService.obtenerVentas().subscribe({
       next: (data) => {
-        this.ventas = data;
+        // La API puede devolver el array directo o envolverlo en un objeto
+        if (Array.isArray(data)) {
+          this.ventas = data;
+        } else if (data && Array.isArray((data as any).ventas)) {
+          this.ventas = (data as any).ventas;
+        } else if (data && Array.isArray((data as any).data)) {
+          this.ventas = (data as any).data;
+        } else {
+          this.ventas = [];
+        }
         this.cargando = false;
       },
       error: (err) => {
         console.error('Error al cargar las ventas', err);
         this.ventas = [];
-        this.cargando = false
+        this.cargando = false;
       }
     });
   }
@@ -252,6 +398,10 @@ export class EmpresaComponent implements OnInit {
         this.notificationService.error('Error al editar ');
       }
     });
+  }
+
+  calcularCostos() {
+    this.nuevoCiclo.costos = (this.nuevoCiclo.numero_peces ?? 0) * (this.costoUnidad ?? 0);
   }
 
   agregarCiclo(){
@@ -396,15 +546,14 @@ export class EmpresaComponent implements OnInit {
       }
       datos.comprador_id = this.nuevaVenta.comprador_id;
     } else {
-      if (!this.nuevoComprador.nombre || !this.nuevoComprador.empresa || 
-          !this.nuevoComprador.direccion || !this.nuevoComprador.correo) {
+      if (!this.nuevoComprador.nombre || !this.nuevoComprador.empresa || !this.nuevoComprador.correo || !this.nuevoComprador.direccion) {
         this.notificationService.error('Completa todos los datos del cliente');
         return;
       }
       datos.nombre = this.nuevoComprador.nombre;
       datos.empresa = this.nuevoComprador.empresa;
-      datos.direccion = this.nuevoComprador.direccion;
       datos.correo = this.nuevoComprador.correo;
+      datos.direccion = this.nuevoComprador.direccion;
       datos.telefono = this.nuevoComprador.telefono || '';
     }
 

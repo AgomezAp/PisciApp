@@ -4,16 +4,7 @@ import { AuthService, User } from '../../../../core/services/auth.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
-import { NavbarComponent } from '../../../../shared/components/navbar/navbar.component';
-import { MatExpansionModule } from '@angular/material/expansion';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatSelectModule } from '@angular/material/select';
 import { NotificationService } from '../../../../core/services/notification.service';
-import { MatIconModule } from '@angular/material/icon';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { PreferenciaService } from '../../../../core/services/preferencias.service';
 import { UsuarioService } from '../../../../core/services/usuario.service';
 import { EmpresaService } from '../../../../core/services/empresa.service';
@@ -22,15 +13,6 @@ import { EmpresaService } from '../../../../core/services/empresa.service';
   imports: [
     CommonModule,
     FormsModule,
-    NavbarComponent,
-    MatExpansionModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule,
-    MatCheckboxModule,
-    MatSelectModule,
-    MatIconModule,
-    MatProgressSpinnerModule,
   ],
   standalone: true,
   templateUrl: './configuracion.component.html',
@@ -65,6 +47,23 @@ export class ConfiguracionComponent implements OnInit, OnDestroy {
   };
   isUpdatingEmpresa: boolean = false;
   isLoadingEmpresa: boolean = false;
+
+  especiesOpciones = ['Tilapia', 'Carpa', 'Salmón', 'Trucha', 'Bagre', 'Rodaballo', 'Bacalao', 'Atún', 'Camarón', 'Langostino'];
+  actividadesOpciones = ['Producción', 'Comercialización', 'Exportación', 'Investigación', 'Reproducción', 'Engorde', 'Procesamiento', 'Consultoría'];
+
+  toggleEspecie(value: string): void {
+    if (!this.empresa.especies) this.empresa.especies = [];
+    const idx = this.empresa.especies.indexOf(value);
+    if (idx === -1) this.empresa.especies.push(value);
+    else this.empresa.especies.splice(idx, 1);
+  }
+
+  toggleActividad(value: string): void {
+    if (!this.empresa.actividad) this.empresa.actividad = [];
+    const idx = this.empresa.actividad.indexOf(value);
+    if (idx === -1) this.empresa.actividad.push(value);
+    else this.empresa.actividad.splice(idx, 1);
+  }
 
 
   constructor(

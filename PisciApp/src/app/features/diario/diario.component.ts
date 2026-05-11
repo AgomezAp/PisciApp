@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { NavbarComponent } from '../../shared/components/navbar/navbar.component';
 import { AuthService } from '../../core/services/auth.service';
 import { TanqueService } from '../../core/services/tanque.service';
 import { CommonModule } from '@angular/common';
@@ -11,7 +10,7 @@ import { InventarioService } from '../../core/services/inventario.service';
 
 @Component({
   selector: 'app-diario',
-  imports: [NavbarComponent, CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './diario.component.html',
   styleUrl: './diario.component.css'
 })

@@ -1,212 +1,306 @@
-<app-navbar></app-navbar>
 <main class="container">
-    <section class="head">
+
+  <!-- ===== CABECERA ===== -->
+  <section class="head">
+    <div class="head-inner">
+      <div>
         <h1>Reporte diario</h1>
-        <p class="muted">
-            Registra diariamente calidad del agua, alimentación y mortalidad.
-        </p>
-    </section>
+        <p class="muted">Registra diariamente calidad del agua, alimentación y mortalidad.</p>
+      </div>
+      <button class="btn-guardar" type="button" (click)="guardarDiario()" [disabled]="!tanque_id">
+        <span class="material-icons">save</span>
+        {{ cargando ? 'Guardando...' : 'Guardar reporte' }}
+      </button>
+    </div>
+  </section>
 
-    <section class="card">
-        <form id="formReporte" class="form-grid">
-            <div class="group">
-                <h2>Estanque</h2>
-                <div class="grid2">
-                    <label>
-                        Selecciona el estanque
-                        <select [(ngModel)]="tanque_id" id="estanque" name="estanque" (change)="onTanqueChange()">
-                            <option value="" disabled selected>Selecciona un estanque</option>
-                            <option *ngFor="let tanque of tanques" [value]="tanque.id">
-                                {{getTanqueNombre(tanque.id)}}
-                            </option>
-                        </select>
-                    </label>
-                    <label>
-                        Ciclo Asociado
-                        <input type="text" [value]="ciclo_id ? 'Ciclo #' + ciclo_id : 'No hay ciclo para este tanque'"
-                            readonly [style.color]="ciclo_id ? '#00bcd4' : '#e53935'" [style.font-weight]="'600'"
-                            [style.background]="ciclo_id ? '#e0f7fa' : '#ffebee'" />
-                    </label>
-                </div>
-            </div>
+  <!-- ===== LAYOUT 2 COLUMNAS ===== -->
+  <form id="formReporte" class="form-layout">
 
-            <div class="group" id="grp-agua">
-                <h2>1. Calidad del agua</h2>
-                <div class="grid4">
-                    <label>Temperatura (°C)
-                        <input type="number" step="0.1" name="temperatura" [(ngModel)]="calidadAgua['temperatura']"
-                            [placeholder]="ultimaMedicion?.temperatura ?? '0'" [disabled]="!tanque_id" />
-                        <span [ngClass]="getSemaforo('temperatura', calidadAgua['temperatura'] ?? 0)">●</span>
-                    </label>
-                    <label>Oxígeno disuelto (mg/L)
-                        <input type="number" step="0.1" name="oxigeno" [(ngModel)]="calidadAgua['oxigeno_disuelto']"
-                            [placeholder]="ultimaMedicion?.oxigeno_disuelto ?? '0'" [disabled]="!tanque_id" />
-                        <span [ngClass]="getSemaforo('oxigeno_disuelto', calidadAgua['oxigeno_disuelto'] ?? 0)">●</span>
-                    </label>
-                    <label>pH
-                        <input type="number" step="0.1" name="ph" [(ngModel)]="calidadAgua['ph']"
-                            [placeholder]="ultimaMedicion?.ph ?? '0'" [disabled]="!tanque_id" />
-                        <span [ngClass]="getSemaforo('ph', calidadAgua['ph'] ?? 0)">●</span>
-                    </label>
-                    <label>Nitritos (mg/L)
-                        <input type="number" step="0.01" name="nitritos" [(ngModel)]="calidadAgua['nitritos']"
-                            [placeholder]="ultimaMedicion?.nitritos ?? '0'" [disabled]="!tanque_id" />
-                        <span [ngClass]="getSemaforo('nitritos', calidadAgua['nitritos'] ?? 0)">●</span>
-                    </label>
-                    <label>Amoníaco (mg/L)
-                        <input type="number" step="0.01" name="amoniaco" [(ngModel)]="calidadAgua['amoniaco']"
-                            [placeholder]="ultimaMedicion?.amoniaco ?? '0'" [disabled]="!tanque_id" />
-                        <span [ngClass]="getSemaforo('amoniaco', calidadAgua['amoniaco'] ?? 0)">●</span>
-                    </label>
-                    <label>Nitratos (mg/L)
-                        <input type="number" step="0.01" name="nitratos" [(ngModel)]="calidadAgua['nitratos']"
-                            [placeholder]="ultimaMedicion?.nitratos ?? '0'" [disabled]="!tanque_id" />
-                        <span [ngClass]="getSemaforo('nitratos', calidadAgua['nitratos'] ?? 0)">●</span>
-                    </label>
-                    <label>Salinidad (ppt)
-                        <input type="number" step="0.01" name="salinidad" [(ngModel)]="calidadAgua['salinidad']"
-                            [placeholder]="ultimaMedicion?.salinidad ?? '0'" [disabled]="!tanque_id" />
-                        <span [ngClass]="getSemaforo('salinidad', calidadAgua['salinidad'] ?? 0)">●</span>
-                    </label>
-                </div>
+    <!-- ──── COLUMNA IZQUIERDA ──── -->
+    <div class="col-left">
 
-                <div class="global-chip" *ngIf="tieneDatosCalidadAgua()" [ngClass]="{
-                    'critico': getCalidadAguaGlobal() === 'Crítico',
-                    'vigilancia': getCalidadAguaGlobal() === 'Vigilancia' || getCalidadAguaGlobal() === 'Alto Riesgo',
-                    'optimo': getCalidadAguaGlobal() === 'Óptimo'
-                }">Calidad del agua: {{getCalidadAguaGlobal()}}</div>
+      <!-- Estanque -->
+      <div class="card group">
+        <h2>
+          <span class="material-icons section-icon">water</span>
+          Estanque
+          <span class="info-hint">
+            <span class="material-icons">help_outline</span>
+            <span class="hint-text">Selecciona el estanque a registrar. Solo puedes ingresar datos si hay un ciclo de producción activo en ese estanque.</span>
+          </span>
+        </h2>
+        <div class="grid2">
+          <label>
+            Selecciona el estanque
+            <select [(ngModel)]="tanque_id" id="estanque" name="estanque" (change)="onTanqueChange()">
+              <option value="" disabled selected>Selecciona un estanque</option>
+              <option *ngFor="let tanque of tanques" [value]="tanque.id">
+                {{getTanqueNombre(tanque.id)}}
+              </option>
+            </select>
+          </label>
+          <label>
+            Ciclo Asociado
+            <input type="text" [value]="ciclo_id ? 'Ciclo #' + ciclo_id : 'No hay ciclo para este tanque'"
+              readonly [style.color]="ciclo_id ? '#00bcd4' : '#e53935'" [style.font-weight]="'600'"
+              [style.background]="ciclo_id ? '#e0f7fa' : '#ffebee'" />
+          </label>
+        </div>
+      </div>
 
-                <div class="info-card" *ngIf="tieneDatosCalidadAgua()">
-                    <div class="info-title">Plan de Acción</div>
-                    <ul class="info-list">
-                        <li *ngFor="let param of calidadAguaParams">
-                            <b>{{ formatearParametro(param) }}:</b>
-                            {{ getPlanAccion(param, getSemaforo(param, calidadAgua[param] ?? 0)) }}
-                        </li>
-                    </ul>
-                </div>
-            </div>
+      <!-- Calidad del agua -->
+      <div class="card group" id="grp-agua">
+        <h2>
+          <span class="material-icons section-icon">science</span>
+          Calidad del agua
+          <span class="info-hint">
+            <span class="material-icons">help_outline</span>
+            <span class="hint-text">Registra los parámetros fisicoquímicos del agua. El semáforo ● indica: verde = óptimo, amarillo = vigilar, rojo = crítico.</span>
+          </span>
+        </h2>
+        <div class="grid4">
+          <label>
+            <span class="label-text">
+              Temperatura (°C)
+              <span class="info-hint">
+                <span class="material-icons">help_outline</span>
+                <span class="hint-text">Óptimo: 18-28 °C. Fuera de este rango afecta el metabolismo y la conversión alimenticia.</span>
+              </span>
+            </span>
+            <input type="number" step="0.1" name="temperatura" [(ngModel)]="calidadAgua['temperatura']"
+              [placeholder]="ultimaMedicion?.temperatura ?? '0'" [disabled]="!tanque_id" />
+            <span [ngClass]="getSemaforo('temperatura', calidadAgua['temperatura'] ?? 0)">●</span>
+          </label>
+          <label>
+            <span class="label-text">
+              Oxígeno disuelto (mg/L)
+              <span class="info-hint">
+                <span class="material-icons">help_outline</span>
+                <span class="hint-text">Óptimo: 5-9 mg/L. Por debajo de 4 mg/L causa estrés severo y mortalidad.</span>
+              </span>
+            </span>
+            <input type="number" step="0.1" name="oxigeno" [(ngModel)]="calidadAgua['oxigeno_disuelto']"
+              [placeholder]="ultimaMedicion?.oxigeno_disuelto ?? '0'" [disabled]="!tanque_id" />
+            <span [ngClass]="getSemaforo('oxigeno_disuelto', calidadAgua['oxigeno_disuelto'] ?? 0)">●</span>
+          </label>
+          <label>
+            <span class="label-text">
+              pH
+              <span class="info-hint">
+                <span class="material-icons">help_outline</span>
+                <span class="hint-text">Óptimo: 6.5-8.5. El pH afecta la toxicidad del amoniaco: a pH alto el amoniaco es más tóxico.</span>
+              </span>
+            </span>
+            <input type="number" step="0.1" name="ph" [(ngModel)]="calidadAgua['ph']"
+              [placeholder]="ultimaMedicion?.ph ?? '0'" [disabled]="!tanque_id" />
+            <span [ngClass]="getSemaforo('ph', calidadAgua['ph'] ?? 0)">●</span>
+          </label>
+          <label>
+            <span class="label-text">
+              Nitritos (mg/L)
+              <span class="info-hint">
+                <span class="material-icons">help_outline</span>
+                <span class="hint-text">Óptimo: 0-0.5 mg/L. Los nitritos son muy tóxicos; valores altos indican falla en el biofiltro.</span>
+              </span>
+            </span>
+            <input type="number" step="0.01" name="nitritos" [(ngModel)]="calidadAgua['nitritos']"
+              [placeholder]="ultimaMedicion?.nitritos ?? '0'" [disabled]="!tanque_id" />
+            <span [ngClass]="getSemaforo('nitritos', calidadAgua['nitritos'] ?? 0)">●</span>
+          </label>
+          <label>
+            <span class="label-text">
+              Amoníaco (mg/L)
+              <span class="info-hint">
+                <span class="material-icons">help_outline</span>
+                <span class="hint-text">Óptimo: 0-0.1 mg/L. Indicador clave de carga orgánica; valores altos causan mortalidad.</span>
+              </span>
+            </span>
+            <input type="number" step="0.01" name="amoniaco" [(ngModel)]="calidadAgua['amoniaco']"
+              [placeholder]="ultimaMedicion?.amoniaco ?? '0'" [disabled]="!tanque_id" />
+            <span [ngClass]="getSemaforo('amoniaco', calidadAgua['amoniaco'] ?? 0)">●</span>
+          </label>
+          <label>
+            <span class="label-text">
+              Nitratos (mg/L)
+              <span class="info-hint">
+                <span class="material-icons">help_outline</span>
+                <span class="hint-text">Óptimo: 0-50 mg/L. Producto final de la nitrificación; niveles altos indican necesidad de recambio de agua.</span>
+              </span>
+            </span>
+            <input type="number" step="0.01" name="nitratos" [(ngModel)]="calidadAgua['nitratos']"
+              [placeholder]="ultimaMedicion?.nitratos ?? '0'" [disabled]="!tanque_id" />
+            <span [ngClass]="getSemaforo('nitratos', calidadAgua['nitratos'] ?? 0)">●</span>
+          </label>
+          <label>
+            <span class="label-text">
+              Salinidad (ppt)
+              <span class="info-hint">
+                <span class="material-icons">help_outline</span>
+                <span class="hint-text">Óptimo agua dulce: 0-2 ppt. Para especies marinas consulta los rangos específicos de la especie.</span>
+              </span>
+            </span>
+            <input type="number" step="0.01" name="salinidad" [(ngModel)]="calidadAgua['salinidad']"
+              [placeholder]="ultimaMedicion?.salinidad ?? '0'" [disabled]="!tanque_id" />
+            <span [ngClass]="getSemaforo('salinidad', calidadAgua['salinidad'] ?? 0)">●</span>
+          </label>
+        </div>
 
-            <div class="group">
-                <h2>2. Alimentación</h2>
-                <div *ngFor="let alimento of alimentos; let i = index" class="registro-inline">
-                    <label>Nombre
-                        <select [name]="'alimentoNombre' + i" [(ngModel)]="alimento.nombre"
-                            (change)="onAlimentoSeleccionado($event, i)" [disabled]="!ciclo_id">
-                            <option value="">-- Selecciona un alimento --</option>
-                            <option *ngFor="let item of alimentoInventario"
-                                [value]="item.producto?.nombre || item.nombre">
-                                {{ item.producto?.nombre || item.nombre}} (Lote: {{ item.lote || item.producto?.lote ||
-                                'N/A' }})
-                            </option>
-                        </select>
-                    </label>
-                    <label>Cantidad{{ alimento.total_kg_disponible ? ' (máx: ' + alimento.total_kg_disponible +
-                        (alimento.unidad_medida || 'kg') + ')' : '' }}
-                        <input type="number" step="0.01" [name]="'alimentoCantidad' + i" [(ngModel)]="alimento.cantidad"
-                            (ngModelChange)="onAlimentoCantidadChange(i)" [disabled]="!ciclo_id"
-                            [max]="alimento.total_kg_disponible" />
-                    </label>
-                    <label>Costo ($)
-                        <input type="number" step="0.01" [name]="'alimentoCosto' + i" [(ngModel)]="alimento.costo"
-                            [disabled]="!ciclo_id" readonly
-                            [placeholder]="alimento.costo_por_kg ? '$' + (alimento.costo_por_kg | number:'1.2-2') + '/' + (alimento.unidad_medida || 'kg') : 'Selecciona un alimento'" />
-                    </label>
-                    <label>Observación
-                        <input type="text" [name]="'alimentoDescripcion' + i" [(ngModel)]="alimento.observacion"
-                            [disabled]="!ciclo_id" />
-                    </label>
-                    <div class="btn-group">
-                        <button type="button" class="btn-circle btn-add" (click)="agregarAlimento()"
-                            [disabled]="!ciclo_id" *ngIf="i === alimentos.length - 1" title="Agregar">
-                            +
-                        </button>
-                        <button type="button" class="btn-circle btn-remove" (click)="eliminarAlimento(i)"
-                            [disabled]="!ciclo_id" *ngIf="alimentos.length > 1" title="Eliminar">
-                            x
-                        </button>
-                    </div>
-                </div>
-            </div>
+        <div class="global-chip" *ngIf="tieneDatosCalidadAgua()" [ngClass]="{
+          'critico':    getCalidadAguaGlobal() === 'Crítico',
+          'vigilancia': getCalidadAguaGlobal() === 'Vigilancia' || getCalidadAguaGlobal() === 'Alto Riesgo',
+          'optimo':     getCalidadAguaGlobal() === 'Óptimo'
+        }">Calidad del agua: {{getCalidadAguaGlobal()}}</div>
 
-            <div class="group">
-                <h2>3. Químico</h2>
-                <div *ngFor="let quimico of quimicos; let i = index" class="registro-inline">
-                    <label>Nombre
-                        <select [name]="'quimicoNombre' + i" [(ngModel)]="quimico.nombre"
-                            (change)="onQuimicoSeleccionado($event, i)" [disabled]="!ciclo_id">
-                            <option value="">-- Selecciona un químico --</option>
-                            <option *ngFor="let item of quimicoInventario"
-                                [value]="item.producto?.nombre || item.nombre">
-                                {{item.producto?.nombre || item.nombre}} (Lote: {{ item.lote || item.producto?.lote ||
-                                'N/A' }})
-                            </option>
-                        </select>
-                    </label>
+        <div class="info-card" *ngIf="tieneDatosCalidadAgua()">
+          <div class="info-title">Plan de Acción</div>
+          <ul class="info-list">
+            <li *ngFor="let param of calidadAguaParams">
+              <b>{{ formatearParametro(param) }}:</b>
+              {{ getPlanAccion(param, getSemaforo(param, calidadAgua[param] ?? 0)) }}
+            </li>
+          </ul>
+        </div>
+      </div>
 
-                    <label>Cantidad {{ quimico.total_kg_disponible ? '(máx: ' + quimico.total_kg_disponible +
-                        (quimico.unidad_medida || 'kg') + ')' : '' }}
-                        <input type="number" step="0.01" [name]="'quimicoCantidad' + i" [(ngModel)]="quimico.cantidad"
-                            (ngModelChange)="onQuimicoCantidadChange(i)" [disabled]="!ciclo_id"
-                            [max]="quimico.total_kg_disponible" />
-                    </label>
-                    <label>Costo ($)
-                        <input type="number" step="0.01" [name]="'quimicoCosto' + i" [(ngModel)]="quimico.costo"
-                            [disabled]="!ciclo_id" readonly
-                            [placeholder]="quimico.costo_por_kg ? '$' + (quimico.costo_por_kg | number:'1.2-2') + '/' + (quimico.unidad_medida || 'kg') : 'Selecciona un químico'" />
-                    </label>
-                    <label>Observación
-                        <input type="text" [name]="'quimicoDescripcion'+ i" [(ngModel)]="quimico.descripcion"
-                            [disabled]="!ciclo_id" />
-                    </label>
-                    <div class="btn-group">
-                        <button type="button" class="btn-circle btn-add" (click)="agregarQuimico()"
-                            [disabled]="!ciclo_id" *ngIf="i === quimicos.length - 1" title="Agregar">
-                            +
-                        </button>
-                        <button type="button" class="btn-circle btn-remove" (click)="eliminarQuimico(i)"
-                            [disabled]="!ciclo_id" *ngIf="quimicos.length > 1" title="Eliminar">
-                            x
-                        </button>
-                    </div>
-                </div>
-            </div>
+    </div><!-- /col-left -->
 
-            <div class="group">
-                <h2>4. Mortalidad Diaria</h2>
-                <div *ngFor="let baja of bajas; let i = index" class="registro-inline mortalidad">
-                    <label>Número de peces muertos
-                        <input type="number" [(ngModel)]="baja.cantidad" [name]="'cantidad' + i"
-                            [disabled]="!ciclo_id" />
-                    </label>
-                    <label>Causas
-                        <select [name]="'causas' + i" [(ngModel)]="baja.causas" required [disabled]="!ciclo_id">
-                            <option value="" disabled selected>Selecciona las causas</option>
-                            <option *ngFor="let causa of causasBajas" [ngValue]="causa">
-                                {{causa}}
-                            </option>
-                        </select>
-                    </label>
-                    <div class="btn-group">
-                        <button type="button" class="btn-circle btn-add" (click)="agregarBaja()" [disabled]="!ciclo_id"
-                            *ngIf="i === bajas.length - 1" title="Agregar">
-                            +
-                        </button>
-                        <button type="button" class="btn-circle btn-remove" (click)="eliminarBaja(i)"
-                            [disabled]="!ciclo_id" *ngIf="bajas.length > 1" title="Eliminar">
-                            x
-                        </button>
-                    </div>
-                </div>
-            </div>
+    <!-- ──── COLUMNA DERECHA ──── -->
+    <div class="col-right">
 
-            <div class="form-actions">
-                <button class="btn" type="button" (click)="guardarDiario()" [disabled]="!tanque_id">
-                    {{ cargando ? 'Guardando...' : 'Guardar' }}
-                </button>
-            </div>
-        </form>
-    </section>
+      <!-- Alimentación -->
+      <div class="card group">
+        <h2>
+          <span class="material-icons section-icon">set_meal</span>
+          Alimentación
+          <span class="info-hint">
+            <span class="material-icons">help_outline</span>
+            <span class="hint-text">Registra el alimento suministrado. El costo se calcula automáticamente desde el inventario según precio por kg.</span>
+          </span>
+        </h2>
+        <div *ngFor="let alimento of alimentos; let i = index" class="registro-inline">
+          <label>Nombre
+            <select [name]="'alimentoNombre' + i" [(ngModel)]="alimento.nombre"
+              (change)="onAlimentoSeleccionado($event, i)" [disabled]="!ciclo_id">
+              <option value="">-- Selecciona --</option>
+              <option *ngFor="let item of alimentoInventario" [value]="item.producto?.nombre || item.nombre">
+                {{ item.producto?.nombre || item.nombre }} (Lote: {{ item.lote || item.producto?.lote || 'N/A' }})
+              </option>
+            </select>
+          </label>
+          <label>Cantidad{{ alimento.total_kg_disponible ? ' (máx: ' + alimento.total_kg_disponible + (alimento.unidad_medida || 'kg') + ')' : '' }}
+            <input type="number" step="0.01" [name]="'alimentoCantidad' + i" [(ngModel)]="alimento.cantidad"
+              (ngModelChange)="onAlimentoCantidadChange(i)" [disabled]="!ciclo_id"
+              [max]="alimento.total_kg_disponible" />
+          </label>
+          <label>Costo ($)
+            <input type="number" step="0.01" [name]="'alimentoCosto' + i" [(ngModel)]="alimento.costo"
+              [disabled]="!ciclo_id" readonly
+              [placeholder]="alimento.costo_por_kg ? '$' + (alimento.costo_por_kg | number:'1.2-2') + '/' + (alimento.unidad_medida || 'kg') : 'Selecciona un alimento'" />
+          </label>
+          <label>Observación
+            <input type="text" [name]="'alimentoDescripcion' + i" [(ngModel)]="alimento.observacion" [disabled]="!ciclo_id" />
+          </label>
+          <div class="btn-group">
+            <button type="button" class="btn-circle btn-add" (click)="agregarAlimento()"
+              [disabled]="!ciclo_id" *ngIf="i === alimentos.length - 1" title="Agregar">
+              <span class="material-icons">add</span>
+            </button>
+            <button type="button" class="btn-circle btn-remove" (click)="eliminarAlimento(i)"
+              [disabled]="!ciclo_id" *ngIf="alimentos.length > 1" title="Eliminar">
+              <span class="material-icons">remove</span>
+            </button>
+          </div>
+        </div>
+      </div>
 
+      <!-- Químico -->
+      <div class="card group">
+        <h2>
+          <span class="material-icons section-icon">science</span>
+          Químico
+          <span class="info-hint">
+            <span class="material-icons">help_outline</span>
+            <span class="hint-text">Registra cualquier producto químico o aditivo aplicado al estanque. El costo se calcula desde el inventario.</span>
+          </span>
+        </h2>
+        <div *ngFor="let quimico of quimicos; let i = index" class="registro-inline">
+          <label>Nombre
+            <select [name]="'quimicoNombre' + i" [(ngModel)]="quimico.nombre"
+              (change)="onQuimicoSeleccionado($event, i)" [disabled]="!ciclo_id">
+              <option value="">-- Selecciona --</option>
+              <option *ngFor="let item of quimicoInventario" [value]="item.producto?.nombre || item.nombre">
+                {{item.producto?.nombre || item.nombre}} (Lote: {{ item.lote || item.producto?.lote || 'N/A' }})
+              </option>
+            </select>
+          </label>
+          <label>Cantidad{{ quimico.total_kg_disponible ? ' (máx: ' + quimico.total_kg_disponible + (quimico.unidad_medida || 'kg') + ')' : '' }}
+            <input type="number" step="0.01" [name]="'quimicoCantidad' + i" [(ngModel)]="quimico.cantidad"
+              (ngModelChange)="onQuimicoCantidadChange(i)" [disabled]="!ciclo_id"
+              [max]="quimico.total_kg_disponible" />
+          </label>
+          <label>Costo ($)
+            <input type="number" step="0.01" [name]="'quimicoCosto' + i" [(ngModel)]="quimico.costo"
+              [disabled]="!ciclo_id" readonly
+              [placeholder]="quimico.costo_por_kg ? '$' + (quimico.costo_por_kg | number:'1.2-2') + '/' + (quimico.unidad_medida || 'kg') : 'Selecciona un químico'" />
+          </label>
+          <label>Observación
+            <input type="text" [name]="'quimicoDescripcion' + i" [(ngModel)]="quimico.descripcion" [disabled]="!ciclo_id" />
+          </label>
+          <div class="btn-group">
+            <button type="button" class="btn-circle btn-add" (click)="agregarQuimico()"
+              [disabled]="!ciclo_id" *ngIf="i === quimicos.length - 1" title="Agregar">
+              <span class="material-icons">add</span>
+            </button>
+            <button type="button" class="btn-circle btn-remove" (click)="eliminarQuimico(i)"
+              [disabled]="!ciclo_id" *ngIf="quimicos.length > 1" title="Eliminar">
+              <span class="material-icons">remove</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mortalidad -->
+      <div class="card group">
+        <h2>
+          <span class="material-icons section-icon">monitor_heart</span>
+          Mortalidad diaria
+          <span class="info-hint">
+            <span class="material-icons">help_outline</span>
+            <span class="hint-text">Registra los peces muertos del día con su causa probable. Esto actualiza la tasa de supervivencia del ciclo.</span>
+          </span>
+        </h2>
+        <div *ngFor="let baja of bajas; let i = index" class="registro-inline mortalidad">
+          <label>
+            <span class="label-text">
+              Nº peces muertos
+              <span class="info-hint">
+                <span class="material-icons">help_outline</span>
+                <span class="hint-text">Ingresa el total de peces muertos encontrados en el estanque durante el día.</span>
+              </span>
+            </span>
+            <input type="number" [(ngModel)]="baja.cantidad" [name]="'cantidad' + i" [disabled]="!ciclo_id" />
+          </label>
+          <label>Causas
+            <select [name]="'causas' + i" [(ngModel)]="baja.causas" required [disabled]="!ciclo_id">
+              <option value="" disabled selected>Selecciona la causa</option>
+              <option *ngFor="let causa of causasBajas" [ngValue]="causa">{{causa}}</option>
+            </select>
+          </label>
+          <div class="btn-group">
+            <button type="button" class="btn-circle btn-add" (click)="agregarBaja()" [disabled]="!ciclo_id"
+              *ngIf="i === bajas.length - 1" title="Agregar">
+              <span class="material-icons">add</span>
+            </button>
+            <button type="button" class="btn-circle btn-remove" (click)="eliminarBaja(i)" [disabled]="!ciclo_id"
+              *ngIf="bajas.length > 1" title="Eliminar">
+              <span class="material-icons">remove</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /col-right -->
+  </form>
 
 </main>

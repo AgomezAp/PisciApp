@@ -1,26 +1,45 @@
-<div class="verify-container">
-  <h2>Verificar tu correo</h2>
-
-  <form [formGroup]="verifyForm" (ngSubmit)="onSubmit()">
-    <div>
-      <label>Correo:</label>
-      <input type="email" formControlName="correo"  />
+<div class="auth-page">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <img src="/assets/logo.png" alt="PisciApp" />
     </div>
 
-    <div>
-      <label>Código recibido:</label>
-      <input
-        type="text"
-        placeholder="Introduce el código"
-        formControlName="codigo"
-      />
+    <div class="email-icon">
+      <span class="material-icons">mark_email_read</span>
     </div>
 
-    <button type="submit" [disabled]="verifyForm.invalid || loading">
-      {{ loading ? "Verificando..." : "Verificar" }}
-    </button>
+    <h2 class="auth-title">Verificar correo</h2>
+    <p class="auth-subtitle">Ingresa tu correo y el código que recibiste para activar tu cuenta</p>
 
-    <div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
-    <div *ngIf="successMessage" class="success">{{ successMessage }}</div>
-  </form>
+    <form [formGroup]="verifyForm" (ngSubmit)="onSubmit()" class="auth-form">
+      <div class="form-field">
+        <label for="correo">Correo electrónico</label>
+        <input type="email" id="correo" formControlName="correo" placeholder="tu@correo.com" />
+      </div>
+
+      <div class="form-field">
+        <label for="codigo">Código de verificación</label>
+        <input type="text" id="codigo" formControlName="codigo" placeholder="Código recibido" autocomplete="one-time-code" />
+      </div>
+
+      <button type="submit" class="auth-btn" [disabled]="verifyForm.invalid || loading">
+        <span class="material-icons">check_circle</span>
+        {{ loading ? 'Verificando...' : 'Verificar correo' }}
+      </button>
+    </form>
+
+    <div class="error-msg" *ngIf="errorMessage">
+      <span class="material-icons">error_outline</span>
+      {{ errorMessage }}
+    </div>
+
+    <div class="success-msg" *ngIf="successMessage">
+      <span class="material-icons">check_circle</span>
+      {{ successMessage }}
+    </div>
+
+    <div class="auth-footer">
+      <a href="/login">← Volver al inicio de sesión</a>
+    </div>
+  </div>
 </div>

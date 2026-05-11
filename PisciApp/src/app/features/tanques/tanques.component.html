@@ -1,24 +1,252 @@
-<app-navbar></app-navbar>
+<main class="tanques-page">
 
-<div class="tanques-carrusel">
-  <h2>Lista de tanques</h2>
-  <div class="carrusel-lista">
-    <div class="carrusel-item"
-      *ngFor="let tanque of tanques"
-      [class.seleccionado]="tanque.id === tanqueSeleccionado?.id"
-      [ngClass]="tanque.disponible ? 'carrusel-azul' : 'carrusel-rojo'"
-      (click)="seleccionarTanque(tanque)">
-      <div><b>{{ tanque.nombre }}</b></div>
-      <div>Volumen: {{ tanque.volumen }} m³</div>
-      
+  <!-- ═══ HEADER ═══ -->
+  <header class="page-hdr">
+    <div class="hdr-left">
+      <div class="hdr-orb"><span class="material-icons">sensors</span></div>
+      <div>
+        <h1>Monitoreo de Estanques</h1>
+        <p class="hdr-sub">Calidad del agua y análisis de parámetros en tiempo real</p>
+      </div>
+    </div>
+  </header>
+
+  <!-- ═══ MAIN LAYOUT ═══ -->
+  <div class="main-layout">
+
+    <!-- ─── SIDEBAR ─── -->
+    <aside class="tanks-sidebar">
+
+      <!-- Global KPIs 2x2 -->
+      <div class="global-kpis">
+        <div class="gkpi gkpi-teal">
+          <span class="material-icons">inventory_2</span>
+          <div><div class="gkpi-val">{{ stats.total }}</div><div class="gkpi-lbl">Totales</div></div>
+        </div>
+        <div class="gkpi gkpi-red">
+          <span class="material-icons">sensors</span>
+          <div><div class="gkpi-val">{{ stats.ocupados }}</div><div class="gkpi-lbl">En Producción</div></div>
+        </div>
+        <div class="gkpi gkpi-green">
+          <span class="material-icons">check_circle</span>
+          <div><div class="gkpi-val">{{ stats.disponibles }}</div><div class="gkpi-lbl">Disponibles</div></div>
+        </div>
+        <div class="gkpi gkpi-blue">
+          <span class="material-icons">water_drop</span>
+          <div><div class="gkpi-val">{{ stats.volumenTotal | number }}</div><div class="gkpi-lbl">m³ Cap.</div></div>
+        </div>
+      </div>
+
+      <!-- Tank list label -->
+      <div class="sidebar-label">
+        <span class="material-icons">pool</span> Estanques
+        <span class="count-pill">{{ tanques.length }}</span>
+      </div>
+
+      <!-- Tank cards -->
+      <div class="tank-list">
+        <button
+          class="tank-item"
+          *ngFor="let tanque of tanques; let i = index"
+          [class.tank-item--selected]="tanque.id === tanqueSeleccionado?.id"
+          [class.tank-item--busy]="!tanque.disponible"
+          [style.animation-delay]="(i * 50) + 'ms'"
+          (click)="seleccionarTanque(tanque)"
+        >
+          <!-- SVG shape indicator -->
+          <div class="tank-shape">
+            <svg *ngIf="tanque.forma !== 'Redondo'" viewBox="0 0 36 24" width="36" height="24">
+              <rect x="1" y="1" width="34" height="22" rx="3"
+                [attr.fill]="tanque.disponible ? 'rgba(0,151,167,0.12)' : 'rgba(239,83,80,0.12)'"
+                [attr.stroke]="tanque.disponible ? '#0097a7' : '#ef5350'"
+                stroke-width="1.5"/>
+              <rect x="1" y="15" width="34" height="8" rx="0"
+                [attr.fill]="tanque.disponible ? 'rgba(0,151,167,0.22)' : 'rgba(239,83,80,0.22)'"/>
+            </svg>
+            <svg *ngIf="tanque.forma === 'Redondo'" viewBox="0 0 28 28" width="28" height="28">
+              <circle cx="14" cy="14" r="12"
+                [attr.fill]="tanque.disponible ? 'rgba(0,151,167,0.12)' : 'rgba(239,83,80,0.12)'"
+                [attr.stroke]="tanque.disponible ? '#0097a7' : '#ef5350'"
+                stroke-width="1.5"/>
+              <ellipse cx="14" cy="22" rx="12" ry="5"
+                [attr.fill]="tanque.disponible ? 'rgba(0,151,167,0.22)' : 'rgba(239,83,80,0.22)'"/>
+            </svg>
+          </div>
+          <div class="tank-item-body">
+            <div class="tank-item-name">{{ tanque.nombre }}</div>
+            <div class="tank-item-vol">{{ tanque.volumen | number }} m³</div>
+          </div>
+          <div class="tank-item-dot" [class.dot-ok]="tanque.disponible" [class.dot-busy]="!tanque.disponible"></div>
+        </button>
+
+        <div class="no-tanks-msg" *ngIf="tanques.length === 0">
+          <span class="material-icons">info_outline</span>
+          <span>Sin estanques registrados</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ─── DETAIL AREA ─── -->
+    <div class="detail-area">
+
+      <!-- Selected tank detail -->
+      <div class="tank-detail" *ngIf="tanqueSeleccionado">
+
+        <!-- Detail header -->
+        <div class="detail-hdr">
+          <div class="detail-title">
+            <div class="detail-icon-wrap" [class.di-busy]="!tanqueSeleccionado.disponible">
+              <span class="material-icons">water</span>
+            </div>
+            <div>
+              <h2>{{ tanqueSeleccionado.nombre }}</h2>
+              <div class="detail-meta">
+                <span><span class="material-icons">view_in_ar</span> {{ tanqueSeleccionado.volumen | number }} m³</span>
+                <span *ngIf="tanqueSeleccionado.profundidad">
+                  <span class="material-icons">straighten</span> {{ tanqueSeleccionado.profundidad }} m prof.
+                </span>
+                <span><span class="material-icons">category</span> {{ tanqueSeleccionado.forma || 'Rectangular' }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="status-pill" [class.pill-ok]="tanqueSeleccionado.disponible" [class.pill-busy]="!tanqueSeleccionado.disponible">
+            <span class="status-dot"></span>
+            {{ tanqueSeleccionado.disponible ? 'Disponible' : 'En producción' }}
+          </div>
+        </div>
+
+        <!-- Last reading KPIs -->
+        <div class="readings-strip" *ngIf="ultimaLectura">
+          <div class="reading-kpi" [ngClass]="alertClass('temp', ultimaLectura.temperatura)">
+            <div class="rkpi-ico"><span class="material-icons">thermostat</span></div>
+            <div class="rkpi-body">
+              <div class="rkpi-val">{{ ultimaLectura.temperatura }}<span class="rkpi-unit">°C</span></div>
+              <div class="rkpi-lbl">Temperatura</div>
+            </div>
+          </div>
+          <div class="reading-kpi" [ngClass]="alertClass('ox', ultimaLectura.oxigeno_disuelto)">
+            <div class="rkpi-ico"><span class="material-icons">bubble_chart</span></div>
+            <div class="rkpi-body">
+              <div class="rkpi-val">{{ ultimaLectura.oxigeno_disuelto }}<span class="rkpi-unit">mg/L</span></div>
+              <div class="rkpi-lbl">O₂ Disuelto</div>
+            </div>
+          </div>
+          <div class="reading-kpi" [ngClass]="alertClass('ph', ultimaLectura.ph)">
+            <div class="rkpi-ico"><span class="material-icons">science</span></div>
+            <div class="rkpi-body">
+              <div class="rkpi-val">{{ ultimaLectura.ph }}</div>
+              <div class="rkpi-lbl">pH</div>
+            </div>
+          </div>
+          <div class="reading-kpi kpi-neutral">
+            <div class="rkpi-ico"><span class="material-icons">water</span></div>
+            <div class="rkpi-body">
+              <div class="rkpi-val">{{ ultimaLectura.salinidad }}<span class="rkpi-unit">ppt</span></div>
+              <div class="rkpi-lbl">Salinidad</div>
+            </div>
+          </div>
+          <div class="reading-kpi kpi-neutral">
+            <div class="rkpi-ico"><span class="material-icons">biotech</span></div>
+            <div class="rkpi-body">
+              <div class="rkpi-val">{{ ultimaLectura.nitratos }}<span class="rkpi-unit">mg/L</span></div>
+              <div class="rkpi-lbl">Nitratos</div>
+            </div>
+          </div>
+          <div class="reading-kpi kpi-date">
+            <div class="rkpi-ico"><span class="material-icons">event</span></div>
+            <div class="rkpi-body">
+              <div class="rkpi-val kpi-date-val">{{ ultimaLectura.fecha | date:'dd/MM/yy' }}</div>
+              <div class="rkpi-lbl">Última lectura</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- No readings -->
+        <div class="no-readings" *ngIf="!ultimaLectura">
+          <div class="no-readings-orb"><span class="material-icons">sensors_off</span></div>
+          <h3>Sin mediciones</h3>
+          <p>No hay datos de calidad del agua registrados para este estanque</p>
+        </div>
+
+        <!-- Charts -->
+        <div class="charts-row" *ngIf="ultimaLectura">
+          <div class="chart-card">
+            <div class="chart-card-hdr">
+              <div class="chart-dots">
+                <span class="cdot" style="background:#0097a7"></span>
+                <span class="cdot" style="background:#43a047"></span>
+              </div>
+              <h3>Temperatura &amp; Oxígeno</h3>
+            </div>
+            <div class="chart-wrap">
+              <canvas baseChart [data]="chartPrimario" type="line" [options]="baseChartOptions"></canvas>
+            </div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-card-hdr">
+              <div class="chart-dots">
+                <span class="cdot" style="background:#fbc02d"></span>
+                <span class="cdot" style="background:#7e57c2"></span>
+                <span class="cdot" style="background:#ef5350"></span>
+              </div>
+              <h3>pH · Salinidad · Nitratos</h3>
+            </div>
+            <div class="chart-wrap">
+              <canvas baseChart [data]="chartCalidad" type="line" [options]="baseChartOptions"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- History table -->
+        <div class="history-card" *ngIf="tanqueSeleccionado?.mediciones?.length > 0">
+          <div class="history-hdr">
+            <span class="material-icons">table_chart</span>
+            <h3>Historial de Mediciones</h3>
+            <span class="count-pill">{{ tanqueSeleccionado.mediciones.length }} registros</span>
+          </div>
+          <div class="table-scroll">
+            <table class="readings-table">
+              <thead>
+                <tr>
+                  <th>Fecha</th>
+                  <th>Temp (°C)</th>
+                  <th>O₂ (mg/L)</th>
+                  <th>pH</th>
+                  <th>Salinidad (ppt)</th>
+                  <th>Nitratos (mg/L)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let m of tanqueSeleccionado.mediciones">
+                  <td class="date-cell">{{ m.fecha | date:'dd/MM/yyyy' }}</td>
+                  <td><span class="chip-reading" [ngClass]="alertClass('temp', m.temperatura)">{{ m.temperatura }}</span></td>
+                  <td><span class="chip-reading" [ngClass]="alertClass('ox', m.oxigeno_disuelto)">{{ m.oxigeno_disuelto }}</span></td>
+                  <td><span class="chip-reading" [ngClass]="alertClass('ph', m.ph)">{{ m.ph }}</span></td>
+                  <td>{{ m.salinidad }}</td>
+                  <td>{{ m.nitratos }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Empty state -->
+      <div class="empty-detail" *ngIf="!tanqueSeleccionado && tanques.length > 0">
+        <div class="empty-orb"><span class="material-icons">touch_app</span></div>
+        <h3>Selecciona un estanque</h3>
+        <p>Haz clic en una tarjeta del panel izquierdo para ver el análisis completo</p>
+      </div>
+
+      <!-- No tanks at all -->
+      <div class="empty-detail" *ngIf="tanques.length === 0">
+        <div class="empty-orb"><span class="material-icons">waves</span></div>
+        <h3>Sin estanques</h3>
+        <p>Registra estanques desde la sección Empresa para ver el monitoreo aquí</p>
+      </div>
+
     </div>
   </div>
-</div>
 
-<div *ngIf="tanqueSeleccionado">
-    <h3>Mediciones de {{tanqueSeleccionado.nombre}}</h3>
-    <div class="grafico-responsive">
-        <canvas baseChart [data]="graficoMediciones" [type]="graficoTipo" [options]="graficoMedicioneOptions">
-        </canvas>
-    </div>
-</div>
+</main>

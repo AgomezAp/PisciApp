@@ -1,162 +1,177 @@
 <div class="registro-container">
-  <header class="header">
-    <img src="/assets/logob.png" alt="PisciApp Cloud" class="logo">
-  </header>
-
   <div class="content-wrapper">
+
+    <!-- ===== SIDEBAR IZQUIERDO ===== -->
     <aside class="sidebar">
-      <div class="sidebar-card active">
-        <span class="sidebar-icon">🏢</span>
-        <p>Centro de producción</p>
-      </div>
-    </aside>
-
-    <main class="form-section">
-      <div class="form-header">
-        <h1>Bienvenido/a</h1>
-        <p class="subtitle">Rellena unos datos para poder iniciar todo el servicio</p>
+      <div class="sidebar-brand">
+        <img src="/assets/logob.png" alt="PisciApp Cloud" class="logo">
+        <h2 class="brand-title">PisciApp Cloud</h2>
+        <p class="brand-subtitle">Gestión profesional de producción acuícola</p>
       </div>
 
-      <form [formGroup]="empresaForm" (ngSubmit)="onSubmit()" class="empresa-form">
-        <div class="form-title">
-          <h2>Centro de producción</h2>
-          <p class="form-subtitle">Rellena todos los campos</p>
+      <div class="sidebar-steps">
+        <div class="step-label">Pasos de configuración</div>
+        <div class="sidebar-card active">
+          <span class="sidebar-icon material-icons">business</span>
+          <p>Centro de producción</p>
         </div>
+      </div>
 
-        <div class="form-group">
-          <label for="nombre">Nombre</label>
-          <input 
-            type="text" 
-            id="nombre" 
-            formControlName="nombre"
-            placeholder="Ecopeces"
-            class="form-input">
-          <div class="error-message" *ngIf="empresaForm.get('nombre')?.invalid && empresaForm.get('nombre')?.touched">
-            El nombre es obligatorio
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="direccion">Dirección</label>
-          <input 
-            type="text" 
-            id="direccion" 
-            formControlName="direccion"
-            placeholder="Calle 38 #23 -54"
-            class="form-input">
-          <div class="error-message" *ngIf="empresaForm.get('direccion')?.invalid && empresaForm.get('direccion')?.touched">
-            La dirección es obligatoria
-          </div>
-        </div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label for="departamento">Provincia</label>
-            <input 
-              type="text" 
-              id="departamento" 
-              formControlName="departamento"
-              placeholder="Risaralda"
-              class="form-input">
-            <div class="error-message" *ngIf="empresaForm.get('departamento')?.invalid && empresaForm.get('departamento')?.touched">
-              La provincia es obligatoria
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="ciudad">Ciudad</label>
-            <input 
-              type="text" 
-              id="ciudad" 
-              formControlName="ciudad"
-              placeholder="Pereira"
-              class="form-input">
-            <div class="error-message" *ngIf="empresaForm.get('ciudad')?.invalid && empresaForm.get('ciudad')?.touched">
-              La ciudad es obligatoria
-            </div>
-          </div>
-        </div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label for="codigo_postal">Código postal</label>
-            <input 
-              type="number" 
-              id="codigo_postal" 
-              formControlName="codigo_postal"
-              placeholder="66001"
-              class="form-input">
-            <div class="error-message" *ngIf="empresaForm.get('codigo_postal')?.invalid && empresaForm.get('codigo_postal')?.touched">
-              El código postal es obligatorio
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="pais">País</label>
-            <select id="pais" formControlName="pais" class="form-select">
-              <option value="" disabled>Selecciona un país</option>
-              <option value="Colombia">Colombia</option>
-              <option value="México">México</option>
-              <option value="Argentina">Argentina</option>
-              <option value="Chile">Chile</option>
-              <option value="Perú">Perú</option>
-              <option value="Ecuador">Ecuador</option>
-            </select>
-            <div class="error-message" *ngIf="empresaForm.get('pais')?.invalid && empresaForm.get('pais')?.touched">
-              El país es obligatorio
-            </div>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label>Especies con las que trabaja</label>
-          <div class="chips-container">
-            <div class="chip" *ngFor="let especie of especiesSeleccionadas">
-              {{ especie }}
-              <button type="button" class="chip-remove" (click)="eliminarEspecie(especie)">×</button>
-            </div>
-          </div>
-          <div class="input-add-container">
-            <input 
-              type="text" 
-              [(ngModel)]="nuevaEspecie"
-              [ngModelOptions]="{standalone: true}"
-              placeholder="Agregar especie"
-              class="form-input"
-              (keydown.enter)="$event.preventDefault(); agregarEspecie()">
-            <button type="button" class="btn-add" (click)="agregarEspecie()">+</button>
-          </div>
-          <div class="error-message" *ngIf="especiesSeleccionadas.length === 0 && formSubmitted">
-            Debe agregar al menos una especie
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label>Actividades que realiza</label>
-          <div class="chips-container">
-            <div class="chip chip-activity" *ngFor="let actividad of actividadesSeleccionadas">
-              {{ actividad }}
-              <button type="button" class="chip-remove" (click)="eliminarActividad(actividad)">×</button>
-            </div>
-          </div>
-          <div class="input-add-container">
-            <input 
-              type="text" 
-              [(ngModel)]="nuevaActividad"
-              [ngModelOptions]="{standalone: true}"
-              placeholder="Agregar actividad"
-              class="form-input"
-              (keydown.enter)="$event.preventDefault(); agregarActividad()">
-            <button type="button" class="btn-add" (click)="agregarActividad()">+</button>
-          </div>
-        </div>
-
-        <button type="submit" class="btn-submit" [disabled]="cargando">
-          {{ cargando ? 'Guardando...' : 'Siguiente paso' }}
-        </button>
-      </form>
-
-      <footer class="form-footer">
+      <footer class="sidebar-footer">
         <p>2025 © PisciApp</p>
       </footer>
+    </aside>
+
+    <!-- ===== FORMULARIO ===== -->
+    <main class="form-section">
+      <div class="form-inner">
+        <div class="form-header">
+          <h1>Bienvenido/a</h1>
+          <p class="subtitle">Rellena los datos de tu centro de producción para comenzar</p>
+        </div>
+
+        <form [formGroup]="empresaForm" (ngSubmit)="onSubmit()" class="empresa-form">
+
+          <!-- Nombre + Dirección -->
+          <div class="form-row">
+            <div class="form-group">
+              <label for="nombre">Nombre del centro</label>
+              <input
+                type="text"
+                id="nombre"
+                formControlName="nombre"
+                placeholder="Ecopeces"
+                class="form-input">
+              <div class="error-message" *ngIf="empresaForm.get('nombre')?.invalid && empresaForm.get('nombre')?.touched">
+                El nombre es obligatorio
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="direccion">Dirección</label>
+              <input
+                type="text"
+                id="direccion"
+                formControlName="direccion"
+                placeholder="Calle 38 #23 -54"
+                class="form-input">
+              <div class="error-message" *ngIf="empresaForm.get('direccion')?.invalid && empresaForm.get('direccion')?.touched">
+                La dirección es obligatoria
+              </div>
+            </div>
+          </div>
+
+          <!-- Provincia + Ciudad -->
+          <div class="form-row">
+            <div class="form-group">
+              <label for="departamento">Provincia</label>
+              <input
+                type="text"
+                id="departamento"
+                formControlName="departamento"
+                placeholder="Risaralda"
+                class="form-input">
+              <div class="error-message" *ngIf="empresaForm.get('departamento')?.invalid && empresaForm.get('departamento')?.touched">
+                La provincia es obligatoria
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="ciudad">Ciudad</label>
+              <input
+                type="text"
+                id="ciudad"
+                formControlName="ciudad"
+                placeholder="Pereira"
+                class="form-input">
+              <div class="error-message" *ngIf="empresaForm.get('ciudad')?.invalid && empresaForm.get('ciudad')?.touched">
+                La ciudad es obligatoria
+              </div>
+            </div>
+          </div>
+
+          <!-- Código postal + País -->
+          <div class="form-row">
+            <div class="form-group">
+              <label for="codigo_postal">Código postal</label>
+              <input
+                type="number"
+                id="codigo_postal"
+                formControlName="codigo_postal"
+                placeholder="66001"
+                class="form-input">
+              <div class="error-message" *ngIf="empresaForm.get('codigo_postal')?.invalid && empresaForm.get('codigo_postal')?.touched">
+                El código postal es obligatorio
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="pais">País</label>
+              <select id="pais" formControlName="pais" class="form-select">
+                <option value="" disabled>Selecciona un país</option>
+                <option value="Colombia">Colombia</option>
+                <option value="México">México</option>
+                <option value="Argentina">Argentina</option>
+                <option value="Chile">Chile</option>
+                <option value="Perú">Perú</option>
+                <option value="Ecuador">Ecuador</option>
+              </select>
+              <div class="error-message" *ngIf="empresaForm.get('pais')?.invalid && empresaForm.get('pais')?.touched">
+                El país es obligatorio
+              </div>
+            </div>
+          </div>
+
+          <!-- Especies + Actividades (lado a lado) -->
+          <div class="form-row">
+            <div class="form-group">
+              <label>Especies con las que trabaja</label>
+              <div class="chips-container">
+                <div class="chip" *ngFor="let especie of especiesSeleccionadas">
+                  {{ especie }}
+                  <button type="button" class="chip-remove" (click)="eliminarEspecie(especie)">×</button>
+                </div>
+              </div>
+              <div class="input-add-container">
+                <input
+                  type="text"
+                  [(ngModel)]="nuevaEspecie"
+                  [ngModelOptions]="{standalone: true}"
+                  placeholder="Agregar especie"
+                  class="form-input"
+                  (keydown.enter)="$event.preventDefault(); agregarEspecie()">
+                <button type="button" class="btn-add" (click)="agregarEspecie()">+</button>
+              </div>
+              <div class="error-message" *ngIf="especiesSeleccionadas.length === 0 && formSubmitted">
+                Agrega al menos una especie
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Actividades que realiza</label>
+              <div class="chips-container">
+                <div class="chip chip-activity" *ngFor="let actividad of actividadesSeleccionadas">
+                  {{ actividad }}
+                  <button type="button" class="chip-remove" (click)="eliminarActividad(actividad)">×</button>
+                </div>
+              </div>
+              <div class="input-add-container">
+                <input
+                  type="text"
+                  [(ngModel)]="nuevaActividad"
+                  [ngModelOptions]="{standalone: true}"
+                  placeholder="Agregar actividad"
+                  class="form-input"
+                  (keydown.enter)="$event.preventDefault(); agregarActividad()">
+                <button type="button" class="btn-add" (click)="agregarActividad()">+</button>
+              </div>
+            </div>
+          </div>
+
+          <button type="submit" class="btn-submit" [disabled]="cargando">
+            <span class="material-icons btn-icon">arrow_forward</span>
+            {{ cargando ? 'Guardando...' : 'Siguiente paso' }}
+          </button>
+        </form>
+      </div>
     </main>
+
   </div>
 </div>
